@@ -1,0 +1,25 @@
+# Project
+/db/
+
+# Intellij
+.idea
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+
+# Mac files
+.DS_Store
+
+# OpenOffice temp files
+.~*
+
+# Gradle
+build/
+.gradle/
+*.jar
+
+# svn
+.svn/
