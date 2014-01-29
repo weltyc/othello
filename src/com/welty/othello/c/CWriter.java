@@ -30,6 +30,7 @@ public class CWriter {
 
     public void println(Object obj) {
         out.println(obj.toString());
+        out.flush();
     }
 
     public void close() {
