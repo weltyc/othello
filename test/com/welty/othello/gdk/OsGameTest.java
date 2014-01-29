@@ -63,16 +63,16 @@ public class OsGameTest extends TestCase {
     }
 
     public void testEquals() {
-        final String sBoard = "OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ********";
-        final COsBoardType bt = new COsBoardType("8");
+        final OsBoard boardBtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
+        final OsBoard boardWtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
 
-        final COsPosition a = new COsPosition(new COsBoard(bt, sBoard, true), new OsClock(1, 2), new OsClock(2, 3));
-        final COsPosition b = new COsPosition(new COsBoard(bt, sBoard, true), new OsClock(1, 2), new OsClock(2, 3));
+        final COsPosition a = new COsPosition(boardBtm, new OsClock(1, 2), new OsClock(2, 3));
+        final COsPosition b = new COsPosition(boardBtm, new OsClock(1, 2), new OsClock(2, 3));
         assertEquals(a, a);
         assertEquals(a, b);
-        final COsPosition c = new COsPosition(new COsBoard(bt, sBoard, false), new OsClock(1, 2), new OsClock(2, 3));
-        final COsPosition d = new COsPosition(new COsBoard(bt, sBoard, true), new OsClock(1, 3), new OsClock(2, 3));
-        final COsPosition e = new COsPosition(new COsBoard(bt, sBoard, true), new OsClock(1, 2), new OsClock(2, 4));
+        final COsPosition c = new COsPosition(boardWtm, new OsClock(1, 2), new OsClock(2, 3));
+        final COsPosition d = new COsPosition(boardBtm, new OsClock(1, 3), new OsClock(2, 3));
+        final COsPosition e = new COsPosition(boardBtm, new OsClock(1, 2), new OsClock(2, 4));
         assertFalse(a.equals(c));
         assertFalse(a.equals(d));
         assertFalse(a.equals(e));

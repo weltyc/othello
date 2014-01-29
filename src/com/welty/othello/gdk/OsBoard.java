@@ -14,9 +14,17 @@ import java.util.Arrays;
  * Time: 11:55:56 AM
  * To change this template use File | Settings | File Templates.
  */
-public class COsBoard {
+public class OsBoard {
     private COsBoardType bt = new COsBoardType("8");
+
+    /**
+     * The board is stored as an (n+2)x(n+2) array of squares, with dummy squares
+     * on the outside edge.
+     * <p/>
+     * It may also be null.
+     */
     private char[] sBoard;
+
     public boolean fBlackMove;
 
     public static final char BLACK = '*';
@@ -24,27 +32,22 @@ public class COsBoard {
     public static final char EMPTY = '-';
     private static final char DUMMY = 'd';
 
-    public COsBoard() {
+    public OsBoard() {
     }
 
-    public COsBoard(COsBoard board) {
+    public OsBoard(OsBoard board) {
         copy(board);
     }
 
-    public COsBoard(CReader is) {
+    public OsBoard(CReader is) {
         In(is);
     }
 
-    public COsBoard(COsBoardType bt, String sBoard, boolean fBlackMove) {
-        this.bt = new COsBoardType(bt);
-        this.sBoard = sBoard.toCharArray();
-        this.fBlackMove = fBlackMove;
-    }
-
-    public void copy(COsBoard board) {
+    public void copy(OsBoard board) {
         bt = new COsBoardType(board.bt);
         sBoard = (board.sBoard == null) ? null : Arrays.copyOf(board.sBoard, board.sBoard.length);
         fBlackMove = board.fBlackMove;
+        validate();
     }
 
     public boolean IsBlackMove() {
@@ -52,7 +55,7 @@ public class COsBoard {
     }
 
     int IsMoveLegal(int row, int col) {
-        return IsMoveLegal(row, col, fBlackMove);
+        return nFlipped(row, col, fBlackMove);
     }
 
     public boolean HasLegalMove() {
@@ -84,13 +87,18 @@ public class COsBoard {
         SetPiece(center - 1, center - 1, WHITE);
 
         fBlackMove = true;
+        validate();
     }
 
     public char Piece(int row, int col) {
         // need to adjust for the first row and column of dummy squares
         row++;
         col++;
-        return sBoard[row * (bt.n + 2) + col];
+        final int index = row * (bt.n + 2) + col;
+        if (index >= sBoard.length) {
+            System.out.println("breakpoint!");
+        }
+        return sBoard[index];
     }
 
     public void SetPiece(int row, int col, char piece) {
@@ -156,7 +164,7 @@ public class COsBoard {
 
         for (r = 0; r < bt.n; r++) {
             for (c = 0; c < bt.n; c++)
-                if (IsMoveLegal(r, c, fBlackMover) != 0)
+                if (nFlipped(r, c, fBlackMover) != 0)
                     return true;
         }
         return false;
@@ -168,7 +176,7 @@ public class COsBoard {
 
         for (r = 0; r < bt.n; r++) {
             for (c = 0; c < bt.n; c++)
-                if (IsMoveLegal(r, c, fMover ? fBlackMove : !fBlackMove) != 0)
+                if (nFlipped(r, c, fMover ? fBlackMove : !fBlackMove) != 0)
                     mvs.add(new COsMove(r, c));
         }
 
@@ -183,18 +191,18 @@ public class COsBoard {
      */
     public boolean IsMoveLegal(final COsMove move) {
         if (move.Pass())
-            return !HasLegalMove();
+            return !HasLegalMove() && HasLegalMove(!blackMove());
         else
             return IsMoveLegal(move.Row(), move.Col()) != 0;
     }
 
     /**
-     * @param row
-     * @param col
-     * @param fBlackMover
+     * @param row         row of move (starts at 0)
+     * @param col         col of move (starts at 0)
+     * @param fBlackMover if true, black is making a move
      * @return number of squares flipped, or 0 if no squares are flipped
      */
-    int IsMoveLegal(int row, int col, boolean fBlackMover) {
+    int nFlipped(int row, int col, boolean fBlackMover) {
         int dRow, dCol;
         char cMover, cOpponent;
 
@@ -227,44 +235,81 @@ public class COsBoard {
      * @throws IllegalArgumentException if the reader does not contain a valid board
      */
     public void In(CReader is) {
-        char c;
-        int i, nsq;
-
         Clear();
 
         initialize(new COsBoardType(is));
-        nsq = sBoard.length;
-        for (i = 0; i < nsq; i++) {
+        for (int i = 0; i < sBoard.length; i++) {
             // find the next non-dummy square
             if (sBoard[i] != 'd') {
                 // put something there
-                is.ignoreWhitespace();
-                c = is.read();
-                switch(c) {
-                    case 'x':
-                    case 'X':
-                        c = BLACK;
-                        break;
-                    case '.':
-                    case ' ':
-                    case '_':
-                        c = EMPTY;
-                        break;
-                    case 'o':
-                    case '0':
-                        c = WHITE;
-                        break;
-                }
-                if (!(c == BLACK || c == WHITE || c == EMPTY)) {
-                    throw (new IllegalArgumentException("illegal character " + c));
-                }
+                final char c=readNormalized(is);
                 sBoard[i] = c;
             }
         }
 
-        is.ignoreWhitespace();
-        c = is.read();
+        final char c = readNormalized(is);
         fBlackMove = (c == BLACK);
+        is.ignoreWhitespace();
+        if (is.read()!=65535) {
+            throw new IllegalArgumentException("Board text has too many characters");
+        }
+        validate();
+    }
+
+    /**
+     * Strip whitespace, then read a character and convert it to normalized form (BLACK, WHITE, or EMPTY).
+     *
+     * @param is input stream
+     * @return normalized character (BLACK, WHITE, or EMPTY).
+     * @throws IllegalArgumentException if the character can't be converted to normalized form or the reader is at
+     *                                  end-of-stream.
+     */
+    private static char readNormalized(CReader is) {
+        is.ignoreWhitespace();
+        final char c = is.read();
+        return normalizeChar(c);
+    }
+
+    /**
+     * Convert an input character into BLACK, EMPTY, or WHITE as appropriate.
+     * <p/>
+     * BLACK (*): *xX
+     * WHITE (O): Oo0
+     * EMPTY (-): -. _
+     *
+     * @param c char to convert
+     * @return converted char
+     * @throws IllegalArgumentException if the input character is not one of the convertible characters.
+     */
+    private static char normalizeChar(char c) {
+        switch (c) {
+            case 'x':
+            case 'X':
+                c = BLACK;
+                break;
+            case '.':
+            case ' ':
+            case '_':
+                c = EMPTY;
+                break;
+            case 'o':
+            case '0':
+                c = WHITE;
+                break;
+        }
+        if (!(c == BLACK || c == WHITE || c == EMPTY)) {
+            throw (new IllegalArgumentException("illegal character: '" + c + "'"));
+        }
+        return c;
+    }
+
+    private void validate() {
+        if (sBoard != null) {
+            final int expectedLength = (bt.n + 2) * (bt.n + 2);
+            if (expectedLength != sBoard.length) {
+                throw new IllegalStateException("Expected board length " + expectedLength + ", was " + sBoard.length);
+            }
+        }
     }
 
     @Override public String toString() {
@@ -368,6 +413,13 @@ public class COsBoard {
         return new GetTextResult(sBoard, fBlackMove);
     }
 
+    /**
+     * Determine if it is black to move.
+     * <p/>
+     * Black may have no legal moves - if he must pass or the game is over.
+     *
+     * @return True if it is black to move.
+     */
     public boolean blackMove() {
         return fBlackMove;
     }
@@ -376,9 +428,10 @@ public class COsBoard {
         return getPieceCounts().nEmpty;
     }
 
-    public void Set(COsBoard board) {
+    public void Set(OsBoard board) {
         bt = new COsBoardType(board.bt);
         setText(board.GetText());
+        validate();
     }
 
     public static class GetTextResult {
@@ -476,8 +529,8 @@ public class COsBoard {
     }
 
     @Override public boolean equals(Object obj) {
-        if (obj instanceof COsBoard) {
-            COsBoard b = (COsBoard) obj;
+        if (obj instanceof OsBoard) {
+            OsBoard b = (OsBoard) obj;
             return bt.equals(b.bt) && Arrays.equals(sBoard, b.sBoard) && fBlackMove == b.fBlackMove;
         } else {
             return false;

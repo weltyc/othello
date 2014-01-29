@@ -99,7 +99,8 @@ public class CReader {
     }
 
     /**
-     * @return the next character (does not strip whitespace characters, returns them instead)
+     * @return the next character (does not strip whitespace characters, returns them instead),
+     * or 65535 if at end of stream.
      */
     public char read() {
         try {

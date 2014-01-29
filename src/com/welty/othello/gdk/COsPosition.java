@@ -13,16 +13,16 @@ import java.util.Arrays;
  * </PRE>
  */
 public class COsPosition {
-    public final COsBoard board;
+    public final OsBoard board;
     public final OsClock[] cks;
 
     public COsPosition() {
-        board = new COsBoard();
+        board = new OsBoard();
         cks = new OsClock[]{new OsClock(), new OsClock()};
     }
 
-    public COsPosition(COsBoard board, OsClock whiteClock, OsClock blackClock) {
-        this.board = new COsBoard(board);
+    public COsPosition(OsBoard board, OsClock whiteClock, OsClock blackClock) {
+        this.board = new OsBoard(board);
         cks = new OsClock[]{new OsClock(whiteClock), new OsClock(blackClock)};
     }
 
@@ -30,7 +30,7 @@ public class COsPosition {
      * Copy constructor. Deep copy.
      */
     public COsPosition(COsPosition posStart) {
-        board = new COsBoard(posStart.board);
+        board = new OsBoard(posStart.board);
         cks = new OsClock[]{new OsClock(posStart.cks[0]), new OsClock(posStart.cks[1])};
     }
 
