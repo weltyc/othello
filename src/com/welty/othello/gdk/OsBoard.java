@@ -95,9 +95,6 @@ public class OsBoard {
         row++;
         col++;
         final int index = row * (bt.n + 2) + col;
-        if (index >= sBoard.length) {
-            System.out.println("breakpoint!");
-        }
         return sBoard[index];
     }
 
@@ -140,6 +137,15 @@ public class OsBoard {
                     }
                 }
                 Require.gt(nFlipped, "nFlipped", 0);
+            }
+        } else {
+            // is a pass legal?
+            final int nPass = NPass();
+            if (nPass == 0) {
+                throw new IllegalArgumentException("can't pass, still have a legal move");
+            }
+            if (nPass == 2) {
+                throw new IllegalArgumentException("can't pass, game is over");
             }
         }
 
@@ -242,7 +248,7 @@ public class OsBoard {
             // find the next non-dummy square
             if (sBoard[i] != 'd') {
                 // put something there
-                final char c=readNormalized(is);
+                final char c = readNormalized(is);
                 sBoard[i] = c;
             }
         }
@@ -250,7 +256,7 @@ public class OsBoard {
         final char c = readNormalized(is);
         fBlackMove = (c == BLACK);
         is.ignoreWhitespace();
-        if (is.read()!=65535) {
+        if (is.read() != 65535) {
             throw new IllegalArgumentException("Board text has too many characters");
         }
         validate();

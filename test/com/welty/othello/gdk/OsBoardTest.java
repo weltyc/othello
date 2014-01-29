@@ -76,4 +76,16 @@ public class OsBoardTest extends TestCase {
         assertTrue(osBoard.IsMoveLegal(new COsMove("a1")));
         assertEquals(16, osBoard.GetMoves(true).size());
     }
+
+    public void testThrowsIfBadMove() {
+        final OsBoard board = board("4 OOOO OOOO OOOO *OO. O");
+        board.Update(new COsMove("pass"));
+        try {
+            board.Update(new COsMove("pass"));
+            fail("can't pass, black has a legal move");
+        }
+        catch(IllegalArgumentException e) {
+            // expected
+        }
+    }
 }
