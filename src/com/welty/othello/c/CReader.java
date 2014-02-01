@@ -27,6 +27,13 @@ public class CReader {
         this(new ByteArrayInputStream(s.getBytes()));
     }
 
+    /**
+     * Skip whitespace, then read an integer from the stream.
+     *
+     * @return the integer read
+     * @throws EOFException             if EOF is reached before an integer is parsed
+     * @throws IllegalArgumentException if the next non-space tokens are not an integer.
+     */
     public int readInt() throws EOFException {
         ignoreWhitespace();
         StringBuilder sb = new StringBuilder();
@@ -54,8 +61,7 @@ public class CReader {
     public int readInt(int def) {
         try {
             return readInt();
-        }
-        catch (EOFException e) {
+        } catch (EOFException e) {
             return def;
         }
     }
@@ -100,7 +106,7 @@ public class CReader {
 
     /**
      * @return the next character (does not strip whitespace characters, returns them instead),
-     * or 65535 if at end of stream.
+     *         or 65535 if at end of stream.
      */
     public char read() {
         try {
