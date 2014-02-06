@@ -385,9 +385,13 @@ public class COsGame {
 
     // Does not affect the board type.
 
+    /**
+     * @param sBoardText board text. No spaces, and all chars must be BLACK, WHITE, or EMPTY (*, O, -).
+     * @param fBlackMove if true, it's black's move
+     */
     public void SetToPosition(final String sBoardText, final boolean fBlackMove) {
         posStart.board.setText(sBoardText, fBlackMove);
-        pos = posStart;
+        pos = new COsPosition(posStart);
         ml.clear();
     }
 

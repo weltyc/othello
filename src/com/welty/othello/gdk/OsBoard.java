@@ -99,10 +99,19 @@ public class OsBoard {
     }
 
     public void SetPiece(int row, int col, char piece) {
-        // need to adjust for the first row and column of dummy squares
-        row++;
-        col++;
-        sBoard[row * (bt.n + 2) + col] = piece;
+        switch (piece) {
+            case BLACK:
+            case WHITE:
+            case EMPTY:
+            case DUMMY:
+                // need to adjust for the first row and column of dummy squares
+                row++;
+                col++;
+                sBoard[row * (bt.n + 2) + col] = piece;
+                break;
+            default:
+                throw new IllegalStateException("Illegal piece: " + piece);
+        }
     }
 
     void Update(final COsMove mv) {
@@ -471,11 +480,22 @@ public class OsBoard {
     }
 
 
+    /**
+     * Set the pieces on the board
+     *
+     * @param sBoardText text representation of the pieces on the board. No spaces are allowed.
+     */
     public void setText(String sBoardText, boolean fBlackMove) {
         setText(sBoardText);
         this.fBlackMove = fBlackMove;
     }
 
+    /**
+     * Set the pieces on the board
+     *
+     * @param sBoard text representation of the pieces on the board. No spaces are allowed. Pieces must be
+     *               BLACK, WHITE, or EMPTY (*, O, or -).
+     */
     void setText(final String sBoard) {
         int r, c;
 
