@@ -20,8 +20,8 @@ class ProgressWindow extends JFrame {
 
     public ProgressWindow(ProgressTask endgameTask, ProgressTask midgameTask) {
         super("Ntest Speed Test");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         final Box box = Box.createVerticalBox();
         final Properties props = System.getProperties();
         box.add(systemLabel(props));
