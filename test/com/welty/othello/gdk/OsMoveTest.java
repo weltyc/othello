@@ -3,11 +3,7 @@ package com.welty.othello.gdk;
 import junit.framework.TestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 7:33:06 AM
- * To change this template use File | Settings | File Templates.
+ * Test OsMove
  */
 public class OsMoveTest extends TestCase {
     public void testConstructor() {
@@ -22,8 +18,7 @@ public class OsMoveTest extends TestCase {
     }
 
     public void testToString() {
-        final COsMove pass = new COsMove();
-        pass.SetPass();
+        final COsMove pass = COsMove.PASS;
         assertEquals("PA", pass.toString());
 
         final COsMove move = new COsMove(4, 3);
@@ -39,8 +34,6 @@ public class OsMoveTest extends TestCase {
 
     public void testSet() {
         final COsMove move = new COsMove();
-        move.SetPass();
-        assertTrue(move.Pass());
         move.Set(2, 3);
         assertEquals(new COsMove(2, 3), move);
     }

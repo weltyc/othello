@@ -43,20 +43,22 @@ public class COsMove {
         in(in);
     }
 
+    /**
+     * Create a move from an IOS move code
+     *
+     * @param iosMove integer from 11-88; positive if a black move, negative if a white move
+     * @return the move
+     */
+    public static COsMove ofIos(int iosMove) {
+        if (iosMove < 0) {
+            iosMove = -iosMove;
+        }
+        final int row = (iosMove % 10) - 1;
+        final int col = (iosMove / 10) - 1;
+        return new COsMove(row, col);
+    }
 
     // Modification
-    public void setIos(int iosmove) {
-        fPass = false;
-        if (iosmove < 0)
-            iosmove = -iosmove;
-        row = (iosmove % 10) - 1;
-        col = (iosmove / 10) - 1;
-    }
-
-    public void SetPass() {
-        fPass = true;
-    }
-
     public void Set(int row, int col) {
         this.row = row;
         this.col = col;

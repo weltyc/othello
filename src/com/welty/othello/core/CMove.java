@@ -41,9 +41,7 @@ public class CMove implements Comparable<CMove> {
 
     public COsMove toOsMove() {
         if (IsPass()) {
-            final COsMove osMove = new COsMove();
-            osMove.SetPass();
-            return osMove;
+            return COsMove.PASS;
         } else {
             return new COsMove(Row(), Col());
         }

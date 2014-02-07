@@ -103,48 +103,69 @@ public class COsGame {
 
             CReader is = new CReader(sData);
 
-            if (sToken.equals("GM"))
-                Require.eq(sData, "Game type", "Othello");
-            else if (sToken.equals("PC"))
-                sPlace = sData;
-            else if (sToken.equals("DT"))
-                sDateTime = sData;
-            else if (sToken.equals("PB"))
-                pis[1].sName = sData;
-            else if (sToken.equals("PW"))
-                pis[0].sName = sData;
-            else if (sToken.equals("RB"))
-                pis[1].dRating = is.readDoubleNoExponent();
-            else if (sToken.equals("RW"))
-                pis[0].dRating = is.readDoubleNoExponent();
-            else if (sToken.equals("TI")) {
-                posStart.cks[0].In(is);
-                posStart.cks[1] = new OsClock(posStart.cks[0]);
-            } else if (sToken.equals("TB"))
-                posStart.cks[1].In(is);
-            else if (sToken.equals("TW"))
-                posStart.cks[0].In(is);
-            else if (sToken.equals("TY"))
-                mt.In(is);
-            else if (sToken.equals("BO"))
-                posStart.board.In(is);
-            else if (sToken.equals("B") || sToken.equals("W")) {
-                COsMoveListItem mli = new COsMoveListItem();
-                mli.In(is);
-                ml.add(mli);
-            } else if (sToken.equals("RE"))
-                result.In(is);
-            else if (sToken.equals("CO")) {
-                // ignore comments
-            } else if (sToken.equals("KB")) {
-                mlisKomi[1] = new COsMoveListItem(is);
-            } else if (sToken.equals("KW")) {
-                mlisKomi[0] = new COsMoveListItem(is);
-            } else if (sToken.equals("KM")) {
-                dKomiValue = in.readDoubleNoExponent();
-                fCheckKomiValue = true;
-            } else // unknown token
-                throw new IllegalArgumentException("Unknown token: " + sToken);
+            switch (sToken) {
+                case "GM":
+                    Require.eq(sData, "Game type", "Othello");
+                    break;
+                case "PC":
+                    sPlace = sData;
+                    break;
+                case "DT":
+                    sDateTime = sData;
+                    break;
+                case "PB":
+                    pis[1].sName = sData;
+                    break;
+                case "PW":
+                    pis[0].sName = sData;
+                    break;
+                case "RB":
+                    pis[1].dRating = is.readDoubleNoExponent();
+                    break;
+                case "RW":
+                    pis[0].dRating = is.readDoubleNoExponent();
+                    break;
+                case "TI":
+                    posStart.cks[0].In(is);
+                    posStart.cks[1] = new OsClock(posStart.cks[0]);
+                    break;
+                case "TB":
+                    posStart.cks[1].In(is);
+                    break;
+                case "TW":
+                    posStart.cks[0].In(is);
+                    break;
+                case "TY":
+                    mt.In(is);
+                    break;
+                case "BO":
+                    posStart.board.In(is);
+                    break;
+                case "B":
+                case "W":
+                    COsMoveListItem mli = new COsMoveListItem();
+                    mli.In(is);
+                    ml.add(mli);
+                    break;
+                case "RE":
+                    result.In(is);
+                    break;
+                case "CO":
+                    // ignore comments
+                    break;
+                case "KB":
+                    mlisKomi[1] = new COsMoveListItem(is);
+                    break;
+                case "KW":
+                    mlisKomi[0] = new COsMoveListItem(is);
+                    break;
+                case "KM":
+                    dKomiValue = in.readDoubleNoExponent();
+                    fCheckKomiValue = true;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown token: " + sToken);
+            }
         }
         if (fCheckKomiValue) {
             final double komiCheck;
@@ -255,14 +276,14 @@ public class COsGame {
 
             // get moves
             COsMoveListItem mli = new COsMoveListItem();
-            int iosmove;
+            int iosMove;
 
             // read move code. move code 0 means game is over
-            while (0 != (iosmove = is.readInt())) {
+            while (0 != (iosMove = is.readInt())) {
                 // positive moves are black, negative are white
-                Require.eq(pos.board.blackMove(), "black move", iosmove > 0);
+                Require.eq(pos.board.blackMove(), "black move", iosMove > 0);
 
-                mli.mv.setIos(iosmove);
+                mli.mv = COsMove.ofIos(iosMove);
                 Update(mli);
 
                 // pass if needed
@@ -313,8 +334,8 @@ public class COsGame {
 
         // move list
         boolean fBlackMove = posStart.board.blackMove();
-        for (COsMoveListItem pmli : ml) {
-            sb.append(fBlackMove ? "]B[" : "]W[").append(pmli);
+        for (COsMoveListItem mli : ml) {
+            sb.append(fBlackMove ? "]B[" : "]W[").append(mli);
             fBlackMove = !fBlackMove;
         }
 
@@ -350,20 +371,8 @@ public class COsGame {
     }
 
 
-    void SetResult(final COsResult aresult, final OsPlayerInfo[] apis) {
-        result = aresult;
-        if (!pis[0].sName.equals(apis[0].sName))
-            result.dResult = -result.dResult;
-    }
-
-    void SetResult(final COsResult aresult, final String[] sNames) {
-        result = aresult;
-        if (!pis[0].sName.equals(sNames[0]))
-            result.dResult = -result.dResult;
-    }
-
-    public void SetResult(final COsResult aresult) {
-        result = aresult;
+    public void SetResult(final COsResult result) {
+        this.result = result;
     }
 
     public void Initialize(final String sBoardType) {
@@ -413,11 +422,6 @@ public class COsGame {
         sDateTime = Integer.toString(year);
     }
 
-    void SetCurrentTime() {
-        long tCurrent = System.currentTimeMillis() / 1000;
-        SetTime(tCurrent);
-    }
-
     public void CalcCurrentPos() {
         pos = calcPosition(ml);
     }
@@ -458,30 +462,8 @@ public class COsGame {
         }
     }
 
-    double max(double a, double b) {
-        return (a > b) ? a : b;
-    }
-
-    void UpdateKomiSet(final COsMoveListItem[] mlis) {
-        Require.isTrue(NeedsKomi(), "needs komi");
-        pos.UpdateKomiSet(mlis);
-        mlisKomi[0] = mlis[0];
-        mlisKomi[1] = mlis[1];
-    }
-
     public boolean GameOver() {
         return pos.board.GameOver();
-    }
-
-    boolean ToMove(String sLogin) {
-        if (result.status != COsResult.TStatus.kUnfinished)
-            return false;
-        if (pos.board.GameOver())
-            return false;
-        if (NeedsKomi())
-            return sLogin.equals(pis[0].sName) || sLogin.equals(pis[1].sName);
-        else
-            return sLogin.equals(pis[pos.board.blackMove() ? 1 : 0].sName);
     }
 
     @Override public String toString() {

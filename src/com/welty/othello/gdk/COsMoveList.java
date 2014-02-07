@@ -29,4 +29,13 @@ public class COsMoveList extends ArrayList<COsMoveListItem> {
         }
         return sb.toString();
     }
+
+    /**
+     * Strip all evals and times from the moves
+     */
+    public void stripEvalsAndTimes() {
+        for (int i = 0; i < size(); i++) {
+            set(i, new COsMoveListItem(get(i).mv));
+        }
+    }
 }

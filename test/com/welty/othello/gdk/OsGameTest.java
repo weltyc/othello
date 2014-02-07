@@ -48,7 +48,8 @@ public class OsGameTest extends TestCase {
         mli.mv = new COsMove("D6");
         assertEquals(expected, game.ml);
 
-        move0.SetPass();
+        // test defensive copy on update
+        move0.Set(5, 1);
         assertEquals(expected, game.ml);
 
 
