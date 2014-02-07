@@ -9,12 +9,8 @@ import com.welty.othello.c.CReader;
 public class OsMove {
     public static final OsMove PASS = new OsMove(-1, -1, true);
 
-    private boolean fPass;
-    private int row, col;
-
-    // Creation
-    public OsMove() {
-    }
+    private final boolean fPass;
+    private final int row, col;
 
     public OsMove(int row, int col) {
         this(row, col, false);
@@ -47,6 +43,8 @@ public class OsMove {
                     break;
                 }
             }
+            row = 0;
+            col = 0;
         } else {
             col = cCol - 'A';
             row = in.read() - '1';
