@@ -26,7 +26,7 @@ public class COsGame {
     protected String sDateTime;
     public OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
     public final COsMoveList ml;
-    COsMoveListItem[] mlisKomi = new COsMoveListItem[2];
+    OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
     public OsMatchType mt = new OsMatchType();
     public COsResult result = new COsResult();
     private double dKomiValue = 0;
@@ -143,7 +143,7 @@ public class COsGame {
                     break;
                 case "B":
                 case "W":
-                    final COsMoveListItem mli = new COsMoveListItem(is);
+                    final OsMoveListItem mli = new OsMoveListItem(is);
                     ml.add(mli);
                     break;
                 case "RE":
@@ -153,10 +153,10 @@ public class COsGame {
                     // ignore comments
                     break;
                 case "KB":
-                    mlisKomi[1] = new COsMoveListItem(is);
+                    mlisKomi[1] = new OsMoveListItem(is);
                     break;
                 case "KW":
-                    mlisKomi[0] = new COsMoveListItem(is);
+                    mlisKomi[0] = new OsMoveListItem(is);
                     break;
                 case "KM":
                     dKomiValue = in.readDoubleNoExponent();
@@ -191,7 +191,7 @@ public class COsGame {
     }
 
     public CReader InLogbook(CReader is) {
-        final COsMoveListItem pass = new COsMoveListItem(OsMove.PASS);
+        final OsMoveListItem pass = new OsMoveListItem(OsMove.PASS);
         char c;
 
         Clear();
@@ -208,7 +208,7 @@ public class COsGame {
                 // read move
                 boolean fBlackMove = c == '+';
                 Require.eq(fBlackMove, "black move", pos.board.blackMove());
-                COsMoveListItem mli = new COsMoveListItem(new OsMove(is));
+                OsMoveListItem mli = new OsMoveListItem(new OsMove(is));
 
                 // update game and pass if needed
                 Update(mli);
@@ -280,12 +280,12 @@ public class COsGame {
                 // positive moves are black, negative are white
                 Require.eq(pos.board.blackMove(), "black move", iosMove > 0);
 
-                final COsMoveListItem mli = new COsMoveListItem(OsMove.ofIos(iosMove));
+                final OsMoveListItem mli = new OsMoveListItem(OsMove.ofIos(iosMove));
                 Update(mli);
 
                 // pass if needed
                 if (!GameOver() && !pos.board.HasLegalMove()) {
-                    Update(COsMoveListItem.PASS);
+                    Update(OsMoveListItem.PASS);
                 }
             }
 
@@ -331,7 +331,7 @@ public class COsGame {
 
         // move list
         boolean fBlackMove = posStart.board.blackMove();
-        for (COsMoveListItem mli : ml) {
+        for (OsMoveListItem mli : ml) {
             sb.append(fBlackMove ? "]B[" : "]W[").append(mli);
             fBlackMove = !fBlackMove;
         }
@@ -423,12 +423,12 @@ public class COsGame {
         pos = calcPosition(ml);
     }
 
-    COsPosition calcPosition(List<COsMoveListItem> moveList) {
+    COsPosition calcPosition(List<OsMoveListItem> moveList) {
         final COsPosition position = new COsPosition(posStart);
         if (mt.fKomi && !moveList.isEmpty())
             position.UpdateKomiSet(mlisKomi);
 
-        for (COsMoveListItem mli : moveList) {
+        for (OsMoveListItem mli : moveList) {
             position.Update(mli);
         }
         return position;
@@ -446,8 +446,8 @@ public class COsGame {
     }
 
 
-    public void Update(COsMoveListItem mli) {
-        mli = new COsMoveListItem(mli);
+    public void Update(OsMoveListItem mli) {
+        mli = new OsMoveListItem(mli);
         pos.Update(mli);
         ml.add(mli);
         if (GameOver()) {
@@ -482,7 +482,7 @@ public class COsGame {
         final CReader in = new CReader(s);
         while (!in.wsEof()) {
             OsMove mv = new OsMove(in);
-            ml.add(new COsMoveListItem(mv));
+            ml.add(new OsMoveListItem(mv));
         }
         CalcCurrentPos();
     }

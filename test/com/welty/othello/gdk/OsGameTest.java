@@ -38,14 +38,14 @@ public class OsGameTest extends TestCase {
 
         final COsGame game = new COsGame();
         game.SetDefaultStartPos();
-        final COsMoveListItem mli = new COsMoveListItem(new OsMove("F5"));
+        final OsMoveListItem mli = new OsMoveListItem(new OsMove("F5"));
         game.Update(mli);
         assertEquals(expected, game.ml);
     }
 
     private static COsMoveList expectedMoveList() {
         COsMoveList expected = new COsMoveList();
-        COsMoveListItem expectedItem = new COsMoveListItem(new OsMove("F5"));
+        OsMoveListItem expectedItem = new OsMoveListItem(new OsMove("F5"));
         expected.add(expectedItem);
         return expected;
     }
@@ -70,7 +70,7 @@ public class OsGameTest extends TestCase {
     public void testCalcPosition() {
         COsGame game = new COsGame();
         game.SetDefaultStartPos();
-        final COsPosition pos = game.calcPosition(new ArrayList<COsMoveListItem>());
+        final COsPosition pos = game.calcPosition(new ArrayList<OsMoveListItem>());
         COsPosition expected = new COsPosition();
         expected.board.initialize(new COsBoardType("8"));
 

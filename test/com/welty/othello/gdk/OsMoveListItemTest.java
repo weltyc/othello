@@ -3,12 +3,12 @@ package com.welty.othello.gdk;
 import junit.framework.TestCase;
 
 /**
- * Test COsMoveListItem behaviour
+ * Test OsMoveListItem behaviour
  */
-public class COsMoveListItemTest extends TestCase {
+public class OsMoveListItemTest extends TestCase {
     public void testReadWrite() {
         final String test = "F5/1.23/2.1";
-        final COsMoveListItem mli = new COsMoveListItem(test);
+        final OsMoveListItem mli = new OsMoveListItem(test);
         assertEquals(test, mli.toString());
     }
 
@@ -21,14 +21,14 @@ public class COsMoveListItemTest extends TestCase {
     }
 
     private void testHasEval(boolean expected, String text) {
-        final COsMoveListItem mli = new COsMoveListItem(text);
+        final OsMoveListItem mli = new OsMoveListItem(text);
         assertEquals(text, expected, mli.hasEval());
         assertEquals(text, text, mli.toString());
     }
 
     public void testMoveOnlyConstructor() {
         final OsMove move = new OsMove("F5");
-        final COsMoveListItem mli = new COsMoveListItem(move);
+        final OsMoveListItem mli = new OsMoveListItem(move);
         assertEquals(move, mli.mv);
         assertEquals(false, mli.hasEval());
         assertEquals(0., mli.getElapsedTime());
@@ -43,8 +43,8 @@ public class COsMoveListItemTest extends TestCase {
     }
 
     private void testEquals(boolean expected, String a, String b) {
-        final COsMoveListItem ma = new COsMoveListItem(a);
-        final COsMoveListItem mb = new COsMoveListItem(b);
+        final OsMoveListItem ma = new OsMoveListItem(a);
+        final OsMoveListItem mb = new OsMoveListItem(b);
         assertEquals(a + " == " + b, expected, ma.equals(mb));
     }
 }

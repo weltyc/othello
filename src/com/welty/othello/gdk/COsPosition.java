@@ -38,7 +38,7 @@ public class COsPosition {
         Update(ml, 100000);
     }
 
-    void Update(final COsMoveListItem mli) {
+    void Update(final OsMoveListItem mli) {
         cks[board.blackMove() ? 1 : 0].Update(mli.getElapsedTime());
         board.Update(mli.mv);
     }
@@ -57,7 +57,7 @@ public class COsPosition {
      * It updates the clock of the non-mover. The mover's clock
      * is updated by a call to Update().
      */
-    void UpdateKomiSet(final COsMoveListItem[] mlis) {
+    void UpdateKomiSet(final OsMoveListItem[] mlis) {
         boolean fBlackOpponent = !board.blackMove();
         final int enemyIndex = fBlackOpponent ? 1 : 0;
         cks[enemyIndex].Update(mlis[enemyIndex].getElapsedTime());

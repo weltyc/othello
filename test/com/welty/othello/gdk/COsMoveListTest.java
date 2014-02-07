@@ -12,9 +12,9 @@ import junit.framework.TestCase;
 public class COsMoveListTest extends TestCase {
     public void testToMoveListString() {
         COsMoveList ml = new COsMoveList();
-        ml.add(new COsMoveListItem("F5/3.2/1"));
-        ml.add(new COsMoveListItem("D6"));
-        ml.add(new COsMoveListItem("C3/.01"));
+        ml.add(new OsMoveListItem("F5/3.2/1"));
+        ml.add(new OsMoveListItem("D6"));
+        ml.add(new OsMoveListItem("C3/.01"));
         assertEquals("F5D6C3", ml.toMoveListString());
     }
 }

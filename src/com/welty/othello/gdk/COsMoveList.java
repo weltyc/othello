@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Time: 3:45:23 PM
  * </PRE>
  */
-public class COsMoveList extends ArrayList<COsMoveListItem> {
+public class COsMoveList extends ArrayList<OsMoveListItem> {
     public COsMoveList(COsMoveList ml) {
         super(ml);
     }
@@ -24,7 +24,7 @@ public class COsMoveList extends ArrayList<COsMoveListItem> {
 
     public String toMoveListString() {
         final StringBuilder sb = new StringBuilder();
-        for (COsMoveListItem mli : this) {
+        for (OsMoveListItem mli : this) {
             sb.append(mli.mv.toString());
         }
         return sb.toString();
@@ -35,7 +35,7 @@ public class COsMoveList extends ArrayList<COsMoveListItem> {
      */
     public void stripEvalsAndTimes() {
         for (int i = 0; i < size(); i++) {
-            set(i, new COsMoveListItem(get(i).mv));
+            set(i, new OsMoveListItem(get(i).mv));
         }
     }
 }
