@@ -1,30 +1,31 @@
 package com.welty.othello.gdk;
 
-import com.welty.othello.c.CReader;
 import com.orbanova.common.misc.Require;
+import com.welty.othello.c.CReader;
 
 import java.io.ByteArrayInputStream;
 
 /**
  * A GGF-format move
- * <PRE>
- * User: Chris
- * Date: May 2, 2009
- * Time: 7:33:19 AM
- * </PRE>
  */
 public class COsMove {
-    boolean fPass;
+    public static final COsMove PASS = new COsMove(-1, -1, true);
+
+    private boolean fPass;
     private int row, col;
 
     // Creation
     public COsMove() {
     }
 
-    public COsMove(int arow, int acol) {
-        row = arow;
-        col = acol;
-        fPass = false;
+    public COsMove(int row, int col) {
+        this(row, col, false);
+    }
+
+    private COsMove(int row, int col, boolean pass) {
+        this.row = row;
+        this.col = col;
+        this.fPass = pass;
     }
 
     public COsMove(final String text) {

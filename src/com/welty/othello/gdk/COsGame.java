@@ -171,6 +171,7 @@ public class COsGame {
     }
 
     public CReader InLogbook(CReader is) {
+        final COsMoveListItem pass = new COsMoveListItem(COsMove.PASS);
         char c;
 
         Clear();
@@ -193,8 +194,7 @@ public class COsGame {
                 // update game and pass if needed
                 Update(mli);
                 if (!GameOver() && !pos.board.HasLegalMove()) {
-                    mli.mv.fPass = true;
-                    Update(mli);
+                    Update(pass);
                 }
             } else {
                 Require.eq(c, "c", ':');
@@ -267,8 +267,7 @@ public class COsGame {
 
                 // pass if needed
                 if (!GameOver() && !pos.board.HasLegalMove()) {
-                    mli.mv.fPass = true;
-                    Update(mli);
+                    Update(COsMoveListItem.PASS);
                 }
             }
 

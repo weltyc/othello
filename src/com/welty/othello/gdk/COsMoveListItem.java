@@ -6,6 +6,11 @@ import com.welty.othello.c.CReader;
  * An Othello move, including optional evaluation and elapsed time
  */
 public class COsMoveListItem {
+    /**
+     * A pass with no evaluation or elapsed time
+     */
+    public static final COsMoveListItem PASS = new COsMoveListItem(COsMove.PASS);
+
     public COsMove mv;
     private double dEval;
     public double tElapsed;
