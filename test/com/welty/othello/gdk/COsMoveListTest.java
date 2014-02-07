@@ -17,4 +17,16 @@ public class COsMoveListTest extends TestCase {
         ml.add(new OsMoveListItem("C3/.01"));
         assertEquals("F5D6C3", ml.toMoveListString());
     }
+
+    public void testTruncation() {
+        COsMoveList ml = new COsMoveList();
+        ml.add(new OsMoveListItem("F5/3.2/1"));
+        ml.add(new OsMoveListItem("D6"));
+        ml.add(new OsMoveListItem("C3/.01"));
+
+        assertEquals(0, new COsMoveList(ml, 0).size());
+        assertEquals(1, new COsMoveList(ml, 1).size());
+        assertEquals(2, new COsMoveList(ml, 2).size());
+        assertEquals(3, new COsMoveList(ml, 3).size());
+    }
 }

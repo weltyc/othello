@@ -11,15 +11,18 @@ import java.util.ArrayList;
  * </PRE>
  */
 public class COsMoveList extends ArrayList<OsMoveListItem> {
-    public COsMoveList(COsMoveList ml) {
+    /**
+     * Create a copy of a move list
+     *
+     * @param ml     source for copy
+     * @param nMoves number of moves to retain; in the range 0..ml.size()
+     */
+    public COsMoveList(COsMoveList ml, int nMoves) {
         super(ml);
+        removeRange(nMoves, size());
     }
 
     public COsMoveList() {
-    }
-
-    public void resize(int iMove) {
-        removeRange(iMove, size());
     }
 
     public String toMoveListString() {

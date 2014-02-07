@@ -37,15 +37,7 @@ public class COsGame {
     }
 
     public COsGame(COsGame b) {
-        posStart = new COsPosition(b.posStart);
-        pos = new COsPosition(b.pos);
-        sPlace = b.sPlace;
-        sDateTime = b.sDateTime;
-        pis = new OsPlayerInfo[]{new OsPlayerInfo(pis[0]), new OsPlayerInfo(pis[1])};
-        ml = new COsMoveList(b.ml);
-        mlisKomi = Arrays.copyOf(b.mlisKomi, 2);
-        mt = new OsMatchType(b.mt);
-        result = new COsResult(b.result);
+        this(b, b.ml.size());
     }
 
     public COsGame(String text) {
@@ -55,6 +47,26 @@ public class COsGame {
     public COsGame(CReader in) {
         this();
         In(in);
+    }
+
+    /**
+     * Create a copy of this game, truncated to the given move number
+     *
+     * @param game       source game
+     * @param moveNumber number of moves to retain (0..ml.size()).
+     */
+    public COsGame(COsGame game, int moveNumber) {
+        posStart = new COsPosition(game.posStart);
+        pos = new COsPosition(game.pos);
+        sPlace = game.sPlace;
+        sDateTime = game.sDateTime;
+        pis = new OsPlayerInfo[]{new OsPlayerInfo(pis[0]), new OsPlayerInfo(pis[1])};
+        ml = new COsMoveList(game.ml, moveNumber);
+        if (moveNumber > 0) {
+            mlisKomi = Arrays.copyOf(game.mlisKomi, 2);
+        }
+        mt = new OsMatchType(game.mt);
+        result = new COsResult(game.result);
     }
 
     // Information
