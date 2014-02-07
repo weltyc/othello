@@ -504,7 +504,7 @@ public class COsGame {
         final CReader in = new CReader(s);
         while (!in.wsEof()) {
             COsMove mv = new COsMove(in);
-            ml.add(new COsMoveListItem(mv, 0, 0));
+            ml.add(new COsMoveListItem(mv));
         }
         CalcCurrentPos();
     }

@@ -3,11 +3,7 @@ package com.welty.othello.gdk;
 import com.welty.othello.c.CReader;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 3:18:38 PM
- * To change this template use File | Settings | File Templates.
+ * An Othello move, including optional evaluation and elapsed time
  */
 public class COsMoveListItem {
     public COsMove mv;
@@ -28,6 +24,7 @@ public class COsMoveListItem {
         mv = new COsMove(mli.mv);
         dEval = mli.dEval;
         tElapsed = mli.tElapsed;
+        hasEval = mli.hasEval;
     }
 
     public COsMoveListItem(String text) {
@@ -36,6 +33,18 @@ public class COsMoveListItem {
 
     public COsMoveListItem(CReader cReader) {
         In(cReader);
+    }
+
+    /**
+     * Construct a move with elapsed time of 0 and no evaluation
+     *
+     * @param mv move made
+     */
+    public COsMoveListItem(COsMove mv) {
+        this.mv = new COsMove(mv);
+        dEval = 0;
+        hasEval = false;
+        tElapsed = 0;
     }
 
     public void In(CReader is) {

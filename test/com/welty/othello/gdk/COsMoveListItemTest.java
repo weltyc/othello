@@ -3,11 +3,7 @@ package com.welty.othello.gdk;
 import junit.framework.TestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: Jun 21, 2009
- * Time: 10:16:46 PM
- * To change this template use File | Settings | File Templates.
+ * Test COsMoveListItem behaviour
  */
 public class COsMoveListItemTest extends TestCase {
     public void testReadWrite() {
@@ -28,5 +24,17 @@ public class COsMoveListItemTest extends TestCase {
         final COsMoveListItem mli = new COsMoveListItem(text);
         assertEquals(text, expected, mli.hasEval());
         assertEquals(text, text, mli.toString());
+    }
+
+    public void testMoveOnlyConstructor() {
+        final COsMove move = new COsMove("F5");
+        final COsMoveListItem mli = new COsMoveListItem(move);
+        assertEquals(move, mli.mv);
+        assertEquals(false, mli.hasEval());
+        assertEquals(0., mli.tElapsed);
+
+        // check defensive copy of move
+        move.Set(1, 1);
+        assertFalse(move.equals(mli.mv));
     }
 }
