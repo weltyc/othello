@@ -143,8 +143,7 @@ public class COsGame {
                     break;
                 case "B":
                 case "W":
-                    COsMoveListItem mli = new COsMoveListItem();
-                    mli.In(is);
+                    final COsMoveListItem mli = new COsMoveListItem(is);
                     ml.add(mli);
                     break;
                 case "RE":
@@ -203,14 +202,13 @@ public class COsGame {
         sPlace = "logbook";
 
         // get moves
-        COsMoveListItem mli = new COsMoveListItem();
         while (0 != (c = is.read())) {
             if (c == '+' || c == '-') {
 
                 // read move
                 boolean fBlackMove = c == '+';
                 Require.eq(fBlackMove, "black move", pos.board.blackMove());
-                mli.mv = new OsMove(is);
+                COsMoveListItem mli = new COsMoveListItem(new OsMove(is));
 
                 // update game and pass if needed
                 Update(mli);
@@ -275,7 +273,6 @@ public class COsGame {
             pos = posStart;
 
             // get moves
-            COsMoveListItem mli = new COsMoveListItem();
             int iosMove;
 
             // read move code. move code 0 means game is over
@@ -283,7 +280,7 @@ public class COsGame {
                 // positive moves are black, negative are white
                 Require.eq(pos.board.blackMove(), "black move", iosMove > 0);
 
-                mli.mv = OsMove.ofIos(iosMove);
+                final COsMoveListItem mli = new COsMoveListItem(OsMove.ofIos(iosMove));
                 Update(mli);
 
                 // pass if needed

@@ -11,13 +11,14 @@ public class COsMoveListItem {
      */
     public static final COsMoveListItem PASS = new COsMoveListItem(OsMove.PASS);
 
-    public OsMove mv;
-    private double dEval;
-    public double tElapsed;
-    private boolean hasEval;
+    public final OsMove mv;
 
-    public COsMoveListItem() {
-    }
+    /**
+     * Eval, or Double.NaN if no eval exists
+     */
+    private double dEval;
+
+    private double tElapsed;
 
     public COsMoveListItem(OsMove mv, double dEval, double tElapsed) {
         this.mv = new OsMove(mv);
@@ -29,15 +30,34 @@ public class COsMoveListItem {
         mv = new OsMove(mli.mv);
         dEval = mli.dEval;
         tElapsed = mli.tElapsed;
-        hasEval = mli.hasEval;
     }
 
     public COsMoveListItem(String text) {
         this(new CReader(text));
     }
 
-    public COsMoveListItem(CReader cReader) {
-        In(cReader);
+    public COsMoveListItem(CReader in) {
+
+        // move
+        mv = new OsMove(in);
+        in.ignoreAlnum();
+
+        // eval
+        dEval = Double.NaN;
+        if (in.peek() == '/') {
+            in.ignore(1);
+            try {
+                dEval = in.readDoubleNoExponent();
+            } catch (NumberFormatException e) {
+                // if blank, do nothing - it's already set to Double.NaN
+            }
+        }
+
+        tElapsed = 0;
+        if (in.peek() == '/') {
+            in.ignore(1);
+            tElapsed = in.readDoubleNoExponent();
+        }
     }
 
     /**
@@ -47,40 +67,16 @@ public class COsMoveListItem {
      */
     public COsMoveListItem(OsMove mv) {
         this.mv = new OsMove(mv);
-        dEval = 0;
-        hasEval = false;
+        dEval = Double.NaN;
         tElapsed = 0;
-    }
-
-    public void In(CReader is) {
-
-        // move
-        mv = new OsMove(is);
-        is.ignoreAlnum();
-
-        // eval
-        dEval = 0;
-        if (is.peek() == '/') {
-            is.ignore(1);
-            try {
-                dEval = is.readDoubleNoExponent();
-                hasEval = true;
-            } catch (NumberFormatException e) {
-                hasEval = false;
-            }
-        }
-
-        tElapsed = 0;
-        if (is.peek() == '/') {
-            is.ignore(1);
-            tElapsed = is.readDoubleNoExponent();
-        }
     }
 
     @Override public boolean equals(Object obj) {
         if (obj instanceof COsMoveListItem) {
             COsMoveListItem b = (COsMoveListItem) obj;
-            return mv.equals(b.mv) && dEval == b.dEval && tElapsed == b.tElapsed;
+            // use Double.compare() because of possibility of NaNs.
+            final boolean evalsOk = Double.compare(dEval, b.dEval) == 0;
+            return mv.equals(b.mv) && evalsOk && tElapsed == b.tElapsed;
         } else {
             return false;
         }
@@ -89,9 +85,9 @@ public class COsMoveListItem {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(mv);
-        if (hasEval || tElapsed != 0) {
+        if (hasEval() || tElapsed != 0) {
             sb.append('/');
-            if (hasEval) {
+            if (hasEval()) {
                 sb.append(String.format("%3.2f", dEval));
             }
             if (tElapsed != 0) {
@@ -105,10 +101,17 @@ public class COsMoveListItem {
      * @return true if an eval was given to this move list item
      */
     public boolean hasEval() {
-        return hasEval;
+        return !Double.isNaN(dEval);
     }
 
+    /**
+     * @return evaluation, or Double.NaN if there is no eval.
+     */
     public double getEval() {
         return dEval;
+    }
+
+    public double getElapsedTime() {
+        return tElapsed;
     }
 }

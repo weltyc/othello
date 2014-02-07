@@ -39,7 +39,7 @@ public class COsPosition {
     }
 
     void Update(final COsMoveListItem mli) {
-        cks[board.blackMove() ? 1 : 0].Update(mli.tElapsed);
+        cks[board.blackMove() ? 1 : 0].Update(mli.getElapsedTime());
         board.Update(mli.mv);
     }
 
@@ -54,13 +54,13 @@ public class COsPosition {
     /**
      * UpdateKomiSet() is called in a komi game to set the first move
      * choices of both players.
-     * It updates the clock of the nonmover. The mover's clock
+     * It updates the clock of the non-mover. The mover's clock
      * is updated by a call to Update().
      */
     void UpdateKomiSet(final COsMoveListItem[] mlis) {
         boolean fBlackOpponent = !board.blackMove();
         final int enemyIndex = fBlackOpponent ? 1 : 0;
-        cks[enemyIndex].Update(mlis[enemyIndex].tElapsed);
+        cks[enemyIndex].Update(mlis[enemyIndex].getElapsedTime());
     }
 
     void Calculate(final COsGame game) {

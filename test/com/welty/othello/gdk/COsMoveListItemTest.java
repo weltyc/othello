@@ -31,6 +31,20 @@ public class COsMoveListItemTest extends TestCase {
         final COsMoveListItem mli = new COsMoveListItem(move);
         assertEquals(move, mli.mv);
         assertEquals(false, mli.hasEval());
-        assertEquals(0., mli.tElapsed);
+        assertEquals(0., mli.getElapsedTime());
+    }
+
+    public void testEquals() {
+        testEquals(true, "F5", "F5");
+        testEquals(false, "F5", "D5");
+        testEquals(true, "F5/1.0/2.0", "F5/1.0/2.0");
+        testEquals(false, "F5/1.0/5.0", "F5/1.0/2.0");
+        testEquals(false, "F5/3.0/2.0", "F5/1.0/2.0");
+    }
+
+    private void testEquals(boolean expected, String a, String b) {
+        final COsMoveListItem ma = new COsMoveListItem(a);
+        final COsMoveListItem mb = new COsMoveListItem(b);
+        assertEquals(a + " == " + b, expected, ma.equals(mb));
     }
 }
