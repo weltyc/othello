@@ -26,12 +26,6 @@ public class OsMove {
         this(new CReader(text));
     }
 
-    public OsMove(OsMove mv) {
-        fPass = mv.fPass;
-        row = mv.row;
-        col = mv.col;
-    }
-
     public OsMove(CReader in) {
         final char cCol = Character.toUpperCase(in.read());
         fPass = cCol == 'P';

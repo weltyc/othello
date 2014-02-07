@@ -1,9 +1,9 @@
 package com.welty.othello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.othello.gdk.OsBoard;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.COsPosition;
+import com.welty.othello.gdk.OsBoard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -41,7 +41,7 @@ public class CQPosition {
     public CQPosition(final COsGame game, int iMove) {
         this(game.GetPosStart());
         for (int i = 0; i < iMove && i < game.ml.size(); i++) {
-            CMove mv = new CMove(game.ml.get(i).mv);
+            CMove mv = new CMove(game.ml.get(i).move);
             MakeMove(mv);
         }
     }

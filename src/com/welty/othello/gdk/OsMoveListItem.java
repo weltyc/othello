@@ -14,7 +14,7 @@ public class OsMoveListItem {
     /**
      * The move that was made
      */
-    public final OsMove mv;
+    public final OsMove move;
 
     /**
      * Eval, or Double.NaN if no eval exists
@@ -26,16 +26,17 @@ public class OsMoveListItem {
      */
     private final double tElapsed;
 
-    public OsMoveListItem(OsMove mv, double eval, double tElapsed) {
-        this.mv = new OsMove(mv);
+    /**
+     * Create a MoveListItem
+     *
+     * @param move     move
+     * @param eval     move evaluation, or Double.NaN if no eval was provided
+     * @param tElapsed elapsed time, in seconds
+     */
+    public OsMoveListItem(OsMove move, double eval, double tElapsed) {
+        this.move = move;
         this.eval = eval;
         this.tElapsed = tElapsed;
-    }
-
-    public OsMoveListItem(OsMoveListItem mli) {
-        mv = new OsMove(mli.mv);
-        eval = mli.eval;
-        tElapsed = mli.tElapsed;
     }
 
     public OsMoveListItem(String text) {
@@ -45,7 +46,7 @@ public class OsMoveListItem {
     public OsMoveListItem(CReader in) {
 
         // move
-        mv = new OsMove(in);
+        move = new OsMove(in);
         in.ignoreAlnum();     // sometimes have extra chars after the move
 
         eval = parseEval(in);
@@ -77,10 +78,10 @@ public class OsMoveListItem {
     /**
      * Construct a move with elapsed time of 0 and no evaluation
      *
-     * @param mv move made
+     * @param move move made
      */
-    public OsMoveListItem(OsMove mv) {
-        this.mv = new OsMove(mv);
+    public OsMoveListItem(OsMove move) {
+        this.move = move;
         eval = Double.NaN;
         tElapsed = 0;
     }
@@ -90,7 +91,7 @@ public class OsMoveListItem {
             OsMoveListItem b = (OsMoveListItem) obj;
             // use Double.compare() because of possibility of NaNs.
             final boolean evalsOk = Double.compare(eval, b.eval) == 0;
-            return mv.equals(b.mv) && evalsOk && tElapsed == b.tElapsed;
+            return move.equals(b.move) && evalsOk && tElapsed == b.tElapsed;
         } else {
             return false;
         }
@@ -98,7 +99,7 @@ public class OsMoveListItem {
 
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(mv);
+        sb.append(move);
         if (hasEval() || tElapsed != 0) {
             sb.append('/');
             if (hasEval()) {

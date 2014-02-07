@@ -25,7 +25,7 @@ public class COsMoveList extends ArrayList<OsMoveListItem> {
     public String toMoveListString() {
         final StringBuilder sb = new StringBuilder();
         for (OsMoveListItem mli : this) {
-            sb.append(mli.mv.toString());
+            sb.append(mli.move.toString());
         }
         return sb.toString();
     }
@@ -35,7 +35,7 @@ public class COsMoveList extends ArrayList<OsMoveListItem> {
      */
     public void stripEvalsAndTimes() {
         for (int i = 0; i < size(); i++) {
-            set(i, new OsMoveListItem(get(i).mv));
+            set(i, new OsMoveListItem(get(i).move));
         }
     }
 }

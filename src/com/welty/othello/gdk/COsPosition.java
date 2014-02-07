@@ -40,7 +40,7 @@ public class COsPosition {
 
     void Update(final OsMoveListItem mli) {
         cks[board.blackMove() ? 1 : 0].Update(mli.getElapsedTime());
-        board.Update(mli.mv);
+        board.Update(mli.move);
     }
 
     void Update(final COsMoveList ml, int nMoves) {

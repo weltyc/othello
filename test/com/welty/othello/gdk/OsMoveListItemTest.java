@@ -29,7 +29,7 @@ public class OsMoveListItemTest extends TestCase {
     public void testMoveOnlyConstructor() {
         final OsMove move = new OsMove("F5");
         final OsMoveListItem mli = new OsMoveListItem(move);
-        assertEquals(move, mli.mv);
+        assertEquals(move, mli.move);
         assertEquals(false, mli.hasEval());
         assertEquals(0., mli.getElapsedTime());
     }

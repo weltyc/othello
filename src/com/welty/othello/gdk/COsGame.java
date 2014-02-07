@@ -447,7 +447,6 @@ public class COsGame {
 
 
     public void Update(OsMoveListItem mli) {
-        mli = new OsMoveListItem(mli);
         pos.Update(mli);
         ml.add(mli);
         if (GameOver()) {
