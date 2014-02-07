@@ -40,19 +40,12 @@ public class OsGameTest extends TestCase {
         final COsGame game = new COsGame();
         game.SetDefaultStartPos();
         final COsMoveListItem mli = new COsMoveListItem();
-        final COsMove move0 = new COsMove("F5");
-        mli.mv = move0;
+        mli.mv = new COsMove("F5");
         game.Update(mli);
         assertEquals(expected, game.ml);
 
         mli.mv = new COsMove("D6");
         assertEquals(expected, game.ml);
-
-        // test defensive copy on update
-        move0.Set(5, 1);
-        assertEquals(expected, game.ml);
-
-
     }
 
     private static COsMoveList expectedMoveList() {

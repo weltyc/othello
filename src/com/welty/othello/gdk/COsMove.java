@@ -59,7 +59,7 @@ public class COsMove {
     }
 
     // Modification
-    public void Set(int row, int col) {
+    private void Set(int row, int col) {
         this.row = row;
         this.col = col;
         fPass = false;

@@ -31,10 +31,4 @@ public class OsMoveTest extends TestCase {
         assertEquals("PA", new COsMove("PA").toString());
         assertEquals("PA", new COsMove("pAsS").toString());
     }
-
-    public void testSet() {
-        final COsMove move = new COsMove();
-        move.Set(2, 3);
-        assertEquals(new COsMove(2, 3), move);
-    }
 }

@@ -32,9 +32,5 @@ public class COsMoveListItemTest extends TestCase {
         assertEquals(move, mli.mv);
         assertEquals(false, mli.hasEval());
         assertEquals(0., mli.tElapsed);
-
-        // check defensive copy of move
-        move.Set(1, 1);
-        assertFalse(move.equals(mli.mv));
     }
 }
