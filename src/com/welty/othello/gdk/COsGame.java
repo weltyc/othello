@@ -151,7 +151,7 @@ public class COsGame {
             if (mlisKomi[0] == null && mlisKomi[1] == null) {
                 komiCheck = 0;
             } else if (mlisKomi[0] != null && mlisKomi[1] != null) {
-                komiCheck = mlisKomi[0].dEval + mlisKomi[1].dEval;
+                komiCheck = mlisKomi[0].getEval() + mlisKomi[1].getEval();
             } else {
                 throw new IllegalArgumentException("Komi error: have komi values for only one player");
             }
@@ -182,8 +182,6 @@ public class COsGame {
 
         // get moves
         COsMoveListItem mli = new COsMoveListItem();
-        mli.tElapsed = 0;
-        mli.dEval = 0;
         while (0 != (c = is.read())) {
             if (c == '+' || c == '-') {
 
@@ -257,8 +255,6 @@ public class COsGame {
 
             // get moves
             COsMoveListItem mli = new COsMoveListItem();
-            mli.tElapsed = 0;
-            mli.dEval = 0;
             int iosmove;
 
             // read move code. move code 0 means game is over
@@ -313,7 +309,7 @@ public class COsGame {
         if (mt.fKomi && !ml.isEmpty()) {
             sb.append("]KB[").append(mlisKomi[1]);
             sb.append("]KW[").append(mlisKomi[0]);
-            sb.append("]KM[").append((mlisKomi[0].dEval + mlisKomi[1].dEval) / 2);
+            sb.append("]KM[").append((mlisKomi[0].getEval() + mlisKomi[1].getEval()) / 2);
         }
 
         // move list

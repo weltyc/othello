@@ -15,4 +15,18 @@ public class COsMoveListItemTest extends TestCase {
         final COsMoveListItem mli = new COsMoveListItem(test);
         assertEquals(test, mli.toString());
     }
+
+    public void testHasEval() {
+        testHasEval(true, "F5/1.00");
+        testHasEval(false, "F5");
+        testHasEval(true, "F5/0.00");
+        testHasEval(false, "F5//1.0");
+        testHasEval(true, "F5/0.00/1.0");
+    }
+
+    private void testHasEval(boolean expected, String text) {
+        final COsMoveListItem mli = new COsMoveListItem(text);
+        assertEquals(text, expected, mli.hasEval());
+        assertEquals(text, text, mli.toString());
+    }
 }

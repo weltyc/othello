@@ -11,8 +11,9 @@ import com.welty.othello.c.CReader;
  */
 public class COsMoveListItem {
     public COsMove mv;
-    public double dEval;
+    private double dEval;
     public double tElapsed;
+    private boolean hasEval;
 
     public COsMoveListItem() {
     }
@@ -50,9 +51,9 @@ public class COsMoveListItem {
             is.ignore(1);
             try {
                 dEval = is.readDoubleNoExponent();
-            }
-            catch (NumberFormatException e) {
-                // 0 is passed as a blank spot, so ignore errors here
+                hasEval = true;
+            } catch (NumberFormatException e) {
+                hasEval = false;
             }
         }
 
@@ -75,9 +76,9 @@ public class COsMoveListItem {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(mv);
-        if (dEval != 0 || tElapsed != 0) {
+        if (hasEval || tElapsed != 0) {
             sb.append('/');
-            if (dEval != 0) {
+            if (hasEval) {
                 sb.append(String.format("%3.2f", dEval));
             }
             if (tElapsed != 0) {
@@ -85,5 +86,16 @@ public class COsMoveListItem {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * @return true if an eval was given to this move list item
+     */
+    public boolean hasEval() {
+        return hasEval;
+    }
+
+    public double getEval() {
+        return dEval;
     }
 }
