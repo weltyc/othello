@@ -192,7 +192,7 @@ public class COsGame {
     }
 
     public CReader InLogbook(CReader is) {
-        final COsMoveListItem pass = new COsMoveListItem(COsMove.PASS);
+        final COsMoveListItem pass = new COsMoveListItem(OsMove.PASS);
         char c;
 
         Clear();
@@ -210,7 +210,7 @@ public class COsGame {
                 // read move
                 boolean fBlackMove = c == '+';
                 Require.eq(fBlackMove, "black move", pos.board.blackMove());
-                mli.mv.in(is);
+                mli.mv = new OsMove(is);
 
                 // update game and pass if needed
                 Update(mli);
@@ -283,7 +283,7 @@ public class COsGame {
                 // positive moves are black, negative are white
                 Require.eq(pos.board.blackMove(), "black move", iosMove > 0);
 
-                mli.mv = COsMove.ofIos(iosMove);
+                mli.mv = OsMove.ofIos(iosMove);
                 Update(mli);
 
                 // pass if needed
@@ -484,7 +484,7 @@ public class COsGame {
         ml.clear();
         final CReader in = new CReader(s);
         while (!in.wsEof()) {
-            COsMove mv = new COsMove(in);
+            OsMove mv = new OsMove(in);
             ml.add(new COsMoveListItem(mv));
         }
         CalcCurrentPos();

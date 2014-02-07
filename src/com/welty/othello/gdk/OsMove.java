@@ -3,44 +3,54 @@ package com.welty.othello.gdk;
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
 
-import java.io.ByteArrayInputStream;
-
 /**
  * A GGF-format move
  */
-public class COsMove {
-    public static final COsMove PASS = new COsMove(-1, -1, true);
+public class OsMove {
+    public static final OsMove PASS = new OsMove(-1, -1, true);
 
     private boolean fPass;
     private int row, col;
 
     // Creation
-    public COsMove() {
+    public OsMove() {
     }
 
-    public COsMove(int row, int col) {
+    public OsMove(int row, int col) {
         this(row, col, false);
     }
 
-    private COsMove(int row, int col, boolean pass) {
+    private OsMove(int row, int col, boolean pass) {
         this.row = row;
         this.col = col;
         this.fPass = pass;
     }
 
-    public COsMove(final String text) {
-        final ByteArrayInputStream is = new ByteArrayInputStream(text.getBytes());
-        in(new CReader(is));
+    public OsMove(final String text) {
+        this(new CReader(text));
     }
 
-    public COsMove(COsMove mv) {
+    public OsMove(OsMove mv) {
         fPass = mv.fPass;
         row = mv.row;
         col = mv.col;
     }
 
-    public COsMove(CReader in) {
-        in(in);
+    public OsMove(CReader in) {
+        final char cCol = Character.toUpperCase(in.read());
+        fPass = cCol == 'P';
+        if (fPass) {
+            while (true) {
+                final char c = in.read();
+                if (!Character.isLetter(c)) {
+                    in.unread(c);
+                    break;
+                }
+            }
+        } else {
+            col = cCol - 'A';
+            row = in.read() - '1';
+        }
     }
 
     /**
@@ -49,44 +59,19 @@ public class COsMove {
      * @param iosMove integer from 11-88; positive if a black move, negative if a white move
      * @return the move
      */
-    public static COsMove ofIos(int iosMove) {
+    public static OsMove ofIos(int iosMove) {
         if (iosMove < 0) {
             iosMove = -iosMove;
         }
         final int row = (iosMove % 10) - 1;
         final int col = (iosMove / 10) - 1;
-        return new COsMove(row, col);
-    }
-
-    // Modification
-    private void Set(int row, int col) {
-        this.row = row;
-        this.col = col;
-        fPass = false;
-    }
-
-    // I/O
-    void in(CReader is) {
-        final char cCol = Character.toUpperCase(is.read());
-        fPass = cCol == 'P';
-        if (fPass) {
-            while (true) {
-                final char c = is.read();
-                if (!Character.isLetter(c)) {
-                    is.unread(c);
-                    break;
-                }
-            }
-        } else {
-            col = cCol - 'A';
-            row = is.read() - '1';
-        }
+        return new OsMove(row, col);
     }
 
     /**
      * @return row number, from 0-7
      */
-    public int Row() {
+    public int row() {
         requireOnBoard();
         return row;
     }
@@ -94,7 +79,7 @@ public class COsMove {
     /**
      * @return col number, from 0-7
      */
-    public int Col() {
+    public int col() {
         requireOnBoard();
         return col;
     }
@@ -110,7 +95,7 @@ public class COsMove {
     /**
      * @return true if the move is a pass
      */
-    public boolean Pass() {
+    public boolean isPass() {
         return fPass;
     }
 
@@ -122,8 +107,8 @@ public class COsMove {
     }
 
     @Override public boolean equals(Object obj) {
-        if (obj instanceof COsMove) {
-            COsMove b = (COsMove) obj;
+        if (obj instanceof OsMove) {
+            OsMove b = (OsMove) obj;
 
             if (fPass || b.fPass)
                 return fPass && b.fPass;

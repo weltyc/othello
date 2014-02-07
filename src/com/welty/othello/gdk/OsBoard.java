@@ -114,16 +114,16 @@ public class OsBoard {
         }
     }
 
-    void Update(final COsMove mv) {
+    void Update(final OsMove mv) {
         int dRow, dCol;
         char cMover, cOpponent;
 
-        if (!mv.Pass()) {
+        if (!mv.isPass()) {
 
-            Require.inRange("Row must be in range of board size", mv.Row(), "move row", 0, bt.n - 1);
-            Require.inRange("Col must be in range of board size", mv.Col(), "move col", 0, bt.n - 1);
+            Require.inRange("Row must be in range of board size", mv.row(), "move row", 0, bt.n - 1);
+            Require.inRange("Col must be in range of board size", mv.col(), "move col", 0, bt.n - 1);
 
-            if (Piece(mv.Row(), mv.Col()) != EMPTY) {
+            if (Piece(mv.row(), mv.col()) != EMPTY) {
                 System.err.println(this);
                 throw new IllegalArgumentException("tried to move to a filled square at " + mv);
             } else {
@@ -138,11 +138,11 @@ public class OsBoard {
 
                 // update board
                 int nFlipped = 0;
-                SetPiece(mv.Row(), mv.Col(), cMover);
+                SetPiece(mv.row(), mv.col(), cMover);
                 for (dRow = -1; dRow <= 1; dRow++) {
                     for (dCol = -1; dCol <= 1; dCol++) {
                         if ((dRow != 0) || (dCol != 0))
-                            nFlipped += UpdateDirection(mv.Row(), mv.Col(), dRow, dCol, cMover, cOpponent);
+                            nFlipped += UpdateDirection(mv.row(), mv.col(), dRow, dCol, cMover, cOpponent);
                     }
                 }
                 Require.gt(nFlipped, "nFlipped", 0);
@@ -185,14 +185,14 @@ public class OsBoard {
         return false;
     }
 
-    ArrayList<COsMove> GetMoves(boolean fMover) {
+    ArrayList<OsMove> GetMoves(boolean fMover) {
         int r, c;
-        ArrayList<COsMove> mvs = new ArrayList<COsMove>();
+        ArrayList<OsMove> mvs = new ArrayList<OsMove>();
 
         for (r = 0; r < bt.n; r++) {
             for (c = 0; c < bt.n; c++)
                 if (nFlipped(r, c, fMover ? fBlackMove : !fBlackMove) != 0)
-                    mvs.add(new COsMove(r, c));
+                    mvs.add(new OsMove(r, c));
         }
 
         return mvs;
@@ -204,11 +204,11 @@ public class OsBoard {
      * @param move
      * @return
      */
-    public boolean IsMoveLegal(final COsMove move) {
-        if (move.Pass())
+    public boolean IsMoveLegal(final OsMove move) {
+        if (move.isPass())
             return !HasLegalMove() && HasLegalMove(!blackMove());
         else
-            return IsMoveLegal(move.Row(), move.Col()) != 0;
+            return IsMoveLegal(move.row(), move.col()) != 0;
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.welty.othello.core;
 
 import com.orbanova.common.misc.Require;
-import com.welty.othello.gdk.COsMove;
+import com.welty.othello.gdk.OsMove;
 
 /**
  * A Mutable Othello move on an 8x8 board
@@ -23,11 +23,11 @@ public class CMove implements Comparable<CMove> {
         square = (byte) calcSquare(row, col);
     }
 
-    public CMove(COsMove osMove) {
-        if (osMove.Pass()) {
+    public CMove(OsMove osMove) {
+        if (osMove.isPass()) {
             square = -1;
         } else {
-            square = (byte) calcSquare(osMove.Row(), osMove.Col());
+            square = (byte) calcSquare(osMove.row(), osMove.col());
         }
     }
 
@@ -39,11 +39,11 @@ public class CMove implements Comparable<CMove> {
         this(move_.square);
     }
 
-    public COsMove toOsMove() {
+    public OsMove toOsMove() {
         if (IsPass()) {
-            return COsMove.PASS;
+            return OsMove.PASS;
         } else {
-            return new COsMove(Row(), Col());
+            return new OsMove(Row(), Col());
         }
     }
 

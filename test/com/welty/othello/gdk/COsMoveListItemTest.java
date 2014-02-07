@@ -27,7 +27,7 @@ public class COsMoveListItemTest extends TestCase {
     }
 
     public void testMoveOnlyConstructor() {
-        final COsMove move = new COsMove("F5");
+        final OsMove move = new OsMove("F5");
         final COsMoveListItem mli = new COsMoveListItem(move);
         assertEquals(move, mli.mv);
         assertEquals(false, mli.hasEval());

@@ -9,9 +9,9 @@ public class COsMoveListItem {
     /**
      * A pass with no evaluation or elapsed time
      */
-    public static final COsMoveListItem PASS = new COsMoveListItem(COsMove.PASS);
+    public static final COsMoveListItem PASS = new COsMoveListItem(OsMove.PASS);
 
-    public COsMove mv;
+    public OsMove mv;
     private double dEval;
     public double tElapsed;
     private boolean hasEval;
@@ -19,14 +19,14 @@ public class COsMoveListItem {
     public COsMoveListItem() {
     }
 
-    public COsMoveListItem(COsMove mv, double dEval, double tElapsed) {
-        this.mv = new COsMove(mv);
+    public COsMoveListItem(OsMove mv, double dEval, double tElapsed) {
+        this.mv = new OsMove(mv);
         this.dEval = dEval;
         this.tElapsed = tElapsed;
     }
 
     public COsMoveListItem(COsMoveListItem mli) {
-        mv = new COsMove(mli.mv);
+        mv = new OsMove(mli.mv);
         dEval = mli.dEval;
         tElapsed = mli.tElapsed;
         hasEval = mli.hasEval;
@@ -45,8 +45,8 @@ public class COsMoveListItem {
      *
      * @param mv move made
      */
-    public COsMoveListItem(COsMove mv) {
-        this.mv = new COsMove(mv);
+    public COsMoveListItem(OsMove mv) {
+        this.mv = new OsMove(mv);
         dEval = 0;
         hasEval = false;
         tElapsed = 0;
@@ -55,8 +55,7 @@ public class COsMoveListItem {
     public void In(CReader is) {
 
         // move
-        mv = new COsMove();
-        mv.in(is);
+        mv = new OsMove(is);
         is.ignoreAlnum();
 
         // eval

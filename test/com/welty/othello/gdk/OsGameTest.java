@@ -40,18 +40,18 @@ public class OsGameTest extends TestCase {
         final COsGame game = new COsGame();
         game.SetDefaultStartPos();
         final COsMoveListItem mli = new COsMoveListItem();
-        mli.mv = new COsMove("F5");
+        mli.mv = new OsMove("F5");
         game.Update(mli);
         assertEquals(expected, game.ml);
 
-        mli.mv = new COsMove("D6");
+        mli.mv = new OsMove("D6");
         assertEquals(expected, game.ml);
     }
 
     private static COsMoveList expectedMoveList() {
         COsMoveList expected = new COsMoveList();
         COsMoveListItem expectedItem = new COsMoveListItem();
-        expectedItem.mv = new COsMove("F5");
+        expectedItem.mv = new OsMove("F5");
         expected.add(expectedItem);
         return expected;
     }

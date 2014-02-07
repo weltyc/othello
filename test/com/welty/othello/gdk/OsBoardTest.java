@@ -24,8 +24,7 @@ public class OsBoardTest extends TestCase {
         try {
             board(sBoard);
             fail("Should throw: " + message);
-        }
-        catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
@@ -55,7 +54,7 @@ public class OsBoardTest extends TestCase {
     }
 
     public void testIsMoveLegal() {
-        final COsMove pass = new COsMove("pass");
+        final OsMove pass = new OsMove("pass");
         assertFalse(boardWtm.IsMoveLegal(pass));
     }
 
@@ -72,19 +71,18 @@ public class OsBoardTest extends TestCase {
         assertEquals(0, osBoard.netBlackSquares());
         assertTrue(osBoard.IsBlackMove());
         assertFalse(osBoard.GameOver());
-        assertFalse(osBoard.IsMoveLegal(new COsMove("a2")));
-        assertTrue(osBoard.IsMoveLegal(new COsMove("a1")));
+        assertFalse(osBoard.IsMoveLegal(new OsMove("a2")));
+        assertTrue(osBoard.IsMoveLegal(new OsMove("a1")));
         assertEquals(16, osBoard.GetMoves(true).size());
     }
 
     public void testThrowsIfBadMove() {
         final OsBoard board = board("4 OOOO OOOO OOOO *OO. O");
-        board.Update(new COsMove("pass"));
+        board.Update(new OsMove("pass"));
         try {
-            board.Update(new COsMove("pass"));
+            board.Update(new OsMove("pass"));
             fail("can't pass, black has a legal move");
-        }
-        catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
