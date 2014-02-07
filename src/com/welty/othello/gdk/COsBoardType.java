@@ -5,11 +5,7 @@ import com.welty.othello.c.CReader;
 import java.io.EOFException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 11:59:22 AM
- * To change this template use File | Settings | File Templates.
+ * An Othello board type
  */
 class COsBoardType {
     public int n;

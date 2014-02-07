@@ -47,12 +47,12 @@ public class CQPosition {
     }
 
     private CQPosition(final COsPosition position) {
-        final OsBoard.GetTextResult textResult = position.board.GetText();
+        final OsBoard.GetTextResult textResult = position.board.getText();
         Initialize(textResult.getText(), textResult.isBlackMove());
     }
 
     public CQPosition(final OsBoard osboard) {
-        final OsBoard.GetTextResult result = osboard.GetText();
+        final OsBoard.GetTextResult result = osboard.getText();
         Initialize(result.getText(), result.isBlackMove());
     }
 

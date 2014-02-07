@@ -39,8 +39,8 @@ public class COsPosition {
     }
 
     void Update(final OsMoveListItem mli) {
-        cks[board.blackMove() ? 1 : 0].Update(mli.getElapsedTime());
-        board.Update(mli.move);
+        cks[board.isBlackMove() ? 1 : 0].Update(mli.getElapsedTime());
+        board.update(mli.move);
     }
 
     void Update(final COsMoveList ml, int nMoves) {
@@ -58,7 +58,7 @@ public class COsPosition {
      * is updated by a call to Update().
      */
     void UpdateKomiSet(final OsMoveListItem[] mlis) {
-        boolean fBlackOpponent = !board.blackMove();
+        boolean fBlackOpponent = !board.isBlackMove();
         final int enemyIndex = fBlackOpponent ? 1 : 0;
         cks[enemyIndex].Update(mlis[enemyIndex].getElapsedTime());
     }
@@ -82,7 +82,7 @@ public class COsPosition {
     }
 
     void Clear() {
-        board.Clear();
+        board.clear();
         cks[0].Clear();
         cks[1].Clear();
     }

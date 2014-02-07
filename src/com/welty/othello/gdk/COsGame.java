@@ -139,7 +139,7 @@ public class COsGame {
                     mt.In(is);
                     break;
                 case "BO":
-                    posStart.board.In(is);
+                    posStart.board.in(is);
                     break;
                 case "B":
                 case "W":
@@ -207,12 +207,12 @@ public class COsGame {
 
                 // read move
                 boolean fBlackMove = c == '+';
-                Require.eq(fBlackMove, "black move", pos.board.blackMove());
+                Require.eq(fBlackMove, "black move", pos.board.isBlackMove());
                 OsMoveListItem mli = new OsMoveListItem(new OsMove(is));
 
                 // update game and pass if needed
                 Update(mli);
-                if (!GameOver() && !pos.board.HasLegalMove()) {
+                if (!GameOver() && !pos.board.hasLegalMove()) {
                     Update(pass);
                 }
             } else {
@@ -278,13 +278,13 @@ public class COsGame {
             // read move code. move code 0 means game is over
             while (0 != (iosMove = is.readInt())) {
                 // positive moves are black, negative are white
-                Require.eq(pos.board.blackMove(), "black move", iosMove > 0);
+                Require.eq(pos.board.isBlackMove(), "black move", iosMove > 0);
 
                 final OsMoveListItem mli = new OsMoveListItem(OsMove.ofIos(iosMove));
                 Update(mli);
 
                 // pass if needed
-                if (!GameOver() && !pos.board.HasLegalMove()) {
+                if (!GameOver() && !pos.board.hasLegalMove()) {
                     Update(OsMoveListItem.PASS);
                 }
             }
@@ -330,7 +330,7 @@ public class COsGame {
         }
 
         // move list
-        boolean fBlackMove = posStart.board.blackMove();
+        boolean fBlackMove = posStart.board.isBlackMove();
         for (OsMoveListItem mli : ml) {
             sb.append(fBlackMove ? "]B[" : "]W[").append(mli);
             fBlackMove = !fBlackMove;
@@ -453,13 +453,13 @@ public class COsGame {
             // we don't adjust for timeouts because we don't keep track of
             //	who timed out first. This is a bug; but in games coming from GGS
             //	it should update us with the final result later.
-            result.dResult = pos.board.Result(mt.fAnti);
+            result.dResult = pos.board.getResult(mt.fAnti);
             result.status = COsResult.TStatus.kNormalEnd;
         }
     }
 
     public boolean GameOver() {
-        return pos.board.GameOver();
+        return pos.board.isGameOver();
     }
 
     @Override public String toString() {

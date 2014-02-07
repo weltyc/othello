@@ -8,11 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 11:55:56 AM
- * To change this template use File | Settings | File Templates.
+ * A board knows its size, the disks on the board, and the player to move
  */
 public class OsBoard {
     private COsBoardType bt = new COsBoardType("8");
@@ -40,29 +36,23 @@ public class OsBoard {
     }
 
     public OsBoard(CReader is) {
-        In(is);
+        in(is);
     }
 
-    public void copy(OsBoard board) {
-        bt = new COsBoardType(board.bt);
-        sBoard = (board.sBoard == null) ? null : Arrays.copyOf(board.sBoard, board.sBoard.length);
-        fBlackMove = board.fBlackMove;
-        validate();
-    }
-
-    public boolean IsBlackMove() {
-        return fBlackMove;
-    }
-
-    int IsMoveLegal(int row, int col) {
+    int isMoveLegal(int row, int col) {
         return nFlipped(row, col, fBlackMove);
     }
 
-    public boolean HasLegalMove() {
-        return HasLegalMove(fBlackMove);
+    public boolean hasLegalMove() {
+        return hasLegalMove(fBlackMove);
     }
 
-    void initialize(final COsBoardType bt) {
+    /**
+     * Set to the default start position for the given board type
+     *
+     * @param bt board type
+     */
+    public void initialize(final COsBoardType bt) {
         int row, col;
         char c;
         this.bt = bt;
@@ -76,21 +66,21 @@ public class OsBoard {
                     c = DUMMY;
                 else
                     c = EMPTY;
-                SetPiece(row, col, c);
+                setPiece(row, col, c);
             }
         }
 
         int center = this.bt.n / 2;
-        SetPiece(center, center - 1, BLACK);
-        SetPiece(center - 1, center, BLACK);
-        SetPiece(center, center, WHITE);
-        SetPiece(center - 1, center - 1, WHITE);
+        setPiece(center, center - 1, BLACK);
+        setPiece(center - 1, center, BLACK);
+        setPiece(center, center, WHITE);
+        setPiece(center - 1, center - 1, WHITE);
 
         fBlackMove = true;
         validate();
     }
 
-    public char Piece(int row, int col) {
+    public char getPiece(int row, int col) {
         // need to adjust for the first row and column of dummy squares
         row++;
         col++;
@@ -98,7 +88,7 @@ public class OsBoard {
         return sBoard[index];
     }
 
-    public void SetPiece(int row, int col, char piece) {
+    public void setPiece(int row, int col, char piece) {
         switch (piece) {
             case BLACK:
             case WHITE:
@@ -114,18 +104,23 @@ public class OsBoard {
         }
     }
 
-    void Update(final OsMove mv) {
+    /**
+     * Make a move on this board, updating disks and player-to-move.
+     *
+     * @param move move to make
+     */
+    void update(final OsMove move) {
         int dRow, dCol;
         char cMover, cOpponent;
 
-        if (!mv.isPass()) {
+        if (!move.isPass()) {
 
-            Require.inRange("Row must be in range of board size", mv.row(), "move row", 0, bt.n - 1);
-            Require.inRange("Col must be in range of board size", mv.col(), "move col", 0, bt.n - 1);
+            Require.inRange("Row must be in range of board size", move.row(), "move row", 0, bt.n - 1);
+            Require.inRange("Col must be in range of board size", move.col(), "move col", 0, bt.n - 1);
 
-            if (Piece(mv.row(), mv.col()) != EMPTY) {
+            if (getPiece(move.row(), move.col()) != EMPTY) {
                 System.err.println(this);
-                throw new IllegalArgumentException("tried to move to a filled square at " + mv);
+                throw new IllegalArgumentException("tried to move to a filled square at " + move);
             } else {
                 // get colors
                 if (fBlackMove) {
@@ -138,18 +133,18 @@ public class OsBoard {
 
                 // update board
                 int nFlipped = 0;
-                SetPiece(mv.row(), mv.col(), cMover);
+                setPiece(move.row(), move.col(), cMover);
                 for (dRow = -1; dRow <= 1; dRow++) {
                     for (dCol = -1; dCol <= 1; dCol++) {
                         if ((dRow != 0) || (dCol != 0))
-                            nFlipped += UpdateDirection(mv.row(), mv.col(), dRow, dCol, cMover, cOpponent);
+                            nFlipped += updateDirection(move.row(), move.col(), dRow, dCol, cMover, cOpponent);
                     }
                 }
                 Require.gt(nFlipped, "nFlipped", 0);
             }
         } else {
             // is a pass legal?
-            final int nPass = NPass();
+            final int nPass = nPass();
             if (nPass == 0) {
                 throw new IllegalArgumentException("can't pass, still have a legal move");
             }
@@ -161,20 +156,32 @@ public class OsBoard {
         fBlackMove = !fBlackMove;
     }
 
-    int NPass() {
-        if (HasLegalMove(fBlackMove))
+    /**
+     * @return 0 if mover has a legal move, 1 if mover passes but opponent has a legal move, 2 if neither player has
+     *         a legal move and the game is therefore over.
+     */
+    int nPass() {
+        if (hasLegalMove(fBlackMove))
             return 0;
-        else if (HasLegalMove(!fBlackMove))
+        else if (hasLegalMove(!fBlackMove))
             return 1;
         else
             return 2;
     }
 
-    public boolean GameOver() {
-        return !HasLegalMove(fBlackMove) && !HasLegalMove(!fBlackMove);
+    public boolean isGameOver() {
+        return !hasLegalMove(fBlackMove) && !hasLegalMove(!fBlackMove);
     }
 
-    boolean HasLegalMove(boolean fBlackMover) {
+    /**
+     * Determine whether a player has a legal move given the disks on the board.
+     * <p/>
+     * The player does not need to be the player-to-move.
+     *
+     * @param fBlackMover if true, consider black's moves
+     * @return true if the player has a legal move given the disks on the board
+     */
+    boolean hasLegalMove(boolean fBlackMover) {
         int r, c;
 
         for (r = 0; r < bt.n; r++) {
@@ -185,9 +192,15 @@ public class OsBoard {
         return false;
     }
 
-    ArrayList<OsMove> GetMoves(boolean fMover) {
+    /**
+     * Get all legal moves for a player
+     *
+     * @param fMover if true, legal moves for the player to move. If false, legal moves for the opponent.
+     * @return list of legal moves
+     */
+    ArrayList<OsMove> getMoves(boolean fMover) {
         int r, c;
-        ArrayList<OsMove> mvs = new ArrayList<OsMove>();
+        ArrayList<OsMove> mvs = new ArrayList<>();
 
         for (r = 0; r < bt.n; r++) {
             for (c = 0; c < bt.n; c++)
@@ -199,19 +212,25 @@ public class OsBoard {
     }
 
     /**
-     * Port note: originally returned number of squares flipped if move was not a pass
+     * Determine whether a move is legal.
+     * <p/>
+     * A pass is considered legal if the player has no legal moves, but the opponent does have a legal move.
+     * (So a pass is not legal after the end of the game).
      *
-     * @param move
-     * @return
+     * @param move square to check
+     * @return true if move is legal.
      */
-    public boolean IsMoveLegal(final OsMove move) {
-        if (move.isPass())
-            return !HasLegalMove() && HasLegalMove(!blackMove());
-        else
-            return IsMoveLegal(move.row(), move.col()) != 0;
+    public boolean isMoveLegal(final OsMove move) {
+        if (move.isPass()) {
+            return !hasLegalMove() && hasLegalMove(!isBlackMove());
+        } else {
+            return isMoveLegal(move.row(), move.col()) != 0;
+        }
     }
 
     /**
+     * Determine number of squares flipped by a move
+     *
      * @param row         row of move (starts at 0)
      * @param col         col of move (starts at 0)
      * @param fBlackMover if true, black is making a move
@@ -221,7 +240,7 @@ public class OsBoard {
         int dRow, dCol;
         char cMover, cOpponent;
 
-        if (Piece(row, col) != EMPTY)
+        if (getPiece(row, col) != EMPTY)
             return 0;
 
         // get colors
@@ -238,7 +257,7 @@ public class OsBoard {
         for (dRow = -1; dRow <= 1; dRow++) {
             for (dCol = -1; dCol <= 1; dCol++) {
                 if ((dRow != 0) || (dCol != 0))
-                    nFlipped += IsMoveLegalDirection(row, col, dRow, dCol, cMover, cOpponent);
+                    nFlipped += nFlippedInDirection(row, col, dRow, dCol, cMover, cOpponent);
             }
         }
         return nFlipped;
@@ -249,8 +268,8 @@ public class OsBoard {
      *
      * @throws IllegalArgumentException if the reader does not contain a valid board
      */
-    public void In(CReader is) {
-        Clear();
+    public void in(CReader is) {
+        clear();
 
         initialize(new COsBoardType(is));
         for (int i = 0; i < sBoard.length; i++) {
@@ -334,29 +353,37 @@ public class OsBoard {
             if (c != DUMMY)
                 sb.append(c);
         }
-        sb.append(" ").append(CMover());
+        sb.append(" ").append(getMoverChar());
         return sb.toString();
     }
 
-    void Clear() {
+    /**
+     * Set this board into an invalid state
+     */
+    void clear() {
         bt.Clear();
         fBlackMove = true;
         sBoard = null;
     }
 
-    public void OutFormatted(PrintStream os) {
-        OutHeader(os);
+    /**
+     * Write this board to a PrintStream with headers
+     *
+     * @param os destination
+     */
+    public void outFormatted(PrintStream os) {
+        outHeader(os);
 
         int r, c;
         for (r = 0; r < bt.n; r++) {
             os.format("%2d", r + 1);
             for (c = 0; c < bt.n; c++) {
-                os.print(" " + Piece(r, c));
+                os.print(" " + getPiece(r, c));
             }
             os.format("%2d\n", r + 1);
         }
 
-        OutHeader(os);
+        outHeader(os);
         os.println(moverText() + " to move");
     }
 
@@ -364,7 +391,7 @@ public class OsBoard {
         return fBlackMove ? "Black" : "White";
     }
 
-    void OutHeader(PrintStream os) {
+    private void outHeader(PrintStream os) {
         int c;
 
         os.print("  ");
@@ -373,16 +400,24 @@ public class OsBoard {
         os.println();
     }
 
-    int UpdateDirection(int row, int col, int dRow, int dCol, char cMover, char cOpponent) {
+    /**
+     * Update the board in a given direction
+     *
+     * @return number of disks flipped
+     */
+    private int updateDirection(int row, int col, int dRow, int dCol, char cMover, char cOpponent) {
         int rowEnd, colEnd;
         int nFlipped;
         nFlipped = 0;
 
-        for (rowEnd = row + dRow, colEnd = col + dCol; Piece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol)
-            ;
-        if (Piece(rowEnd, colEnd) == cMover) {
-            for (rowEnd = row + dRow, colEnd = col + dCol; Piece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol) {
-                SetPiece(rowEnd, colEnd, cMover);
+        for (rowEnd = row + dRow, colEnd = col + dCol; getPiece(rowEnd, colEnd) == cOpponent; ) {
+            rowEnd += dRow;
+            colEnd += dCol;
+        }
+
+        if (getPiece(rowEnd, colEnd) == cMover) {
+            for (rowEnd = row + dRow, colEnd = col + dCol; getPiece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol) {
+                setPiece(rowEnd, colEnd, cMover);
                 nFlipped++;
             }
         }
@@ -390,15 +425,23 @@ public class OsBoard {
         return nFlipped;
     }
 
-    int IsMoveLegalDirection(int row, int col, int dRow, int dCol, char cMover, char cOpponent) {
+    /**
+     * Determine how many disks are flipped in a given direction
+     *
+     * @return number of disks flipped in a given direction
+     */
+    private int nFlippedInDirection(int row, int col, int dRow, int dCol, char cMover, char cOpponent) {
         int rowEnd, colEnd;
         int nFlipped;
         nFlipped = 0;
 
-        for (rowEnd = row + dRow, colEnd = col + dCol; Piece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol)
-            ;
-        if (Piece(rowEnd, colEnd) == cMover) {
-            for (rowEnd = row + dRow, colEnd = col + dCol; Piece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol) {
+        for (rowEnd = row + dRow, colEnd = col + dCol; getPiece(rowEnd, colEnd) == cOpponent; ) {
+            rowEnd += dRow;
+            colEnd += dCol;
+        }
+
+        if (getPiece(rowEnd, colEnd) == cMover) {
+            for (rowEnd = row + dRow, colEnd = col + dCol; getPiece(rowEnd, colEnd) == cOpponent; rowEnd += dRow, colEnd += dCol) {
                 nFlipped++;
             }
         }
@@ -409,16 +452,15 @@ public class OsBoard {
     /**
      * Get the text for the board and a flag for black-to-move
      *
-     * @return Port note: original C code put the text into sBoard, and returned sBoard and output a boolean fBlackMove; it also
-     *         had a trailingNull flag if you wanted a \0 at the end of the text
+     * @return a GetTextResult containing the information.
      */
-    public GetTextResult GetText() {
+    public GetTextResult getText() {
         StringBuilder sb = new StringBuilder();
 
         for (int r = 0; r <= bt.n; r++) {
             for (int c = 0; c <= bt.n; c++) {
-                if (Piece(r, c) != DUMMY) {
-                    sb.append(Piece(r, c));
+                if (getPiece(r, c) != DUMMY) {
+                    sb.append(getPiece(r, c));
                 }
             }
         }
@@ -435,29 +477,44 @@ public class OsBoard {
      *
      * @return True if it is black to move.
      */
-    public boolean blackMove() {
+    public boolean isBlackMove() {
         return fBlackMove;
     }
 
-    public int NEmpty() {
+    public int nEmpty() {
         return getPieceCounts().nEmpty;
     }
 
-    public void Set(OsBoard board) {
+    /**
+     * Set this board to be a copy of another board
+     *
+     * @param board board to copy form
+     */
+    public void copy(OsBoard board) {
         bt = new COsBoardType(board.bt);
-        setText(board.GetText());
+        sBoard = (board.sBoard == null) ? null : Arrays.copyOf(board.sBoard, board.sBoard.length);
+        fBlackMove = board.fBlackMove;
         validate();
     }
+
 
     public static class GetTextResult {
         final String text;
         final boolean blackMove;
 
-        public GetTextResult(String text, boolean blackMove) {
+        private GetTextResult(String text, boolean blackMove) {
             this.text = text;
             this.blackMove = blackMove;
         }
 
+        /**
+         * Get a text representation of the squares on the board.
+         * <p/>
+         * The returned value has no spaces. Dummy squares (squares that cannot be played) are not included.
+         * All characters will be one of BLACK, WHITE, or EMPTY.
+         *
+         * @return text of the squares on the board.
+         */
         public String getText() {
             return text;
         }
@@ -466,19 +523,6 @@ public class OsBoard {
             return blackMove;
         }
     }
-
-    /**
-     * @return a string containing one char for each square on the board
-     *         e.g. for the initial position, returns "---------------------------O*------*O---------------------------"
-     */
-    String GetTextString() {
-        return GetText().text;
-    }
-
-    private void setText(GetTextResult sBoard) {
-        setText(sBoard.text, sBoard.blackMove);
-    }
-
 
     /**
      * Set the pieces on the board
@@ -502,14 +546,17 @@ public class OsBoard {
         int i = 0;
         for (r = 0; r <= bt.n; r++) {
             for (c = 0; c <= bt.n; c++) {
-                if (Piece(r, c) != DUMMY) {
-                    SetPiece(r, c, sBoard.charAt(i++));
+                if (getPiece(r, c) != DUMMY) {
+                    setPiece(r, c, sBoard.charAt(i++));
                 }
             }
         }
     }
 
-    public char CMover() {
+    /**
+     * @return Character representing the player to move
+     */
+    public char getMoverChar() {
         return fBlackMove ? BLACK : WHITE;
     }
 
@@ -546,11 +593,13 @@ public class OsBoard {
         return getPieceCounts().netBlackSquares();
     }
 
-    public int Result() {
-        return Result(false);
-    }
-
-    public int Result(boolean fAnti) {
+    /**
+     * Get the result on the board. Winner gets empties. Positive means black won.
+     *
+     * @param fAnti if true, this is an "anti" game and the winner is the player with the FEWEST disks.
+     * @return black disks - white disks (if anti, white disks - black disks).
+     */
+    public int getResult(boolean fAnti) {
         return getPieceCounts().result(fAnti);
     }
 

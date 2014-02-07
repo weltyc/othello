@@ -14,8 +14,8 @@ public class OsBoardTest extends TestCase {
     private static final OsBoard board2 = board("8 *OOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
 
     public void testInitialization() {
-        assertFalse(board(sBoard).blackMove());
-        assertTrue(boardBtm.blackMove());
+        assertFalse(board(sBoard).isBlackMove());
+        assertTrue(boardBtm.isBlackMove());
         testInitializationThrows("too short", "4 OOOO OOOO OOOO OOOO ");
         testInitializationThrows("too long", "4 OOOO OOOO OOOO OOOO *O");
     }
@@ -49,13 +49,13 @@ public class OsBoardTest extends TestCase {
                 "--------\n" +
                 "O");
         final OsBoard board = new OsBoard(in);
-        assertFalse(board.blackMove());
+        assertFalse(board.isBlackMove());
         assertEquals(5, board.getPieceCounts().nBlack);
     }
 
     public void testIsMoveLegal() {
         final OsMove pass = new OsMove("pass");
-        assertFalse(boardWtm.IsMoveLegal(pass));
+        assertFalse(boardWtm.isMoveLegal(pass));
     }
 
     public static OsBoard board(String boardText) {
@@ -69,18 +69,18 @@ public class OsBoardTest extends TestCase {
         osBoard.setText("--------OOOOOOOO********----------------OOOOOOOO********--------");
         assertEquals(new PieceCounts(16, 16, 32), osBoard.getPieceCounts());
         assertEquals(0, osBoard.netBlackSquares());
-        assertTrue(osBoard.IsBlackMove());
-        assertFalse(osBoard.GameOver());
-        assertFalse(osBoard.IsMoveLegal(new OsMove("a2")));
-        assertTrue(osBoard.IsMoveLegal(new OsMove("a1")));
-        assertEquals(16, osBoard.GetMoves(true).size());
+        assertTrue(osBoard.isBlackMove());
+        assertFalse(osBoard.isGameOver());
+        assertFalse(osBoard.isMoveLegal(new OsMove("a2")));
+        assertTrue(osBoard.isMoveLegal(new OsMove("a1")));
+        assertEquals(16, osBoard.getMoves(true).size());
     }
 
     public void testThrowsIfBadMove() {
         final OsBoard board = board("4 OOOO OOOO OOOO *OO. O");
-        board.Update(new OsMove("pass"));
+        board.update(new OsMove("pass"));
         try {
-            board.Update(new OsMove("pass"));
+            board.update(new OsMove("pass"));
             fail("can't pass, black has a legal move");
         } catch (IllegalArgumentException e) {
             // expected
