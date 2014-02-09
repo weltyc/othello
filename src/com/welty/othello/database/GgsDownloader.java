@@ -37,10 +37,9 @@ public class GgsDownloader {
      */
     public static void main(String[] args) throws IOException, CompressorException {
         // Game archives that have already been added to book:
-        // 143, 148
+        // 143-145, 148
         // Game archives that are currently running:
-        // 144
-        final int fileNumber = 144;
+        final int fileNumber = 146;
         final String outputLocation = "c:/dev/oth1/games.ggf";
 
         download(fileNumber, Paths.get(outputLocation));
