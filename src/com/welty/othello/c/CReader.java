@@ -45,10 +45,10 @@ public class CReader {
             }
             readDigits(sb);
             return Integer.parseInt(sb.toString());
-        } else if (c == -1) {
+        } else if (c == 0xFFFF) {
             throw new EOFException("End of file reached");
         } else {
-            throw new IllegalArgumentException("Can't parse integer starting char '" + c + "'");
+            throw new IllegalArgumentException("Can't parse integer starting with char '" + c + "'");
         }
     }
 
