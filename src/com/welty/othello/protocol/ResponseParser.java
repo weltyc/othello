@@ -68,7 +68,7 @@ public class ResponseParser {
                         name = in.readString();
                         responseHandler.handle(new NameChangedResponse());
                     } else {
-                        responseHandler.handle(new ErrorResponse(msg));
+                        responseHandler.handle(new ErrorResponse(msg, "Unknown variable: '" + variable + "'"));
                     }
                     break;
                 case "book":
@@ -90,11 +90,34 @@ public class ResponseParser {
                     // ignore for now, because Edax sends it all the time.
                     break;
                 default:
-                    responseHandler.handle(new ErrorResponse(msg));
+                    responseHandler.handle(new ErrorResponse(msg, "Unknown command: " + command));
             }
         } catch (EOFException | IllegalArgumentException e) {
-            responseHandler.handle(new ErrorResponse(msg));
+            final String comment = getComment(command, e);
+            responseHandler.handle(new ErrorResponse(msg, comment));
         }
+    }
+
+    private String getComment(String command, Exception e) {
+        final String format;
+
+        switch (command) {
+            case "book":
+                format = "book {pv} {eval} {# games:long} {depth} {freeform text:string}";
+                break;
+            case "pong":
+                format = "pong {pong:int}";
+                break;
+            default:
+                format = null;
+        }
+
+        if (format == null) {
+            return e.getMessage();
+        } else {
+            return command + " command format:\n" + format;
+        }
+
     }
 
     private void setStatus(@NotNull String status) {

@@ -2,6 +2,7 @@ package com.welty.othello.protocol;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.jetbrains.annotations.Nullable;
 
 @ToString @EqualsAndHashCode
 public class ErrorResponse implements NBoardResponse {
@@ -10,7 +11,13 @@ public class ErrorResponse implements NBoardResponse {
      */
     public final String message;
 
-    public ErrorResponse(String message) {
+    /**
+     * Comment on why the line was in error, or null if no comment
+     */
+    public final @Nullable String comment;
+
+    public ErrorResponse(String message, @Nullable String comment) {
         this.message = message;
+        this.comment = comment;
     }
 }

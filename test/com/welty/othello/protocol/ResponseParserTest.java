@@ -24,11 +24,11 @@ public class ResponseParserTest extends TestCase {
 
     public void testParsePongError() {
         final String msg = "pong";
-        testErrorResponse(msg);
+        testErrorResponse(msg, "pong command format:\npong {pong:int}");
     }
 
     public void testParsePongError2() {
-        testErrorResponse("pong b");
+        testErrorResponse("pong b", "pong command format:\npong {pong:int}");
     }
 
     public void testParseStatus() {
@@ -56,7 +56,7 @@ public class ResponseParserTest extends TestCase {
     }
 
     public void testInvalidSetVariable() {
-        testErrorResponse("set q myname");
+        testErrorResponse("set q myname", "Unknown variable: 'q'");
     }
 
     public void testBlankLine() {
@@ -81,7 +81,8 @@ public class ResponseParserTest extends TestCase {
 
     public void testBookError() {
         // this comes from Edax 4.4 occasionally
-        testErrorResponse("book    +1                                          d3");
+        testErrorResponse("book    +1                                          d3",
+                "book command format:\nbook {pv} {eval} {# games:long} {depth} {freeform text:string}");
     }
 
     public void testSearchHint() {
@@ -96,8 +97,8 @@ public class ResponseParserTest extends TestCase {
         verify(responseHandler).handle(new NodeStatsResponse(0, 24, 0.0));
     }
 
-    private void testErrorResponse(String msg) {
+    private void testErrorResponse(String msg, String comment) {
         parser.handle(msg);
-        verify(responseHandler).handle(new ErrorResponse(msg));
+        verify(responseHandler).handle(new ErrorResponse(msg, comment));
     }
 }
