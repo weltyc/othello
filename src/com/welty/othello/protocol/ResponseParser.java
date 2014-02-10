@@ -17,7 +17,7 @@ import java.io.EOFException;
  */
 public class ResponseParser {
     private final ResponseHandler responseHandler;
-    private @NotNull String status = "";
+    private @NotNull String status;
     private @NotNull String name;
     private int pong;
 
@@ -26,6 +26,7 @@ public class ResponseParser {
      * @param name            initial name of the engine, until it is overridden by a 'set myname' response.
      */
     public ResponseParser(ResponseHandler responseHandler, @NotNull String name) {
+        status = "Loading " + name;
         this.responseHandler = responseHandler;
         this.name = name;
     }
