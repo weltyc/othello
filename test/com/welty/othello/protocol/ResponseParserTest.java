@@ -4,24 +4,22 @@ import com.welty.othello.gdk.OsMoveListItem;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-import java.util.Queue;
-
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ResponseParserTest extends TestCase {
-    private Queue<NBoardResponse> queue;
+    private ResponseHandler responseHandler;
     private ResponseParser parser;
 
     @Override protected void setUp() throws Exception {
         //noinspection unchecked
-        queue = (Queue<NBoardResponse>) Mockito.mock(Queue.class);
-        parser = new ResponseParser(queue);
+        responseHandler = Mockito.mock(ResponseHandler.class);
+        parser = new ResponseParser(responseHandler, "test");
     }
 
     public void testParsePong() {
-        parser.parse("pong 1");
-        verify(queue).add(new PongResponse(1));
+        parser.handle("pong 1");
+        verify(responseHandler).handle(new PongResponse(1));
     }
 
     public void testParsePongError() {
@@ -34,26 +32,26 @@ public class ResponseParserTest extends TestCase {
     }
 
     public void testParseStatus() {
-        parser.parse("status foo");
-        verify(queue).add(new StatusChangedResponse());
+        parser.handle("status foo");
+        verify(responseHandler).handle(new StatusChangedResponse());
         assertEquals("foo", parser.getStatus());
     }
 
     public void testParseEmptyStatus() {
-        parser.parse("status");
-        verify(queue).add(new StatusChangedResponse());
+        parser.handle("status");
+        verify(responseHandler).handle(new StatusChangedResponse());
         assertEquals("", parser.getStatus());
     }
 
     public void testParseWhitespaceStatus() {
-        parser.parse("status ");
-        verify(queue).add(new StatusChangedResponse());
+        parser.handle("status ");
+        verify(responseHandler).handle(new StatusChangedResponse());
         assertEquals("", parser.getStatus());
     }
 
     public void testSetMyName() {
-        parser.parse("set myname q");
-        verify(queue).add(new NameChangedResponse());
+        parser.handle("set myname q");
+        verify(responseHandler).handle(new NameChangedResponse());
         assertEquals("q", parser.getName());
     }
 
@@ -63,22 +61,22 @@ public class ResponseParserTest extends TestCase {
 
     public void testBlankLine() {
         // not an error, not a message, not anything
-        parser.parse("");
-        verifyNoMoreInteractions(queue);
+        parser.handle("");
+        verifyNoMoreInteractions(responseHandler);
     }
 
     public void testMoveResponse() {
-        parser.parse("=== F5");
+        parser.handle("=== F5");
         final MoveResponse expected = new MoveResponse(0, new OsMoveListItem("F5"));
-        verify(queue).add(expected);
+        verify(responseHandler).handle(expected);
     }
 
     public void testPongUpdating() {
-        parser.parse("pong 13");
-        parser.parse("=== F5");
-        verify(queue).add(new PongResponse(13));
-        verify(queue).add(new StatusChangedResponse());
-        verify(queue).add(new MoveResponse(13, new OsMoveListItem("F5")));
+        parser.handle("pong 13");
+        parser.handle("=== F5");
+        verify(responseHandler).handle(new PongResponse(13));
+        verify(responseHandler).handle(new StatusChangedResponse());
+        verify(responseHandler).handle(new MoveResponse(13, new OsMoveListItem("F5")));
     }
 
     public void testBookError() {
@@ -87,19 +85,19 @@ public class ResponseParserTest extends TestCase {
     }
 
     public void testSearchHint() {
-        parser.parse("search E3       4 0 3");
-        verify(queue).add(new HintResponse(0, false, "E3", 4, 0, "3", ""));
+        parser.handle("search E3       4 0 3");
+        verify(responseHandler).handle(new HintResponse(0, false, "E3", "4", 0, "3", ""));
         //                        // search [pv] [eval] 0         [depth] [freeform text]
 //        parser.parse()
     }
 
     public void testNodestats() {
-        parser.parse("nodestats 24 0.00");
-        verify(queue).add(new NodeStatsResponse(0, 24, 0.0));
+        parser.handle("nodestats 24 0.00");
+        verify(responseHandler).handle(new NodeStatsResponse(0, 24, 0.0));
     }
 
     private void testErrorResponse(String msg) {
-        parser.parse(msg);
-        verify(queue).add(new ErrorResponse(msg));
+        parser.handle(msg);
+        verify(responseHandler).handle(new ErrorResponse(msg));
     }
 }

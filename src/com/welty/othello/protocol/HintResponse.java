@@ -13,14 +13,14 @@ public class HintResponse implements NBoardResponse {
     public final int pong;
     public final boolean book;
     public final String pv;
-    public final float eval;
-    public final long nGames;
+    public final String eval;
+    public final int nGames;
     public final String depth;
     public final String freeformText;
     public final OsMove move;
     public final int depthInt;
 
-    public HintResponse(int pong, boolean isBook, String pv, float eval, long nGames, String depth, String freeformText) {
+    public HintResponse(int pong, boolean isBook, String pv, String eval, int nGames, String depth, String freeformText) {
         this.pong = pong;
         book = isBook;
         this.pv = pv;
@@ -42,10 +42,10 @@ public class HintResponse implements NBoardResponse {
      * @param isBook true if this is a "book" response, false if it's a "search" response
      * @param in     CReader containing the rest of the line
      */
-    @NotNull static HintResponse of(int pong, boolean isBook, CReader in) {
+    @NotNull static HintResponse of(int pong, boolean isBook, CReader in) throws EOFException {
         final String pv = in.readString();
-        final float eval = in.readFloatNoExponent();
-        final long nGames = in.readLong();
+        final String eval = in.readString();
+        final int nGames = in.readInt();
         final String depth = in.readString();
         final String freeformText = in.readLine();
         return new HintResponse(pong, isBook, pv, eval, nGames, depth, freeformText);
