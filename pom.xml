@@ -106,7 +106,8 @@
                     <options>
                         <option>-allowaccessmodification</option>
                         <option>-dontskipnonpubliclibraryclasses</option>
-                        <option>-keep public class com.welty.othello.timer.timer.OthelloTimer { public *; public static *; }
+                        <option>-keep public class com.welty.othello.timer.timer.OthelloTimer { public *; public static
+                            *; }
                         </option>
                         <option>-keep public class com.welty.othello.deploy.DeployerGui { public *; public static *; }
                         </option>
@@ -161,5 +162,20 @@
             <artifactId>commons-compress</artifactId>
             <version>1.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.12.2</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 </project>
