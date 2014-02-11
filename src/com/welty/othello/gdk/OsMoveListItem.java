@@ -17,7 +17,7 @@ public class OsMoveListItem {
     public final OsMove move;
 
     /**
-     * Eval, or Double.NaN if no eval exists
+     * Eval, in disks, or Double.NaN if no eval exists
      */
     private final double eval;
 
@@ -30,7 +30,7 @@ public class OsMoveListItem {
      * Create a MoveListItem
      *
      * @param move     move
-     * @param eval     move evaluation, or Double.NaN if no eval was provided
+     * @param eval     move evaluation in disks, or Double.NaN if no eval was provided
      * @param tElapsed elapsed time, in seconds
      */
     public OsMoveListItem(OsMove move, double eval, double tElapsed) {
@@ -120,7 +120,7 @@ public class OsMoveListItem {
     }
 
     /**
-     * @return evaluation, or Double.NaN if there is no eval.
+     * @return evaluation, in disks, or Double.NaN if there is no eval.
      */
     public double getEval() {
         return eval;

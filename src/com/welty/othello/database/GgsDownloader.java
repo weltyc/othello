@@ -37,17 +37,18 @@ public class GgsDownloader {
      */
     public static void main(String[] args) throws IOException, CompressorException {
         // Game archives that have already been added to book:
-        // none (due to book write error)
+        // 143-145, 148
         // Game archives that are currently running:
-        // 148
-        final int fileNumber = 148;
+        final int fileNumber = 146;
         final String outputLocation = "c:/dev/oth1/games.ggf";
 
         download(fileNumber, Paths.get(outputLocation));
     }
 
     /**
-     * Download an othello game archive from the GGS archive server; select games and store them at the outputPath.
+     * Select games and store them at the outputPath.
+     *
+     * Downloads the games from GGS if they are not already downloaded in the cache.
      *
      * @param archiveFileNumber game archive number, from the selection available at the archive server.
      * @param outputPath path to store selected games at.
