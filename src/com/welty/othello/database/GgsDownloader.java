@@ -7,7 +7,10 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -47,16 +50,16 @@ public class GgsDownloader {
 
     /**
      * Select games and store them at the outputPath.
-     *
+     * <p/>
      * Downloads the games from GGS if they are not already downloaded in the cache.
      *
      * @param archiveFileNumber game archive number, from the selection available at the archive server.
-     * @param outputPath path to store selected games at.
+     * @param outputPath        path to store selected games at.
      * @throws IOException
      * @throws CompressorException
      */
     public static void download(int archiveFileNumber, Path outputPath) throws IOException, CompressorException {
-        final Path destPath = downloadGgs("Othello." + archiveFileNumber+".ggf.bz2");
+        final Path destPath = downloadGgs("Othello." + archiveFileNumber + ".ggf.bz2");
 
         final List<OthelloMatch> matches = Feeds.ofLines(bz2Reader(destPath))
                 .map(OthelloMatch.PARSER)
@@ -75,7 +78,7 @@ public class GgsDownloader {
                 final String type = game.type();
                 // only want to add standard start position to book.
                 // no comments allowed because book might freak out if game is not completely played out.
-                if ((type.equals("8") || type.equals("s8") || type.equals("8k")) && game.result().comment==null) {
+                if ((type.equals("8") || type.equals("s8") || type.equals("8k")) && game.result().comment == null) {
                     n8++;
                     if (game.blackRating() > 1900 && game.whiteRating() > 1900) {
                         gameTexts.add(game.toString());

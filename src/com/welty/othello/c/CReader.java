@@ -231,6 +231,12 @@ public class CReader {
         return sb.toString();
     }
 
+    /**
+     * reads the line up to '\n'. The '\n' is removed from the stream but is not added to the return value.
+     * Whitespace at the beginning of the line is returned, not ignored
+     *
+     * @return line up to, but not including, the '\n' character
+     */
     public String readLine() {
         return readLine('\n');
     }

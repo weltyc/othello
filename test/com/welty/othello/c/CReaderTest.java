@@ -20,8 +20,7 @@ public class CReaderTest extends TestCase {
         try {
             new CReader("--1").readInt();
             fail("not an integer, should throw");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
             // expected
         }
     }
@@ -42,8 +41,7 @@ public class CReaderTest extends TestCase {
         try {
             in.readInt();
             fail("Should throw EOFException");
-        }
-        catch(EOFException e) {
+        } catch (EOFException e) {
             // expected
         }
     }
@@ -58,6 +56,7 @@ public class CReaderTest extends TestCase {
         reader = new CReader("1.23/");
         assertEquals(1.23, reader.readDoubleNoExponent(), 1e-15);
     }
+
     public void testReadDoubleNoExponent2() {
         CReader in = new CReader("102 -9 +13.1  .45  13.2  -13.3a");
         assertEquals(102, in.readDoubleNoExponent(), 1e-10);
