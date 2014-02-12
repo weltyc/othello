@@ -501,10 +501,6 @@ public class COsGame {
         sPlace = s;
     }
 
-    public COsMoveList GetMoveList() {
-        return ml;
-    }
-
     /**
      * Set the game's current moves
      *
@@ -572,5 +568,13 @@ public class COsGame {
         }
 
         pos = PosAtMove(10000);
+    }
+
+    /**
+     * Remove evals and times from all moves in the move list
+     */
+    public void stripEvalsAndTimes() {
+        ml.stripEvalsAndTimes();
+        CalcCurrentPos();
     }
 }
