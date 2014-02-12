@@ -2,6 +2,7 @@ package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
+import com.welty.othello.core.CMove;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
@@ -9,6 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
+
+import static com.welty.othello.core.Utils.Col;
+import static com.welty.othello.core.Utils.Row;
+import static com.welty.othello.core.Utils.Square;
 
 /**
  * The in-memory data corresponding to a GGF-format game
@@ -25,7 +30,7 @@ public class COsGame {
     public String sPlace;
     protected String sDateTime;
     public OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
-    public final COsMoveList ml;
+    private final COsMoveList ml;
     OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
     public OsMatchType mt = new OsMatchType();
     public COsResult result = new COsResult();
@@ -503,5 +508,62 @@ public class COsGame {
      */
     public double KomiValue() {
         return dKomiValue;
+    }
+
+    /**
+     * @return a copy of the move list
+     */
+    public COsMoveList getMoveList() {
+        return new COsMoveList(ml, ml.size());
+    }
+
+    /**
+     * @return number of moves in the move list
+     */
+    public int nMoves() {
+        return ml.size();
+    }
+
+    /**
+     * @param iMove move index (starts at 0).
+     * @return information about that move
+     */
+    public OsMoveListItem getMli(int iMove) {
+        return ml.get(iMove);
+    }
+
+    /**
+     * Append a move to the end of the game.
+     *
+     * @param mli move
+     */
+    public void addMove(OsMoveListItem mli) {
+        ml.add(mli);
+    }
+
+    /**
+     * Reflect the start position and all moves.
+     *
+     * @param iReflection
+     */
+    public void reflect(int iReflection) {
+        // reflect start pos
+        OsBoard newStart = new OsBoard(posStart.board);
+        final int n = pos.board.width();
+        for (int col = 0; col < n; col++) {
+            for (int row = 0; row < n; row++) {
+                final OsMove spot = new OsMove(row, col).reflect(iReflection);
+                newStart.setPiece(spot.row(), spot.col(), posStart.board.getPiece(row, col));
+            }
+        }
+        posStart.board.copy(newStart);
+
+        for (int i = 0; i < nMoves(); i++) {
+            OsMoveListItem mli = getMli(i);
+            ml.set(i, mli.reflect(iReflection));
+        }
+
+        pos = PosAtMove(10000);
+
     }
 }

@@ -78,7 +78,7 @@ public class COsPosition {
 
             UpdateKomiSet(game.mlisKomi);
         }
-        Update(game.ml, nMoves);
+        Update(game.getMoveList(), nMoves);
     }
 
     void Clear() {

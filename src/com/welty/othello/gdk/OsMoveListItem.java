@@ -129,4 +129,18 @@ public class OsMoveListItem {
     public double getElapsedTime() {
         return tElapsed;
     }
+
+    /**
+     * Reflect this moveListItem
+     *
+     * MoveListItem is immutable, so this returns a new object.
+     *
+     * Note: no guarantee this reflection index matches BitBoardUtils.reflect().
+     *
+     * @param iReflection reflection index
+     * @return  reflected moveListItem.
+     */
+    public OsMoveListItem reflect(int iReflection) {
+        return new OsMoveListItem(move.reflect(iReflection), eval, tElapsed);
+    }
 }

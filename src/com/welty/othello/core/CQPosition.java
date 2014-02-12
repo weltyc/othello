@@ -40,8 +40,8 @@ public class CQPosition {
 
     public CQPosition(final COsGame game, int iMove) {
         this(game.GetPosStart());
-        for (int i = 0; i < iMove && i < game.ml.size(); i++) {
-            CMove mv = new CMove(game.ml.get(i).move);
+        for (int i = 0; i < iMove && i < game.nMoves(); i++) {
+            CMove mv = new CMove(game.getMli(i).move);
             MakeMove(mv);
         }
     }

@@ -47,4 +47,14 @@ public class OsMoveListItemTest extends TestCase {
         final OsMoveListItem mb = new OsMoveListItem(b);
         assertEquals(a + " == " + b, expected, ma.equals(mb));
     }
+
+    public void testReflection() {
+        final OsMoveListItem mli = new OsMoveListItem("F5/2/3");
+        for (int i=0; i<8; i++) {
+            final OsMoveListItem mlir = mli.reflect(i);
+            assertEquals(mli.move.reflect(i), mlir.move);
+            assertEquals(mli.getEval(), mlir.getEval());
+            assertEquals(mli.getElapsedTime(), mlir.getElapsedTime());
+        }
+    }
 }

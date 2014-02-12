@@ -3,6 +3,10 @@ package com.welty.othello.gdk;
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
 
+import static com.welty.othello.core.Utils.Col;
+import static com.welty.othello.core.Utils.Row;
+import static com.welty.othello.core.Utils.Square;
+
 /**
  * A GGF-format move
  */
@@ -108,5 +112,38 @@ public class OsMove {
                 return row == b.row && col == b.col;
         }
         return false;
+    }
+
+    /**
+     * Return a reflection of the move
+     * <p/>
+     * Passes are returned as passes.
+     *
+     * @param iReflection reflection index, 0..7. 0 leaves the square unchanged.
+     * @return reflected move
+     */
+    public OsMove reflect(int iReflection) {
+        if (fPass || iReflection == 0)
+            return this;
+
+        int col = col();
+        int row = row();
+
+        if ((iReflection & 4) != 0) {
+            int temp = row;
+            row = col;
+            col = temp;
+        }
+
+        if ((iReflection & 2) != 0) {
+            col^=7;
+        }
+
+        if ((iReflection & 1) != 0){
+            row ^=7;
+        }
+
+        return new OsMove(row, col);
+
     }
 }

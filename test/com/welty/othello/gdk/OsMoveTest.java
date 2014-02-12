@@ -37,4 +37,20 @@ public class OsMoveTest extends TestCase {
         assertEquals("A8", OsMove.ofIos(18).toString());
         assertEquals("negative numbers also work", "A1", OsMove.ofIos(-11).toString());
     }
+
+    public void testReflect() {
+        final OsMove move = new OsMove("F5");
+        assertEquals("F5", move.reflect(0).toString());
+        assertEquals("F4", move.reflect(1).toString());
+        assertEquals("C5", move.reflect(2).toString());
+        assertEquals("C4", move.reflect(3).toString());
+        assertEquals("E6", move.reflect(4).toString());
+        assertEquals("E3", move.reflect(5).toString());
+        assertEquals("D6", move.reflect(6).toString());
+        assertEquals("D3", move.reflect(7).toString());
+
+        for (int i=0; i<8; i++) {
+            assertEquals(OsMove.PASS, OsMove.PASS.reflect(i));
+        }
+    }
 }

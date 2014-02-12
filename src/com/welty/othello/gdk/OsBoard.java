@@ -611,4 +611,15 @@ public class OsBoard {
             return false;
         }
     }
+
+    /**
+     * Width of the board, in squares
+     *
+     * for instance an 8x8 board returns 8.
+     *
+     * @return width of the board
+     */
+    public final int width() {
+        return bt.n;
+    }
 }
