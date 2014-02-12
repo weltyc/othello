@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
 
-@EqualsAndHashCode @ToString
+@EqualsAndHashCode
 public class HintResponse implements NBoardResponse {
     public final int pong;
     public final boolean book;
@@ -21,6 +21,15 @@ public class HintResponse implements NBoardResponse {
     public final int depthInt;
 
     public HintResponse(int pong, boolean isBook, String pv, String eval, int nGames, String depth, String freeformText) {
+        if (pv.contains(" ")) {
+            throw new IllegalArgumentException("pv can't contain spaces");
+        }
+        if (eval.contains(" ")) {
+            throw new IllegalArgumentException("eval can't contain spaces");
+        }
+        if (depth.contains(" ")) {
+            throw new IllegalArgumentException("depth can't contain spaces");
+        }
         this.pong = pong;
         book = isBook;
         this.pv = pv;
@@ -49,5 +58,9 @@ public class HintResponse implements NBoardResponse {
         final String depth = in.readString();
         final String freeformText = in.readLine();
         return new HintResponse(pong, isBook, pv, eval, nGames, depth, freeformText);
+    }
+
+    @Override public String toString() {
+        return String.format("%s %s %s %d %s %s", book?"book":"search", pv, eval, nGames, depth, freeformText);
     }
 }
