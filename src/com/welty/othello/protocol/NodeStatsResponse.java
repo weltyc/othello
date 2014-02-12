@@ -7,17 +7,17 @@ import lombok.ToString;
 @ToString @EqualsAndHashCode
 public class NodeStatsResponse implements NBoardResponse {
     public final int pong;
-    public final double nNodes;
+    public final long nNodes;
     public final double tElapsed;
 
-    public NodeStatsResponse(int pong, double nNodes, double tElapsed) {
+    public NodeStatsResponse(int pong, long nNodes, double tElapsed) {
         this.pong = pong;
         this.nNodes = nNodes;
         this.tElapsed = tElapsed;
     }
 
     public static NBoardResponse of(int pong, CReader in) {
-        final double nNodes = in.readDoubleNoExponent();
+        final long nNodes = in.readLong();
         final double tElapsed = in.readFloatNoExponent();
         return new NodeStatsResponse(pong, nNodes, tElapsed);
     }
