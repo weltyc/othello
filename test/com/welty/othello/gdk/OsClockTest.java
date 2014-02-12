@@ -45,8 +45,8 @@ public class OsClockTest extends TestCase {
     }
 
     private void testIn(String text, int current, int tIncrement, int grace) {
-        OsClock clock = new OsClock();
-        clock.In(new CReader(text));
-        assertEquals(new OsClock(current, tIncrement, grace), clock);
+        OsClock expected = new OsClock(current, tIncrement, grace);
+        OsClock clock = new OsClock(new CReader(text));
+        assertEquals(expected, clock);
     }
 }

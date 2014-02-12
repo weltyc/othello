@@ -30,14 +30,14 @@ public class OsGameTest extends TestCase {
         assertEquals("8", game.mt.toString());
         assertEquals("Saio1200", game.pis[1].sName);
         assertEquals(2200.35, game.pis[0].dRating, 1e-10);
-        assertEquals("5:00", game.GetPosStart().cks[1].toString());
+        assertEquals("5:00", game.GetPosStart().getBlackClock().toString());
     }
 
     public void testUpdate() {
         final COsMoveList expected = expectedMoveList();
 
         final COsGame game = new COsGame();
-        game.SetDefaultStartPos();
+        game.setToDefaultStartPosition(OsClock.DEFAULT, OsClock.DEFAULT);
         final OsMoveListItem mli = new OsMoveListItem(new OsMove("F5"));
         game.append(mli);
         assertEquals(expected, game.getMoveList());
@@ -69,11 +69,22 @@ public class OsGameTest extends TestCase {
 
     public void testCalcPosition() {
         COsGame game = new COsGame();
-        game.SetDefaultStartPos();
+        game.setToDefaultStartPosition(OsClock.DEFAULT, OsClock.DEFAULT);
         final COsPosition pos = game.calcPosition(new ArrayList<OsMoveListItem>());
         COsPosition expected = new COsPosition();
         expected.board.initialize(new COsBoardType("8"));
 
         assertEquals(expected, pos);
+    }
+
+    public void testClockUpdating() {
+        final COsGame game = new COsGame();
+        final OsClock startClock = new OsClock(15 * 60, 0, 2 * 60, 0);
+        game.setToDefaultStartPosition(startClock, startClock);
+
+        game.append(new OsMoveListItem("F5/1/1"));
+        OsClock expected = new OsClock(15 * 60 - 1, 0, 2 * 60, 0);
+        assertEquals(expected, game.getPos().getBlackClock());
+        assertEquals(startClock, game.getPos().getWhiteClock());
     }
 }

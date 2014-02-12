@@ -1,8 +1,7 @@
 package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
-
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Board position and clocks from a GGF game
@@ -14,16 +13,17 @@ import java.util.Arrays;
  */
 public class COsPosition {
     public final OsBoard board;
-    public final OsClock[] cks;
+    private @NotNull OsClock blackClock;
+    private @NotNull OsClock whiteClock;
 
     public COsPosition() {
-        board = new OsBoard();
-        cks = new OsClock[]{new OsClock(), new OsClock()};
+        this(new OsBoard(), OsClock.DEFAULT, OsClock.DEFAULT);
     }
 
-    public COsPosition(OsBoard board, OsClock whiteClock, OsClock blackClock) {
+    public COsPosition(OsBoard board, @NotNull OsClock whiteClock, @NotNull OsClock blackClock) {
         this.board = new OsBoard(board);
-        cks = new OsClock[]{new OsClock(whiteClock), new OsClock(blackClock)};
+        this.blackClock = blackClock;
+        this.whiteClock = whiteClock;
     }
 
     /**
@@ -31,16 +31,30 @@ public class COsPosition {
      */
     public COsPosition(COsPosition posStart) {
         board = new OsBoard(posStart.board);
-        cks = new OsClock[]{new OsClock(posStart.cks[0]), new OsClock(posStart.cks[1])};
+        copyClocks(posStart);
     }
 
-    void Update(final COsMoveList ml) {
-        Update(ml, 100000);
+    private void copyClocks(COsPosition pos) {
+        blackClock = pos.getBlackClock();
+        whiteClock = pos.getWhiteClock();
     }
 
-    void Update(final OsMoveListItem mli) {
-        cks[board.isBlackMove() ? 1 : 0].Update(mli.getElapsedTime());
+    /**
+     * Update the board position and clocks after a move
+     *
+     * @param mli move details
+     */
+    void append(final OsMoveListItem mli) {
+        updateClock(mli, board.isBlackMove());
         board.update(mli.move);
+    }
+
+    private void updateClock(OsMoveListItem mli, boolean blackMove) {
+        if (blackMove) {
+            blackClock = blackClock.update(mli.getElapsedTime());
+        } else {
+            whiteClock = whiteClock.update(mli.getElapsedTime());
+        }
     }
 
     void Update(final COsMoveList ml, int nMoves) {
@@ -48,7 +62,7 @@ public class COsPosition {
         if (nMoves > ml.size())
             nMoves = ml.size();
         for (i = 0; i < nMoves; i++)
-            Update(ml.get(i));
+            append(ml.get(i));
     }
 
     /**
@@ -60,18 +74,13 @@ public class COsPosition {
     void UpdateKomiSet(final OsMoveListItem[] mlis) {
         boolean fBlackOpponent = !board.isBlackMove();
         final int enemyIndex = fBlackOpponent ? 1 : 0;
-        cks[enemyIndex].Update(mlis[enemyIndex].getElapsedTime());
-    }
-
-    void Calculate(final COsGame game) {
-        Calculate(game, 100000);
+        updateClock(mlis[enemyIndex], fBlackOpponent);
     }
 
     public void Calculate(final COsGame game, int nMoves) {
         final COsPosition posStart = game.GetPosStart();
         board.copy(posStart.board);
-        cks[0] = new OsClock(posStart.cks[0]);
-        cks[1] = new OsClock(posStart.cks[1]);
+        copyClocks(posStart);
 
         if (nMoves != 0 && game.mt.fKomi) {
             Require.isTrue(!game.NeedsKomi(), "Needs komi as first move");
@@ -83,20 +92,40 @@ public class COsPosition {
 
     void Clear() {
         board.clear();
-        cks[0].Clear();
-        cks[1].Clear();
+        blackClock = OsClock.DEFAULT;
+        whiteClock = OsClock.DEFAULT;
     }
 
     @Override public boolean equals(Object obj) {
         if (obj instanceof COsPosition) {
             COsPosition pos = (COsPosition) obj;
-            return board.equals(pos.board) && Arrays.equals(cks, pos.cks);
+            return board.equals(pos.board) && blackClock.equals(pos.blackClock) && whiteClock.equals(pos.whiteClock);
         } else {
             return false;
         }
     }
 
     @Override public String toString() {
-        return board.toString() + " : " + Arrays.toString(cks);
+        return board.toString() + " : [" + blackClock + ", " + whiteClock + "]";
+    }
+
+    public void setBlackClock(@NotNull OsClock blackClock) {
+        this.blackClock = blackClock;
+    }
+
+    public @NotNull OsClock getBlackClock() {
+        return blackClock;
+    }
+
+    public void setWhiteClock(@NotNull OsClock whiteClock) {
+        this.whiteClock = whiteClock;
+    }
+
+    public @NotNull OsClock getWhiteClock() {
+        return whiteClock;
+    }
+
+    public @NotNull OsClock getCurrentClock() {
+        return board.isBlackMove() ? getBlackClock() : getWhiteClock();
     }
 }

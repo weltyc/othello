@@ -6,20 +6,30 @@ import com.welty.othello.c.CReader;
 import java.text.DecimalFormat;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 3:49:40 PM
- * To change this template use File | Settings | File Templates.
+ * Game clock
  */
 public class OsClock {
-    public double tCurrent;
+    public static final OsClock DEFAULT = new OsClock(0);
+    /**
+     * Remaining time for this move, in seconds
+     */
+    public final double tCurrent;
+    /**
+     * Amount added to clock after the player makes a legal move, in seconds
+     */
     private double tIncrement;
+    /**
+     * Amount added to the clock if the player times out when iTimeout=0, in seconds
+     */
     private double tGrace;
-    private int iTimeout;
 
-    OsClock() {
-    }
+    /**
+     * Player timeout status:
+     * 0 = never timed out
+     * 1 = timed out once
+     * 2 = timed out more than once
+     */
+    private int iTimeout;
 
     public OsClock(double tCurrent) {
         this(tCurrent, 0);
@@ -33,7 +43,7 @@ public class OsClock {
         this(tCurrent, tIncrement, tGrace, 0);
     }
 
-    private OsClock(double atCurrent, double atIncrement, double atGrace, int aiTimeout) {
+    OsClock(double atCurrent, double atIncrement, double atGrace, int aiTimeout) {
         tCurrent = atCurrent;
         tIncrement = atIncrement;
         tGrace = atGrace;
@@ -41,20 +51,17 @@ public class OsClock {
     }
 
     /**
-     * Copy constructor
+     * Update the clock after a move has been made.
      *
-     * @param clock
+     * @param tElapsed time taken to make the move
+     * @return the new clock
      */
-    public OsClock(OsClock clock) {
-        this(clock.tCurrent, clock.tIncrement, clock.tGrace, clock.iTimeout);
+    OsClock update(double tElapsed) {
+        return update(tElapsed, true);
     }
 
-    void Update(double tElapsed) {
-        Update(tElapsed, true);
-    }
-
-    void In(CReader is) {
-        Clear();
+    OsClock(CReader is) {
+        double tIncrement = 0;
         tGrace = 120;
 
         tCurrent = ReadTime(is);
@@ -72,22 +79,23 @@ public class OsClock {
             is.ignore(1);
             tGrace = ReadTime(is);
         }
+
+        this.tIncrement = tIncrement;
     }
 
-    CReader InIOS(CReader is) {
+    static OsClock InIOS(CReader is) {
         char c;
 
         c = is.read();
         Require.eq(c, "c", '(');
-        tCurrent = is.readDoubleNoExponent();
-        tCurrent *= 60;
-        tIncrement = is.readDoubleNoExponent();
-        tGrace = is.readDoubleNoExponent();
-        tGrace *= 60;
+        double tCurrent = is.readDoubleNoExponent() * 60;
+        double tIncrement = is.readDoubleNoExponent();
+        double tGrace = is.readDoubleNoExponent() * 60;
+
         c = is.read();
         Require.eq(c, "c", ')');
 
-        return is;
+        return new OsClock(tCurrent, tIncrement, tGrace);
     }
 
     @Override public String toString() {
@@ -106,13 +114,9 @@ public class OsClock {
         return sb.toString();
     }
 
-    void Clear() {
-        iTimeout = 0;
-        tCurrent = tGrace = tIncrement = 0;
-    }
-
-    void Update(double tElapsed, boolean fIncludeIncrement) {
-        tCurrent -= tElapsed;
+    OsClock update(double tElapsed, boolean fIncludeIncrement) {
+        double tCurrent = this.tCurrent - tElapsed;
+        int iTimeout = this.iTimeout;
 
         // adjust for timeouts and grace periods
         if (tCurrent < 0) {
@@ -125,8 +129,11 @@ public class OsClock {
                 iTimeout = 2;
             }
         }
-        if (fIncludeIncrement && iTimeout < 2)
+        if (fIncludeIncrement && iTimeout < 2) {
             tCurrent += tIncrement;
+        }
+
+        return new OsClock(tCurrent, tIncrement, tGrace, iTimeout);
     }
 
     static double ReadTime(CReader is) {
@@ -183,12 +190,4 @@ public class OsClock {
             return false;
         }
     }
-
-    boolean EqualsToNearestSecond(final OsClock b) {
-        return iTimeout == b.iTimeout &&
-                (int) tCurrent == (int) b.tCurrent &&
-                (int) tGrace == (int) b.tGrace &&
-                (int) tIncrement == (int) b.tIncrement;
-    }
-
 }

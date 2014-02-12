@@ -144,14 +144,15 @@ public class COsGame {
                     pis[0].dRating = is.readDoubleNoExponent();
                     break;
                 case "TI":
-                    posStart.cks[0].In(is);
-                    posStart.cks[1] = new OsClock(posStart.cks[0]);
+                    final OsClock clock = new OsClock(is);
+                    posStart.setBlackClock(clock);
+                    posStart.setWhiteClock(clock);
                     break;
                 case "TB":
-                    posStart.cks[1].In(is);
+                    posStart.setBlackClock(new OsClock(is));
                     break;
                 case "TW":
-                    posStart.cks[0].In(is);
+                    posStart.setWhiteClock(new OsClock(is));
                     break;
                 case "TY":
                     mt.In(is);
@@ -269,11 +270,11 @@ public class COsGame {
             final char cResultType = is.read();
             pis[1].sName = is.readString();
             nBlack = is.readInt();
-            posStart.cks[1].InIOS(is);
+            posStart.setBlackClock(OsClock.InIOS(is));
 
             pis[0].sName = is.readString();
             nWhite = is.readInt();
-            posStart.cks[0].InIOS(is);
+            posStart.setWhiteClock(OsClock.InIOS(is));
 
             pos = posStart;
 
@@ -333,11 +334,11 @@ public class COsGame {
             sb.append("]RB[").append(pis[1].dRating);
         if (pis[0].dRating != 0)
             sb.append("]RW[").append(pis[0].dRating);
-        if (posStart.cks[0].equals(posStart.cks[1])) {
-            sb.append("]TI[").append(posStart.cks[1]);
+        if (posStart.getBlackClock().equals(posStart.getWhiteClock())) {
+            sb.append("]TI[").append(posStart.getBlackClock());
         } else {
-            sb.append("]TB[").append(posStart.cks[1]);
-            sb.append("]TW[").append(posStart.cks[0]);
+            sb.append("]TB[").append(posStart.getBlackClock());
+            sb.append("]TW[").append(posStart.getWhiteClock());
         }
         sb.append("]TY[").append(mt);
         sb.append("]BO[").append(posStart.board);
@@ -392,11 +393,13 @@ public class COsGame {
         this.result = result;
     }
 
-    public void Initialize(final String sBoardType) {
+    public void Initialize(final String sBoardType, final OsClock blackClock, final OsClock whiteClock) {
         Clear();
         COsBoardType bt = new COsBoardType(sBoardType);
         mt.Initialize(sBoardType);
         posStart.board.initialize(bt);
+        posStart.setBlackClock(blackClock);
+        posStart.setWhiteClock(whiteClock);
         CalcCurrentPos();
     }
 
@@ -416,8 +419,8 @@ public class COsGame {
         ml.clear();
     }
 
-    public void SetDefaultStartPos() {
-        Initialize("8");
+    public void setToDefaultStartPosition(OsClock blackClock, OsClock whiteClock) {
+        Initialize("8", blackClock, whiteClock);
         CalcCurrentPos();
     }
 
@@ -449,7 +452,7 @@ public class COsGame {
             position.UpdateKomiSet(mlisKomi);
 
         for (OsMoveListItem mli : moveList) {
-            position.Update(mli);
+            position.append(mli);
         }
         return position;
     }
@@ -474,7 +477,7 @@ public class COsGame {
      * @param mli move
      */
     public void append(OsMoveListItem mli) {
-        pos.Update(mli);
+        pos.append(mli);
         ml.add(mli);
         if (isOver()) {
             // we don't adjust for timeouts because we don't keep track of
