@@ -3,41 +3,46 @@ package com.welty.othello.gdk;
 import com.welty.othello.c.CReader;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 5:03:56 PM
- * To change this template use File | Settings | File Templates.
+ * Result of an Os game.
  */
-public class COsResult {
-    public double dResult;
+public class OsResult {
+    public static final OsResult INCOMPLETE = new OsResult(TStatus.kUnfinished, 0);
+
+    /**
+     * Net score to Black, in disks
+     */
+    public final double score;
 
     public enum TStatus {
         kUnfinished, kNormalEnd, kTimeout, kResigned, kAgreedScore, kAdjourned, kAborted
     }
 
-    public TStatus status;
+    public final TStatus status;
 
-    public COsResult() {
+    public OsResult(TStatus status, double score) {
+        this.status = status;
+        this.score = score;
     }
 
-    public COsResult(COsResult b) {
-        dResult = b.dResult;
-        status = b.status;
+    public double getScore() {
+        return score;
     }
 
-    public double getDResult() {
-        return dResult;
-    }
-
-    void Set(double dResult) {
-        Set(dResult, TStatus.kNormalEnd);
+    /**
+     * Result with a status of kNormalEnd
+     * @param score score, net disks to black
+     */
+    public OsResult(double score) {
+        this.score = score;
+        status = TStatus.kNormalEnd;
     }
 
     // "nasai left" in matchdelta messages means game adjourned
     //	"?" in other messages
-    void In(CReader is) {
+    public static OsResult of(CReader is) {
         is.ignoreWhitespace();
+        TStatus status;
+        final double dResult;
 
         char c;
         c = is.peek();
@@ -73,16 +78,18 @@ public class COsResult {
                 }
             }
         }
+
+        return new OsResult(status, dResult);
     }
 
     void Out(StringBuilder sb) {
         if (status == TStatus.kUnfinished || status == TStatus.kAdjourned)
             sb.append('?');
         else {
-            if (dResult == (int) dResult) {
-                sb.append((int) dResult);
+            if (score == (int) score) {
+                sb.append((int) score);
             } else {
-                sb.append(dResult);
+                sb.append(score);
             }
             switch (status) {
                 case kResigned:
@@ -97,16 +104,6 @@ public class COsResult {
                     throw new IllegalArgumentException("unknown status : ");
             }
         }
-    }
-
-    void Set(double adResult, TStatus astatus) {
-        dResult = adResult;
-        status = astatus;
-    }
-
-    public void Clear() {
-        status = TStatus.kUnfinished;
-        dResult = 0;
     }
 
     @Override public String toString() {

@@ -2,7 +2,6 @@ package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
-import com.welty.othello.core.CMove;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
@@ -10,10 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
-
-import static com.welty.othello.core.Utils.Col;
-import static com.welty.othello.core.Utils.Row;
-import static com.welty.othello.core.Utils.Square;
 
 /**
  * The in-memory data corresponding to a GGF-format game
@@ -33,7 +28,7 @@ public class COsGame {
     private final COsMoveList ml;
     OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
     public OsMatchType mt = new OsMatchType();
-    public COsResult result = new COsResult();
+    public OsResult result = OsResult.INCOMPLETE;
     private double dKomiValue = 0;
 
     public COsGame() {
@@ -62,20 +57,26 @@ public class COsGame {
      */
     public COsGame(COsGame game, int moveNumber) {
         posStart = new COsPosition(game.posStart);
-        pos = new COsPosition(game.pos);
         sPlace = game.sPlace;
         sDateTime = game.sDateTime;
-        pis = new OsPlayerInfo[]{new OsPlayerInfo(pis[0]), new OsPlayerInfo(pis[1])};
+        pis = new OsPlayerInfo[]{new OsPlayerInfo(game.pis[0]), new OsPlayerInfo(game.pis[1])};
         ml = new COsMoveList(game.ml, moveNumber);
         if (moveNumber > 0) {
             mlisKomi = Arrays.copyOf(game.mlisKomi, 2);
         }
+        CalcCurrentPos();
+
         mt = new OsMatchType(game.mt);
-        result = new COsResult(game.result);
+
+        if (moveNumber == game.ml.size()) {
+            result = game.result;
+        } else {
+            result = OsResult.INCOMPLETE;
+        }
     }
 
     // Information
-    public COsResult Result() {
+    public OsResult Result() {
         return result;
     }
 
@@ -83,7 +84,7 @@ public class COsGame {
         return posStart;
     }
 
-    public COsPosition GetPos() {
+    public COsPosition getPos() {
         return pos;
     }
 
@@ -164,7 +165,7 @@ public class COsGame {
                     ml.add(mli);
                     break;
                 case "RE":
-                    result.In(is);
+                    result = OsResult.of(is);
                     break;
                 case "CO":
                     // ignore comments
@@ -228,9 +229,9 @@ public class COsGame {
                 OsMoveListItem mli = new OsMoveListItem(new OsMove(is));
 
                 // update game and pass if needed
-                Update(mli);
-                if (!GameOver() && !pos.board.hasLegalMove()) {
-                    Update(pass);
+                append(mli);
+                if (!isOver() && !pos.board.hasLegalMove()) {
+                    append(pass);
                 }
             } else {
                 Require.eq(c, "c", ':');
@@ -241,7 +242,7 @@ public class COsGame {
         // get result
         final int nResult = is.readInt(0);
         Require.eq(nResult, "result", pos.board.netBlackSquares());
-        result.Set(nResult);
+        result = new OsResult(nResult);
 
         // game over flag
         final int n = is.readInt(10);
@@ -252,7 +253,6 @@ public class COsGame {
 
     // 772942166 r idiot    64 ( 30   0   0) TravisS   0 ( 30   0   0) +34-33+43-35+24-42+52-64+23-13+41-32+53-14+25-31+51-61+15-16+63-74+62-73+65-75+66-56+76-57+67-86+46-68+47-38+26-37+58-48+36 +0
     public CReader InIOS(CReader is) throws EOFException {
-        char c;
         long timestamp;
         int nBlack, nWhite;
 
@@ -266,19 +266,7 @@ public class COsGame {
             SetTime(timestamp);
 
             // game end type
-            c = is.read();
-            switch (c) {
-                case 'e':
-                    result.status = COsResult.TStatus.kNormalEnd;
-                    break;
-                case 'r':
-                    result.status = COsResult.TStatus.kResigned;
-                    break;
-                case 't':
-                    result.status = COsResult.TStatus.kTimeout;
-                    break;
-            }
-
+            final char cResultType = is.read();
             pis[1].sName = is.readString();
             nBlack = is.readInt();
             posStart.cks[1].InIOS(is);
@@ -298,23 +286,38 @@ public class COsGame {
                 Require.eq(pos.board.isBlackMove(), "black move", iosMove > 0);
 
                 final OsMoveListItem mli = new OsMoveListItem(OsMove.ofIos(iosMove));
-                Update(mli);
+                append(mli);
 
                 // pass if needed
-                if (!GameOver() && !pos.board.hasLegalMove()) {
-                    Update(OsMoveListItem.PASS);
+                if (!isOver() && !pos.board.hasLegalMove()) {
+                    append(OsMoveListItem.PASS);
                 }
             }
 
             // calculate result. Might not be equal to the result
             //	on the board if one player resigned.
-            result.dResult = nBlack - nWhite;
-            if (!(result.dResult == pos.board.netBlackSquares() || result.status != COsResult.TStatus.kNormalEnd)) {
+
+            result = new OsResult(statusFromChar(cResultType), nBlack - nWhite);
+
+            if (!(result.score == pos.board.netBlackSquares() || result.status != OsResult.TStatus.kNormalEnd)) {
                 throw new IllegalArgumentException("Don't understand game result");
             }
         }
 
         return is;
+    }
+
+    private OsResult.TStatus statusFromChar(char cResultType) {
+        switch (cResultType) {
+            case 'e':
+                return OsResult.TStatus.kNormalEnd;
+            case 'r':
+                return OsResult.TStatus.kResigned;
+            case 't':
+                return OsResult.TStatus.kTimeout;
+            default:
+                throw new IllegalArgumentException("Unknown IOS game result status: " + cResultType);
+        }
     }
 
     public void Out(StringBuilder sb) {
@@ -357,7 +360,7 @@ public class COsGame {
     }
 
     public void Clear() {
-        result.Clear();
+        result = OsResult.INCOMPLETE;
         ml.clear();
         pis[0].Clear();
         pis[1].Clear();
@@ -385,7 +388,7 @@ public class COsGame {
     }
 
 
-    public void SetResult(final COsResult result) {
+    public void SetResult(final OsResult result) {
         this.result = result;
     }
 
@@ -463,19 +466,28 @@ public class COsGame {
     }
 
 
-    public void Update(OsMoveListItem mli) {
+    /**
+     * Append a move to the end of the game.
+     * <p/>
+     * Updates the current position and, if the move ends the game, sets the result and status
+     *
+     * @param mli move
+     */
+    public void append(OsMoveListItem mli) {
         pos.Update(mli);
         ml.add(mli);
-        if (GameOver()) {
+        if (isOver()) {
             // we don't adjust for timeouts because we don't keep track of
             //	who timed out first. This is a bug; but in games coming from GGS
             //	it should update us with the final result later.
-            result.dResult = pos.board.getResult(mt.fAnti);
-            result.status = COsResult.TStatus.kNormalEnd;
+            result = new OsResult(pos.board.getResult(mt.fAnti));
         }
     }
 
-    public boolean GameOver() {
+    /**
+     * @return true if there are no legal moves for either player
+     */
+    public boolean isOver() {
         return pos.board.isGameOver();
     }
 
@@ -493,6 +505,11 @@ public class COsGame {
         return ml;
     }
 
+    /**
+     * Set the game's current moves
+     *
+     * @param s string containing a move list, for example "F5 d6 C3 d3"
+     */
     public void SetMoveList(String s) {
         ml.clear();
         final CReader in = new CReader(s);
@@ -533,18 +550,9 @@ public class COsGame {
     }
 
     /**
-     * Append a move to the end of the game.
-     *
-     * @param mli move
-     */
-    public void addMove(OsMoveListItem mli) {
-        ml.add(mli);
-    }
-
-    /**
      * Reflect the start position and all moves.
      *
-     * @param iReflection
+     * @param iReflection reflection index, 0..7
      */
     public void reflect(int iReflection) {
         // reflect start pos
@@ -564,6 +572,5 @@ public class COsGame {
         }
 
         pos = PosAtMove(10000);
-
     }
 }

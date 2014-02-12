@@ -4,11 +4,7 @@ import com.welty.othello.c.CReader;
 import junit.framework.TestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: Jun 21, 2009
- * Time: 7:39:32 PM
- * To change this template use File | Settings | File Templates.
+ * Test COsGame class
  */
 public class COsGameTest extends TestCase {
     public void testOutIn() {
@@ -31,6 +27,26 @@ public class COsGameTest extends TestCase {
             final COsGame gamer = new COsGame(game);
             gamer.reflect(i);
             assertEquals(game.getMli(0).move.reflect(i), gamer.getMli(0).move);
+            validate(game);
         }
+    }
+
+    private static void validate(COsGame game) {
+        // check that game.getPos() is up to date
+        final String pos = game.getPos().toString();
+        game.CalcCurrentPos();
+        assertEquals(pos, game.getPos().toString());
+    }
+
+    public void testCopyConstructor() {
+        final String text =  "(;GM[Othello]PC[]PB[foo]PW[bar]RE[?]TI[0//0]TY[8]BO[8 ---------------------------O*------*O--------------------------- *]B[F5/1/2];)";
+        final COsGame game = new COsGame(text);
+        final COsGame game1 = new COsGame(game, 1);
+        assertEquals(game.toString(), game1.toString());
+        validate(game1);
+
+        final COsGame game0 = new COsGame(game, 0);
+        assertEquals("(;GM[Othello]PC[]PB[foo]PW[bar]RE[?]TI[0//0]TY[8]BO[8 ---------------------------O*------*O--------------------------- *];)", game0.toString());
+        validate(game0);
     }
 }

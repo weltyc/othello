@@ -169,6 +169,9 @@ public class OsBoard {
             return 2;
     }
 
+    /**
+     * @return true if there are no legal moves for either player
+     */
     public boolean isGameOver() {
         return !hasLegalMove(fBlackMove) && !hasLegalMove(!fBlackMove);
     }

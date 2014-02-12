@@ -25,7 +25,7 @@ public class OsGameTest extends TestCase {
     public void testConstructor() {
         final COsGame game = new COsGame();
         game.In(new CReader(gameText));
-        assertEquals(true, game.GameOver());
+        assertEquals(true, game.isOver());
         assertEquals(60, game.nMoves());
         assertEquals("8", game.mt.toString());
         assertEquals("Saio1200", game.pis[1].sName);
@@ -39,7 +39,7 @@ public class OsGameTest extends TestCase {
         final COsGame game = new COsGame();
         game.SetDefaultStartPos();
         final OsMoveListItem mli = new OsMoveListItem(new OsMove("F5"));
-        game.Update(mli);
+        game.append(mli);
         assertEquals(expected, game.getMoveList());
     }
 
