@@ -52,11 +52,13 @@ public class OsClock {
 
     /**
      * Update the clock after a move has been made.
+     * <p/>
+     * OsClock is immutable, so this creates a new clock.
      *
      * @param tElapsed time taken to make the move
      * @return the new clock
      */
-    OsClock update(double tElapsed) {
+    public OsClock update(double tElapsed) {
         return update(tElapsed, true);
     }
 
