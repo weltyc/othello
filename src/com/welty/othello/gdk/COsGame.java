@@ -12,11 +12,6 @@ import java.util.TimeZone;
 
 /**
  * The in-memory data corresponding to a GGF-format game
- * <PRE>
- * User: Chris
- * Date: May 2, 2009
- * Time: 1:31:28 PM
- * </PRE>
  */
 public class COsGame {
     public final COsPosition posStart;
