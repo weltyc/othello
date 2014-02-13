@@ -114,9 +114,9 @@ public class OsBoard {
         char cMover, cOpponent;
 
         if (!move.isPass()) {
-
-            Require.inRange("Row must be in range of board size", move.row(), "move row", 0, bt.n - 1);
-            Require.inRange("Col must be in range of board size", move.col(), "move col", 0, bt.n - 1);
+            if (move.row() < 0 || move.row() >= bt.n || move.col() < 0 || move.col() >= bt.n) {
+                throw new IllegalArgumentException("Not a legal move: " + move);
+            }
 
             if (getPiece(move.row(), move.col()) != EMPTY) {
                 System.err.println(this);
@@ -140,7 +140,9 @@ public class OsBoard {
                             nFlipped += updateDirection(move.row(), move.col(), dRow, dCol, cMover, cOpponent);
                     }
                 }
-                Require.gt(nFlipped, "nFlipped", 0);
+                if (nFlipped == 0) {
+                    throw new IllegalArgumentException("Move flips no disks: " + move);
+                }
             }
         } else {
             // is a pass legal?
@@ -617,7 +619,7 @@ public class OsBoard {
 
     /**
      * Width of the board, in squares
-     *
+     * <p/>
      * for instance an 8x8 board returns 8.
      *
      * @return width of the board

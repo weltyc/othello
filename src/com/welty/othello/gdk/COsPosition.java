@@ -41,12 +41,17 @@ public class COsPosition {
 
     /**
      * Update the board position and clocks after a move
+     * <p/>
+     * If the move list item is invalid, throws an exception. This object is unchanged.
      *
      * @param mli move details
+     * @throws IllegalArgumentException if the move list item is invalid
      */
     void append(final OsMoveListItem mli) {
-        updateClock(mli, board.isBlackMove());
+        final boolean blackMove = board.isBlackMove();
         board.update(mli.move);
+        // update the clock after we see if the board is invalid.
+        updateClock(mli, blackMove);
     }
 
     private void updateClock(OsMoveListItem mli, boolean blackMove) {
