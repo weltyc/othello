@@ -39,7 +39,7 @@ public class CQPosition {
     }
 
     public CQPosition(final COsGame game, int iMove) {
-        this(game.GetPosStart());
+        this(game.getStartPosition());
         for (int i = 0; i < iMove && i < game.nMoves(); i++) {
             CMove mv = new CMove(game.getMli(i).move);
             MakeMove(mv);

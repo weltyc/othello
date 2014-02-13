@@ -83,7 +83,7 @@ public class COsPosition {
     }
 
     public void Calculate(final COsGame game, int nMoves) {
-        final COsPosition posStart = game.GetPosStart();
+        final COsPosition posStart = game.getStartPosition();
         board.copy(posStart.board);
         copyClocks(posStart);
 

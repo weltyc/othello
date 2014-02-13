@@ -75,7 +75,7 @@ public class COsGame {
         return result;
     }
 
-    public COsPosition GetPosStart() {
+    public COsPosition getStartPosition() {
         return posStart;
     }
 

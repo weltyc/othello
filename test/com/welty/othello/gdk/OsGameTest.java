@@ -30,7 +30,7 @@ public class OsGameTest extends TestCase {
         assertEquals("8", game.mt.toString());
         assertEquals("Saio1200", game.pis[1].sName);
         assertEquals(2200.35, game.pis[0].dRating, 1e-10);
-        assertEquals("5:00", game.GetPosStart().getBlackClock().toString());
+        assertEquals("5:00", game.getStartPosition().getBlackClock().toString());
     }
 
     public void testUpdate() {
