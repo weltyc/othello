@@ -33,6 +33,16 @@ public class OsGameTest extends TestCase {
         assertEquals("5:00", game.getStartPosition().getBlackClock().toString());
     }
 
+    public void testConstructorWithMoves() {
+        final COsGame game = new COsGame();
+        try {
+            new COsGame(game, 1);
+            fail("should throw, can't copy game to move 1 when there are no moves");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
     public void testUpdate() {
         final COsMoveList expected = expectedMoveList();
 

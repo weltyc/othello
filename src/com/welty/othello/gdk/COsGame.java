@@ -51,6 +51,8 @@ public class COsGame {
      * @param moveNumber number of moves to retain (0..ml.size()).
      */
     public COsGame(COsGame game, int moveNumber) {
+        Require.leq(moveNumber, "move number", game.nMoves());
+        Require.geq(moveNumber, "move number", 0);
         posStart = new COsPosition(game.posStart);
         sPlace = game.sPlace;
         sDateTime = game.sDateTime;
