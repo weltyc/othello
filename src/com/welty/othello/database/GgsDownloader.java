@@ -40,9 +40,10 @@ public class GgsDownloader {
      */
     public static void main(String[] args) throws IOException, CompressorException {
         // Game archives that have already been added to book:
-        // 143-153
+        // 142-154
+        // As of 18 Feb 2014, 154 is the last split file created; remainder is in Othello.latest.225728.bz2
         // Game archives that are currently running:
-        final int fileNumber = 154;
+        final int fileNumber = 141;
         final String outputLocation = "c:/dev/oth1/games.ggf";
 
         download(fileNumber, Paths.get(outputLocation));
