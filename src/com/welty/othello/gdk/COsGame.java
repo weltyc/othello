@@ -51,6 +51,8 @@ public class COsGame {
      * @param moveNumber number of moves to retain (0..ml.size()).
      */
     public COsGame(COsGame game, int moveNumber) {
+        Require.leq(moveNumber, "move number", game.nMoves());
+        Require.geq(moveNumber, "move number", 0);
         posStart = new COsPosition(game.posStart);
         sPlace = game.sPlace;
         sDateTime = game.sDateTime;
@@ -550,7 +552,7 @@ public class COsGame {
      */
     public void reflect(int iReflection) {
         // reflect start pos
-        OsBoard newStart = new OsBoard(posStart.board);
+        COsBoard newStart = new COsBoard(posStart.board);
         final int n = pos.board.width();
         for (int col = 0; col < n; col++) {
             for (int row = 0; row < n; row++) {

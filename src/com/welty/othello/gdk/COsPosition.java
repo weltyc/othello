@@ -12,16 +12,16 @@ import org.jetbrains.annotations.NotNull;
  * </PRE>
  */
 public class COsPosition {
-    public final OsBoard board;
+    public final COsBoard board;
     private @NotNull OsClock blackClock;
     private @NotNull OsClock whiteClock;
 
     public COsPosition() {
-        this(new OsBoard(), OsClock.DEFAULT, OsClock.DEFAULT);
+        this(new COsBoard(), OsClock.DEFAULT, OsClock.DEFAULT);
     }
 
-    public COsPosition(OsBoard board, @NotNull OsClock whiteClock, @NotNull OsClock blackClock) {
-        this.board = new OsBoard(board);
+    public COsPosition(COsBoard board, @NotNull OsClock whiteClock, @NotNull OsClock blackClock) {
+        this.board = new COsBoard(board);
         this.blackClock = blackClock;
         this.whiteClock = whiteClock;
     }
@@ -30,7 +30,7 @@ public class COsPosition {
      * Copy constructor. Deep copy.
      */
     public COsPosition(COsPosition posStart) {
-        board = new OsBoard(posStart.board);
+        board = new COsBoard(posStart.board);
         copyClocks(posStart);
     }
 

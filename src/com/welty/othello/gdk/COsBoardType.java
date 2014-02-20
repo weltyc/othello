@@ -7,7 +7,7 @@ import java.io.EOFException;
 /**
  * An Othello board type
  */
-class COsBoardType {
+public class COsBoardType {
     public int n;
     public boolean fOcto;
 

@@ -87,7 +87,7 @@ public class ResponseParserTest extends TestCase {
 
     public void testSearchHint() {
         parser.handle("search E3       4 0 3");
-        verify(responseHandler).handle(new HintResponse(0, false, "E3", "4", 0, "3", ""));
+        verify(responseHandler).handle(new HintResponse(0, false, "E3", new Value(4), 0, new Depth(3), ""));
         //                        // search [pv] [eval] 0         [depth] [freeform text]
 //        parser.parse()
     }
