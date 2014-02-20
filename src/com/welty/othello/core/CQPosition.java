@@ -1,9 +1,9 @@
 package com.welty.othello.core;
 
 import com.orbanova.common.misc.Require;
+import com.welty.othello.gdk.COsBoard;
 import com.welty.othello.gdk.COsGame;
 import com.welty.othello.gdk.COsPosition;
-import com.welty.othello.gdk.OsBoard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -47,12 +47,12 @@ public class CQPosition {
     }
 
     private CQPosition(final COsPosition position) {
-        final OsBoard.GetTextResult textResult = position.board.getText();
+        final COsBoard.GetTextResult textResult = position.board.getText();
         Initialize(textResult.getText(), textResult.isBlackMove());
     }
 
-    public CQPosition(final OsBoard osboard) {
-        final OsBoard.GetTextResult result = osboard.getText();
+    public CQPosition(final COsBoard osboard) {
+        final COsBoard.GetTextResult result = osboard.getText();
         Initialize(result.getText(), result.isBlackMove());
     }
 

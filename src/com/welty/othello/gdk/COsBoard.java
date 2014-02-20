@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * A board knows its size, the disks on the board, and the player to move
  */
-public class OsBoard {
+public class COsBoard {
     private COsBoardType bt = new COsBoardType("8");
 
     /**
@@ -28,14 +28,14 @@ public class OsBoard {
     public static final char EMPTY = '-';
     private static final char DUMMY = 'd';
 
-    public OsBoard() {
+    public COsBoard() {
     }
 
-    public OsBoard(OsBoard board) {
+    public COsBoard(COsBoard board) {
         copy(board);
     }
 
-    public OsBoard(CReader is) {
+    public COsBoard(CReader is) {
         in(is);
     }
 
@@ -109,7 +109,7 @@ public class OsBoard {
      *
      * @param move move to make
      */
-    void update(final OsMove move) {
+    public void update(final OsMove move) {
         int dRow, dCol;
         char cMover, cOpponent;
 
@@ -162,7 +162,7 @@ public class OsBoard {
      * @return 0 if mover has a legal move, 1 if mover passes but opponent has a legal move, 2 if neither player has
      *         a legal move and the game is therefore over.
      */
-    int nPass() {
+    public int nPass() {
         if (hasLegalMove(fBlackMove))
             return 0;
         else if (hasLegalMove(!fBlackMove))
@@ -495,7 +495,7 @@ public class OsBoard {
      *
      * @param board board to copy form
      */
-    public void copy(OsBoard board) {
+    public void copy(COsBoard board) {
         bt = new COsBoardType(board.bt);
         sBoard = (board.sBoard == null) ? null : Arrays.copyOf(board.sBoard, board.sBoard.length);
         fBlackMove = board.fBlackMove;
@@ -609,8 +609,8 @@ public class OsBoard {
     }
 
     @Override public boolean equals(Object obj) {
-        if (obj instanceof OsBoard) {
-            OsBoard b = (OsBoard) obj;
+        if (obj instanceof COsBoard) {
+            COsBoard b = (COsBoard) obj;
             return bt.equals(b.bt) && Arrays.equals(sBoard, b.sBoard) && fBlackMove == b.fBlackMove;
         } else {
             return false;

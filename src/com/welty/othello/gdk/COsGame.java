@@ -552,7 +552,7 @@ public class COsGame {
      */
     public void reflect(int iReflection) {
         // reflect start pos
-        OsBoard newStart = new OsBoard(posStart.board);
+        COsBoard newStart = new COsBoard(posStart.board);
         final int n = pos.board.width();
         for (int col = 0; col < n; col++) {
             for (int row = 0; row < n; row++) {

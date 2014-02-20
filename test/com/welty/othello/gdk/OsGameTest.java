@@ -61,8 +61,8 @@ public class OsGameTest extends TestCase {
     }
 
     public void testEquals() {
-        final OsBoard boardBtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
-        final OsBoard boardWtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
+        final COsBoard boardBtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
+        final COsBoard boardWtm = OsBoardTest.board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
 
         final COsPosition a = new COsPosition(boardBtm, new OsClock(1, 2), new OsClock(2, 3));
         final COsPosition b = new COsPosition(boardBtm, new OsClock(1, 2), new OsClock(2, 3));

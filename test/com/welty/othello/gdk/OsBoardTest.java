@@ -4,14 +4,14 @@ import com.welty.othello.c.CReader;
 import junit.framework.TestCase;
 
 /**
- * Test OsBoard
+ * Test COsBoard
  */
 public class OsBoardTest extends TestCase {
     public static final String sBoard = "8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O";
-    private static final OsBoard boardWtm = board(sBoard);
-    private static final OsBoard board6 = board("6 OOOOOO ****** OOOOOO ****** OOOOOO ****** O");
-    private static final OsBoard boardBtm = board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
-    private static final OsBoard board2 = board("8 *OOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
+    private static final COsBoard boardWtm = board(sBoard);
+    private static final COsBoard board6 = board("6 OOOOOO ****** OOOOOO ****** OOOOOO ****** O");
+    private static final COsBoard boardBtm = board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
+    private static final COsBoard board2 = board("8 *OOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
 
     public void testInitialization() {
         assertFalse(board(sBoard).isBlackMove());
@@ -48,7 +48,7 @@ public class OsBoardTest extends TestCase {
                 "--------\n" +
                 "--------\n" +
                 "O");
-        final OsBoard board = new OsBoard(in);
+        final COsBoard board = new COsBoard(in);
         assertFalse(board.isBlackMove());
         assertEquals(5, board.getPieceCounts().nBlack);
     }
@@ -58,12 +58,12 @@ public class OsBoardTest extends TestCase {
         assertFalse(boardWtm.isMoveLegal(pass));
     }
 
-    public static OsBoard board(String boardText) {
-        return new OsBoard(new CReader(boardText));
+    public static COsBoard board(String boardText) {
+        return new COsBoard(new CReader(boardText));
     }
 
     public void testSquareCounts() {
-        final OsBoard osBoard = new OsBoard();
+        final COsBoard osBoard = new COsBoard();
         final COsBoardType bt = new COsBoardType("8");
         osBoard.initialize(bt);
         osBoard.setText("--------OOOOOOOO********----------------OOOOOOOO********--------");
@@ -77,7 +77,7 @@ public class OsBoardTest extends TestCase {
     }
 
     public void testThrowsIfBadMove() {
-        final OsBoard board = board("4 OOOO OOOO OOOO *OO. O");
+        final COsBoard board = board("4 OOOO OOOO OOOO *OO. O");
         board.update(new OsMove("pass"));
         try {
             board.update(new OsMove("pass"));
