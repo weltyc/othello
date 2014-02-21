@@ -50,4 +50,8 @@ public class Depth {
     @Override public String toString() {
         return depth + suffix;
     }
+
+    public String humanString() {
+        return depth + (suffix.isEmpty() ? " ply" : suffix);
+    }
 }
