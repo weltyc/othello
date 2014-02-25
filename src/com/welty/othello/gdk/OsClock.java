@@ -192,4 +192,13 @@ public class OsClock {
             return false;
         }
     }
+
+    /**
+     * Get the time allowed after the first timeout
+     *
+     * @return grace time, in seconds
+     */
+    public double getGraceTime() {
+        return tGrace;
+    }
 }
