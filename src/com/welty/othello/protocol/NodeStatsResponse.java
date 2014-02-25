@@ -4,7 +4,7 @@ import com.welty.othello.c.CReader;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@ToString @EqualsAndHashCode
+@EqualsAndHashCode
 public class NodeStatsResponse implements NBoardResponse {
     public final int pong;
     public final long nNodes;
@@ -20,5 +20,9 @@ public class NodeStatsResponse implements NBoardResponse {
         final long nNodes = in.readLong();
         final double tElapsed = in.readFloatNoExponent();
         return new NodeStatsResponse(pong, nNodes, tElapsed);
+    }
+
+    @Override public String toString() {
+        return "(pong="+pong + ") nodestats " + nNodes + " " + String.format("%.3f", tElapsed);
     }
 }

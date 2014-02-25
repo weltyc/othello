@@ -3,6 +3,8 @@ package com.welty.othello.protocol;
 import com.orbanova.common.misc.Require;
 import lombok.EqualsAndHashCode;
 
+import java.text.DecimalFormat;
+
 @EqualsAndHashCode
 public final class Value {
     /**
@@ -52,9 +54,13 @@ public final class Value {
 
     public String toString() {
         if (drawSeekingValue == drawAvoidingValue) {
-            return Double.toString(drawSeekingValue);
+            return format(drawSeekingValue);
         } else {
-            return drawSeekingValue + "," + drawAvoidingValue;
+            return format(drawSeekingValue) + "," + format(drawAvoidingValue);
         }
+    }
+
+    private static String format(float v) {
+        return String.format("%.2f", v);
     }
 }
