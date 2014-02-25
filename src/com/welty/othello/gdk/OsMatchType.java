@@ -1,16 +1,14 @@
 package com.welty.othello.gdk;
 
 import com.welty.othello.c.CReader;
+import lombok.EqualsAndHashCode;
 
 import java.io.EOFException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 4:50:11 PM
- * To change this template use File | Settings | File Templates.
+ * Match Type, as used in GGF format games
  */
+@EqualsAndHashCode
 public class OsMatchType {
     COsBoardType bt = new COsBoardType("8");
     private boolean fSynch;

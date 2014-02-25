@@ -2,6 +2,7 @@ package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
@@ -13,6 +14,7 @@ import java.util.TimeZone;
 /**
  * The in-memory data corresponding to a GGF-format game
  */
+@EqualsAndHashCode
 public class COsGame {
     public final COsPosition posStart;
     public COsPosition pos = new COsPosition();

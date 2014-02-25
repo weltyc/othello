@@ -1,14 +1,12 @@
 package com.welty.othello.gdk;
 
 import com.welty.othello.c.CReader;
+import lombok.EqualsAndHashCode;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 4:41:34 PM
- * To change this template use File | Settings | File Templates.
+ * Information about a player in a GGF format game
  */
+@EqualsAndHashCode
 public class OsPlayerInfo {
     public String sName;
     public double dRating;

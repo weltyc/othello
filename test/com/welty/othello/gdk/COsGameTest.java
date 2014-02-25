@@ -49,4 +49,11 @@ public class COsGameTest extends TestCase {
         assertEquals("(;GM[Othello]PC[]PB[foo]PW[bar]RE[?]TI[0//0]TY[8]BO[8 ---------------------------O*------*O--------------------------- *];)", game0.toString());
         validate(game0);
     }
+
+    public void testEquals() {
+        final String text = "(;GM[Othello]PC[]PB[foo]PW[bar]RE[?]TI[0//0]TY[8]BO[8 ---------------------------O*------*O--------------------------- *]B[F5/1/2];)";
+        final COsGame game = new COsGame(text);
+        final COsGame game1 = new COsGame(game, 1);
+        assertEquals(game, game1);
+    }
 }

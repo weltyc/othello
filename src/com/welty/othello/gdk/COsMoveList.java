@@ -1,14 +1,11 @@
 package com.welty.othello.gdk;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.ArrayList;
 
 /**
  * A list of GGF-format moves. Passes are included.
- * <PRE>
- * User: Chris
- * Date: May 2, 2009
- * Time: 3:45:23 PM
- * </PRE>
  */
 public class COsMoveList extends ArrayList<OsMoveListItem> {
     /**

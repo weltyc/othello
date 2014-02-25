@@ -1,6 +1,7 @@
 package com.welty.othello.gdk;
 
 import com.welty.othello.c.CReader;
+import lombok.EqualsAndHashCode;
 
 import java.io.EOFException;
 

@@ -1,10 +1,12 @@
 package com.welty.othello.gdk;
 
 import com.welty.othello.c.CReader;
+import lombok.EqualsAndHashCode;
 
 /**
  * Result of an Os game.
  */
+@EqualsAndHashCode
 public class OsResult {
     public static final OsResult INCOMPLETE = new OsResult(TStatus.kUnfinished, 0);
 

@@ -1,6 +1,7 @@
 package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 /**
