@@ -101,4 +101,9 @@ public class ResponseParserTest extends TestCase {
         parser.handle(msg);
         verify(responseHandler).handle(new ErrorResponse(msg, comment));
     }
+
+    public void testAnalysisResponse() {
+        parser.handle("analysis 13 3.50");
+        verify(responseHandler).handle(new AnalysisResponse(0, 13, 3.5));
+    }
 }

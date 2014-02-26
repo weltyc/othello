@@ -85,9 +85,8 @@ public class ResponseParser {
                 case "nodestats":
                     responseHandler.handle(NodeStatsResponse.of(pong, in));
                     break;
-                case "Error:":
-                    // todo put this back in
-                    // ignore for now, because Edax sends it all the time.
+                case "analysis":
+                    responseHandler.handle(AnalysisResponse.of(pong, in));
                     break;
                 default:
                     responseHandler.handle(new ErrorResponse(msg, "Unknown command: " + command));
