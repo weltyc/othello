@@ -33,19 +33,19 @@ public class ResponseParserTest extends TestCase {
 
     public void testParseStatus() {
         parser.handle("status foo");
-        verify(responseHandler).handle(new StatusChangedResponse());
+        verify(responseHandler).handle(new StatusChangedResponse("foo"));
         assertEquals("foo", parser.getStatus());
     }
 
     public void testParseEmptyStatus() {
         parser.handle("status");
-        verify(responseHandler).handle(new StatusChangedResponse());
+        verify(responseHandler).handle(new StatusChangedResponse(""));
         assertEquals("", parser.getStatus());
     }
 
     public void testParseWhitespaceStatus() {
         parser.handle("status ");
-        verify(responseHandler).handle(new StatusChangedResponse());
+        verify(responseHandler).handle(new StatusChangedResponse(""));
         assertEquals("", parser.getStatus());
     }
 
@@ -75,7 +75,7 @@ public class ResponseParserTest extends TestCase {
         parser.handle("pong 13");
         parser.handle("=== F5");
         verify(responseHandler).handle(new PongResponse(13));
-        verify(responseHandler).handle(new StatusChangedResponse());
+        verify(responseHandler).handle(new StatusChangedResponse(""));
         verify(responseHandler).handle(new MoveResponse(13, new OsMoveListItem("F5")));
     }
 

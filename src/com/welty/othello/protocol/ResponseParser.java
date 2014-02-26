@@ -122,7 +122,7 @@ public class ResponseParser {
 
     private void setStatus(@NotNull String status) {
         this.status = status;
-        responseHandler.handle(new StatusChangedResponse());
+        responseHandler.handle(new StatusChangedResponse(status));
     }
 
     public synchronized String getStatus() {
