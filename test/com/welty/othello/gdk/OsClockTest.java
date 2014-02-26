@@ -4,11 +4,7 @@ import com.welty.othello.c.CReader;
 import junit.framework.TestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 4:17:21 PM
- * To change this template use File | Settings | File Templates.
+ * Test of OsClock object
  */
 public class OsClockTest extends TestCase {
     public void testRead() {
@@ -26,7 +22,7 @@ public class OsClockTest extends TestCase {
 
     private String writeTime(int t) {
         StringBuilder sb = new StringBuilder();
-        OsClock.WriteTime(sb, t);
+        OsClock.writeTime(sb, t);
         return sb.toString();
     }
 
@@ -42,6 +38,14 @@ public class OsClockTest extends TestCase {
     public void testOut() {
         assertEquals("5:00", new OsClock(5 * 60, 0, 120).toString());
         assertEquals("5:00//0", new OsClock(5 * 60, 0, 0).toString());
+    }
+
+    public void testToDisplayString() {
+        assertEquals("0:02", new OsClock(2, 0, 120).toDisplayString());
+        assertEquals("14:02", new OsClock(14 * 60 + 2, 0, 120).toDisplayString());
+        assertEquals("1:00:02", new OsClock(3600 + 2, 0, 120).toDisplayString());
+        assertEquals("0:02 (overtime)", new OsClock(2, 0, 120, 1).toDisplayString());
+        assertEquals("0:00 (timeout)", new OsClock(0, 0, 120, 2).toDisplayString());
     }
 
     private void testIn(String text, int current, int tIncrement, int grace) {

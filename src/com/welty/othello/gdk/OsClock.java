@@ -108,14 +108,14 @@ public class OsClock {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        WriteTime(sb, (int) tCurrent);
+        writeTime(sb, (int) tCurrent);
         if (tIncrement != 0 || tGrace != 120) {
             sb.append("/");
             if (tIncrement != 0)
-                WriteTime(sb, (int) tIncrement);
+                writeTime(sb, (int) tIncrement);
             if (tGrace != 120) {
                 sb.append("/");
-                WriteTime(sb, (int) tGrace);
+                writeTime(sb, (int) tGrace);
             }
         }
         return sb.toString();
@@ -168,7 +168,7 @@ public class OsClock {
         return t;
     }
 
-    static void WriteTime(StringBuilder sb, int nSeconds) {
+    static void writeTime(StringBuilder sb, int nSeconds) {
         final DecimalFormat df2 = new DecimalFormat("00");
         if (nSeconds > 60) {
             int nMinutes = nSeconds / 60;
@@ -205,5 +205,23 @@ public class OsClock {
      */
     public double getGraceTime() {
         return tGrace;
+    }
+
+    private static String[] displaySuffixes = {"", " (overtime)", " (timeout)"};
+
+    public String toDisplayString() {
+        int t = (int) tCurrent;
+        final int s = t % 60;
+        t /= 60;
+        final int m = t % 60;
+        t /= 60;
+        final int h = t;
+        final String suffix = displaySuffixes[iTimeout];
+        if (h > 0) {
+            return String.format("%d:%02d:%02d%s", h, m, s, suffix);
+        } else {
+            return String.format("%d:%02d%s", m, s, suffix);
+        }
+
     }
 }
