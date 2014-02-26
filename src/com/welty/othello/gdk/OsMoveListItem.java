@@ -47,7 +47,7 @@ public class OsMoveListItem {
 
         // move
         move = new OsMove(in);
-        in.ignoreAlnum();     // sometimes have extra chars after the move
+        in.ignoreAlphaNumeric();     // sometimes have extra chars after the move
 
         eval = parseEval(in);
         tElapsed = parseElapsedTime(in);
@@ -132,13 +132,13 @@ public class OsMoveListItem {
 
     /**
      * Reflect this moveListItem
-     *
+     * <p/>
      * MoveListItem is immutable, so this returns a new object.
-     *
+     * <p/>
      * Note: no guarantee this reflection index matches BitBoardUtils.reflect().
      *
      * @param iReflection reflection index
-     * @return  reflected moveListItem.
+     * @return reflected moveListItem.
      */
     public OsMoveListItem reflect(int iReflection) {
         return new OsMoveListItem(move.reflect(iReflection), eval, tElapsed);

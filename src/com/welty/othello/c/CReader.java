@@ -3,11 +3,9 @@ package com.welty.othello.c;
 import java.io.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 2, 2009
- * Time: 12:06:14 PM
- * To change this template use File | Settings | File Templates.
+ * A class designed to ease porting C programs to Java.
+ * <p/>
+ * The class roughly mimics scanf() or "<<" by automatically stripping whitespace when parsing.
  */
 public class CReader {
     private final PushbackInputStream in;
@@ -28,31 +26,6 @@ public class CReader {
     }
 
     /**
-     * Skip whitespace, then read an integer from the stream.
-     *
-     * @return the integer read
-     * @throws EOFException             if EOF is reached before an integer is parsed
-     * @throws IllegalArgumentException if the next non-space tokens are not an integer.
-     */
-    public int readInt() throws EOFException {
-        ignoreWhitespace();
-        StringBuilder sb = new StringBuilder();
-        char c = read();
-        if (Character.isDigit(c) || c == '-' || c == '+') {
-            if (c != '+') {
-                // java doesn't like integers that start with '+'
-                sb.append(c);
-            }
-            readDigits(sb);
-            return Integer.parseInt(sb.toString());
-        } else if (c == 0xFFFF) {
-            throw new EOFException("End of file reached");
-        } else {
-            throw new IllegalArgumentException("Can't parse integer starting with char '" + c + "'");
-        }
-    }
-
-    /**
      * Read an integer from the stream.
      *
      * @param def default value
@@ -66,16 +39,63 @@ public class CReader {
         }
     }
 
-    private String readNumberText() {
-        StringBuilder sb = new StringBuilder();
+    /**
+     * Skip whitespace, then read an integer from the stream.
+     *
+     * @return the integer read
+     * @throws EOFException             if the next non-space character is EOF.
+     * @throws IllegalArgumentException if the next non-space character do not form an integer.
+     */
+    public int readInt() throws EOFException {
+        return Integer.parseInt(readSignedDecimal());
+    }
 
+    /**
+     * Skip whitespace, then read a long from the stream.
+     *
+     * @return long value
+     * @throws EOFException             if the next non-space character is EOF.
+     * @throws IllegalArgumentException if the next non-space character do not form an integer.
+     */
+    public long readLong() throws EOFException {
+        return Long.parseLong(readSignedDecimal());
+    }
+
+    /**
+     * Skip whitespace, then read [+-]?[0-9]+ from the stream.
+     * <p/>
+     * Initial '+' characters are not included in the returned String because java's
+     * Integer.parseInt() and Long.parseLong() puke on an initial '+'.
+     *
+     * @return a String containing the non-whitespace characters
+     * @throws EOFException             if the next non-space token is EOF.
+     * @throws IllegalArgumentException if the next non-space tokens do not match the pattern.
+     */
+    private String readSignedDecimal() throws EOFException {
         ignoreWhitespace();
-
-        readDigits(sb);
+        StringBuilder sb = new StringBuilder();
+        if (eof()) {
+            throw new EOFException();
+        }
+        char c = peek();
+        if (c == '-' || c == '+') {
+            c = read();
+            sb.append(c);
+        } else if (!Character.isDigit(c)) {
+            throw new IllegalArgumentException("expected +- or digit, had " + c);
+        }
+        copyDigits(sb);
         return sb.toString();
     }
 
-    private void readDigits(StringBuilder sb) {
+    /**
+     * Reads digits from this CReader and appends them to a StringBuilder.
+     * <p/>
+     * Reads a pattern matching "[0-9]*" from the CReader.
+     *
+     * @param sb destination for digits
+     */
+    private void copyDigits(StringBuilder sb) {
         char c;
         while (Character.isDigit(c = read())) {
             sb.append(c);
@@ -84,21 +104,11 @@ public class CReader {
     }
 
     /**
-     * Ignores whitespace, then returns the long created from the next digits in the stream
-     * Positive only for now
-     *
-     * @return long value
-     */
-    public long readLong() {
-        final String text = readNumberText();
-        return Long.parseLong(text);
-    }
-
-    /**
      * Strip whitespace characters from the stream
      */
     public void ignoreWhitespace() {
         char c;
+        //noinspection StatementWithEmptyBody
         while (Character.isWhitespace(c = read())) {
         }
         unread(c);
@@ -130,8 +140,9 @@ public class CReader {
      * strip from the stream any characters or digits, as determined by
      * Character.isLetterOrDigit()
      */
-    public void ignoreAlnum() {
+    public void ignoreAlphaNumeric() {
         char c;
+        //noinspection StatementWithEmptyBody
         while (Character.isLetterOrDigit(c = read())) {
         }
         unread(c);
@@ -282,7 +293,9 @@ public class CReader {
     }
 
     /**
-     * Strip of all chars in the stream up to 'c'
+     * Strip off all chars in the stream up to the first occurrence of a character.
+     * <p/>
+     * The first occurrence of the character will also be stripped off.
      *
      * @param c character to look for
      * @return true if the stream contains c, false if the stream doesn't contain c (in which case the stream will be at eof)

@@ -5,11 +5,9 @@ import junit.framework.TestCase;
 import java.io.EOFException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: Jun 15, 2009
- * Time: 5:38:33 AM
- * To change this template use File | Settings | File Templates.
+ * Test of CReader, a class designed to ease porting C programs to Java.
+ * <p/>
+ * The class roughly mimics scanf() or "<<" by automatically stripping whitespace when parsing.
  */
 public class CReaderTest extends TestCase {
     public void testReadInt() throws EOFException {
@@ -101,5 +99,48 @@ public class CReaderTest extends TestCase {
         final String s = "no end of line";
         CReader in = new CReader(s);
         assertEquals(s, in.readLine());
+    }
+
+    public void testReadLong() throws EOFException {
+        testReadLong("1", 1, "");
+        testReadLong(" 1", 1, "");
+        testReadLong("+1", 1, "");
+        testReadLong("-1", -1, "");
+        testReadLong("123", 123, "");
+        testReadLong("-123", -123, "");
+        testReadLong("123456789011", 123456789011L, "");
+        testReadLong("123 foo", 123, " foo");
+
+        testReadLongThrowsEofException("");
+        testReadLongThrowsEofException(" ");
+
+        testReadLongThrowsIllegalArgumentException("foo");
+        testReadLongThrowsIllegalArgumentException("  foo");
+    }
+
+    private void testReadLong(String input, long expected, String remainder) throws EOFException {
+        final CReader in = new CReader(input);
+        assertEquals(expected, in.readLong());
+        assertEquals(remainder, in.readLine());
+    }
+
+    private void testReadLongThrowsEofException(String input) {
+        try {
+            new CReader(input).readLong();
+            fail("should throw");
+        } catch (EOFException e) {
+            // expected
+        }
+    }
+
+    private void testReadLongThrowsIllegalArgumentException(String input) {
+        try {
+            new CReader(input).readLong();
+            fail("should throw");
+        } catch (IllegalArgumentException e) {
+            // expected
+        } catch (EOFException e) {
+            fail("should throw IllegalArgumentException");
+        }
     }
 }
