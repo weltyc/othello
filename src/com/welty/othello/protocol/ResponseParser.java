@@ -88,6 +88,11 @@ public class ResponseParser {
                 case "analysis":
                     responseHandler.handle(AnalysisResponse.of(pong, in));
                     break;
+                case "learned":
+                    // this response was in NBoard version 1, but I don't know if any program ever implemented it.
+                    // The gui only ever cleared the engine status anyway.
+                    setStatus("");
+                    break;
                 default:
                     responseHandler.handle(new ErrorResponse(msg, "Unknown command: " + command));
             }
