@@ -31,6 +31,11 @@ public class OsClock {
      */
     private int iTimeout;
 
+    /**
+     * Create a clock with no increment and a 2 minute grace period
+     *
+     * @param tCurrent time until first timeout, in seconds.
+     */
     public OsClock(double tCurrent) {
         this(tCurrent, 0);
     }
