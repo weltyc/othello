@@ -103,7 +103,7 @@ public final class DeployerGui {
         // Overall layout
         /////////////////////////////////////
 
-        frame = frame("Ntest Deployer", JFrame.EXIT_ON_CLOSE,
+        frame = frame("Ntest Deployer", JFrame.EXIT_ON_CLOSE, true,
                 vBox(
                         deploymentMethodChoices,
                         controlGrid(
