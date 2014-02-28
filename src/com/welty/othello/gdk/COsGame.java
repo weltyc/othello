@@ -74,6 +74,12 @@ public class COsGame {
         }
     }
 
+    public static @NotNull COsGame ofLogbook(String s) {
+        final COsGame osGame = new COsGame();
+        osGame.inLogbook(new CReader(s));
+        return osGame;
+    }
+
     // Information
     public OsResult Result() {
         return result;
@@ -208,7 +214,13 @@ public class COsGame {
         CalcCurrentPos();
     }
 
-    public CReader InLogbook(CReader is) {
+    /**
+     * Read in the game in Logistello's book format
+     *
+     * @param is reader containing at least one game in Logistello's book format
+     * @return the reader
+     */
+    private CReader inLogbook(@NotNull CReader is) {
         final OsMoveListItem pass = new OsMoveListItem(OsMove.PASS);
         char c;
 
@@ -216,7 +228,7 @@ public class COsGame {
         mt.bt.n = 8;
         posStart.board.initialize(mt.bt);
         pis[0].sName = pis[1].sName = "logtest";
-        pos = posStart;
+        pos = new COsPosition(posStart);
         sPlace = "logbook";
 
         // get moves
@@ -234,7 +246,9 @@ public class COsGame {
                     append(pass);
                 }
             } else {
-                Require.eq(c, "c", ':');
+                if (c != ':') {
+                    throw new IllegalArgumentException("Unable to read logbook. Was expecting ':' but had '" + c + "' to end the game. Game so far: " + this);
+                }
                 break;
             }
         }
@@ -251,8 +265,17 @@ public class COsGame {
         return is;
     }
 
-    // 772942166 r idiot    64 ( 30   0   0) TravisS   0 ( 30   0   0) +34-33+43-35+24-42+52-64+23-13+41-32+53-14+25-31+51-61+15-16+63-74+62-73+65-75+66-56+76-57+67-86+46-68+47-38+26-37+58-48+36 +0
-    public CReader InIOS(CReader is) throws EOFException {
+    /**
+     * Read in a game in IOS format
+     * <p/>
+     * Example IOS game:
+     * 772942166 r idiot    64 ( 30   0   0) TravisS   0 ( 30   0   0) +34-33+43-35+24-42+52-64+23-13+41-32+53-14+25-31+51-61+15-16+63-74+62-73+65-75+66-56+76-57+67-86+46-68+47-38+26-37+58-48+36 +0
+     *
+     * @param is reader containing the game
+     * @return the reader
+     * @throws EOFException if EOF occurs while reading in the game
+     */
+    public CReader inIos(CReader is) throws EOFException {
         long timestamp;
         int nBlack, nWhite;
 
@@ -320,7 +343,12 @@ public class COsGame {
         }
     }
 
-    public void Out(StringBuilder sb) {
+    /**
+     * Append this game's GGF format text to the StringBuilder
+     *
+     * @param sb destination
+     */
+    public void out(StringBuilder sb) {
         sb.append("(;GM[Othello]");
         sb.append("PC[").append(sPlace);
         if (!sDateTime.isEmpty())
@@ -493,9 +521,12 @@ public class COsGame {
         return pos.board.isGameOver();
     }
 
+    /**
+     * @return This game, in GGF format.
+     */
     @Override public String toString() {
         final StringBuilder sb = new StringBuilder();
-        Out(sb);
+        out(sb);
         return sb.toString();
     }
 
