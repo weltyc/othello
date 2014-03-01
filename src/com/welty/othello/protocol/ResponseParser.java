@@ -93,8 +93,6 @@ public class ResponseParser {
                     // The gui only ever cleared the engine status anyway.
                     setStatus("");
                     break;
-                default:
-                    responseHandler.handle(new ErrorResponse(msg, "Unknown command: " + command));
             }
         } catch (EOFException | IllegalArgumentException e) {
             final String comment = getComment(command, e);
