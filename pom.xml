@@ -19,7 +19,7 @@
     <build>
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>
-        <finalName>${artifactId}-${version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
         <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
@@ -40,6 +40,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -54,6 +55,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -121,7 +123,7 @@
                     <libs>
                         <lib>${java.home}/lib/rt.jar</lib>
                         <lib>${settings.localRepository}/ant/ant/1.6.5/ant-1.6.5.jar</lib>
-                        <lib>${settings.localRepository}/junit/junit/4.4/junit-4.4.jar</lib>
+                        <lib>${settings.localRepository}/junit/junit/4.11/junit-4.11.jar</lib>
                     </libs>
                     <addMavenDescriptor>false</addMavenDescriptor>
                 </configuration>
