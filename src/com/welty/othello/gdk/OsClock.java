@@ -124,14 +124,14 @@ public class OsClock {
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        writeTime(sb, (int) tCurrent);
+        writeTime(sb, tCurrent);
         if (tIncrement != 0 || tGrace != 120) {
             sb.append("/");
             if (tIncrement != 0)
-                writeTime(sb, (int) tIncrement);
+                writeTime(sb, tIncrement);
             if (tGrace != 120) {
                 sb.append("/");
-                writeTime(sb, (int) tGrace);
+                writeTime(sb, tGrace);
             }
         }
         return sb.toString();
@@ -184,10 +184,10 @@ public class OsClock {
         return t;
     }
 
-    static void writeTime(StringBuilder sb, int nSeconds) {
-        final DecimalFormat df2 = new DecimalFormat("00");
+    static void writeTime(StringBuilder sb, double nSeconds) {
         if (nSeconds >= 60) {
-            int nMinutes = nSeconds / 60;
+            final DecimalFormat df2 = new DecimalFormat("00");
+             int nMinutes = (int)Math.floor(nSeconds / 60);
             nSeconds %= 60;
             if (nMinutes >= 60) {
                 int nHours = nMinutes / 60;
@@ -196,9 +196,15 @@ public class OsClock {
             } else {
                 sb.append(nMinutes);
             }
-            sb.append(':').append(df2.format(nSeconds));
+
+//            String secondString = Double.toString(nSeconds);
+//            int i = secondString.indexOf('.');
+//            if (i==1) {
+//                secondString = "0" + secondString;
+//            }
+            sb.append(':').append(new DecimalFormat("00.###").format(nSeconds));
         } else {
-            sb.append(nSeconds);
+            sb.append(new DecimalFormat("0.###").format(nSeconds));
         }
     }
 

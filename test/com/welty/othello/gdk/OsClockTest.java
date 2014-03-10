@@ -18,9 +18,11 @@ public class OsClockTest extends TestCase {
         assertEquals("23", writeTime(23));
         assertEquals("1:23", writeTime(83));
         assertEquals("12:01:23", writeTime(12 * 3600 + 83));
+        assertEquals("0.005", writeTime(0.005));
+        assertEquals("1:00.005", writeTime(60.005));
     }
 
-    private String writeTime(int t) {
+    private String writeTime(double t) {
         StringBuilder sb = new StringBuilder();
         OsClock.writeTime(sb, t);
         return sb.toString();
@@ -40,6 +42,7 @@ public class OsClockTest extends TestCase {
         assertEquals("5:00//0", new OsClock(5 * 60, 0, 0).toString());
         assertEquals("1:00//1:00", new OsClock(60, 0, 60).toString());
         assertEquals("1:00:00//1:00:00", new OsClock(60*60, 0, 60*60).toString());
+        assertEquals("0.005", new OsClock(0.005).toString());
     }
 
     public void testToDisplayString() {
