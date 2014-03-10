@@ -2,6 +2,7 @@ package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Arrays;
  * A board knows its size, the disks on the board, and the player to move
  */
 public class COsBoard {
-    private COsBoardType bt = new COsBoardType("8");
+    private @NotNull COsBoardType bt = new COsBoardType("8");
 
     /**
      * The board is stored as an (n+2)x(n+2) array of squares, with dummy squares
@@ -626,5 +627,12 @@ public class COsBoard {
      */
     public final int width() {
         return bt.n;
+    }
+
+    /**
+     * @return the board type
+     */
+    public final @NotNull COsBoardType getBoardType() {
+        return bt;
     }
 }

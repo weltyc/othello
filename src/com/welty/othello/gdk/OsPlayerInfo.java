@@ -8,25 +8,25 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class OsPlayerInfo {
-    public String sName;
-    public double dRating;
+    public String name;
+    public double rating;
 
     public OsPlayerInfo(OsPlayerInfo pi) {
-        sName = pi.sName;
-        dRating = pi.dRating;
+        name = pi.name;
+        rating = pi.rating;
     }
 
     public OsPlayerInfo() {
     }
 
     void In(CReader is) {
-        dRating = is.readDoubleNoExponent();
-        sName = is.readString();
+        rating = is.readDoubleNoExponent();
+        name = is.readString();
     }
 
     void Clear() {
-        dRating = 0;
-        sName = "";
+        rating = 0;
+        name = "";
     }
 
 

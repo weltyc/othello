@@ -27,9 +27,9 @@ public class OsGameTest extends TestCase {
         game.In(new CReader(gameText));
         assertEquals(true, game.isOver());
         assertEquals(60, game.nMoves());
-        assertEquals("8", game.mt.toString());
-        assertEquals("Saio1200", game.pis[1].sName);
-        assertEquals(2200.35, game.pis[0].dRating, 1e-10);
+        assertEquals("8", game.getMatchType().toString());
+        assertEquals("Saio1200", game.getBlackPlayer().name);
+        assertEquals(2200.35, game.getWhitePlayer().rating, 1e-10);
         assertEquals("5:00", game.getStartPosition().getBlackClock().toString());
     }
 

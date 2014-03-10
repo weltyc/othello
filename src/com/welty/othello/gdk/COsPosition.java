@@ -1,7 +1,6 @@
 package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
-import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -88,7 +87,7 @@ public class COsPosition {
         board.copy(posStart.board);
         copyClocks(posStart);
 
-        if (nMoves != 0 && game.mt.fKomi) {
+        if (nMoves != 0 && game.getMatchType().komi) {
             Require.isTrue(!game.NeedsKomi(), "Needs komi as first move");
 
             UpdateKomiSet(game.mlisKomi);

@@ -1,6 +1,7 @@
 package com.welty.othello.gdk;
 
 import com.welty.othello.c.CReader;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An Othello move, including optional evaluation and elapsed time
@@ -14,7 +15,7 @@ public class OsMoveListItem {
     /**
      * The move that was made
      */
-    public final OsMove move;
+    public final @NotNull OsMove move;
 
     /**
      * Eval, in disks, or Double.NaN if no eval exists
@@ -33,7 +34,7 @@ public class OsMoveListItem {
      * @param eval     move evaluation in disks, or Double.NaN if no eval was provided
      * @param tElapsed elapsed time, in seconds
      */
-    public OsMoveListItem(OsMove move, double eval, double tElapsed) {
+    public OsMoveListItem(@NotNull OsMove move, double eval, double tElapsed) {
         this.move = move;
         this.eval = eval;
         this.tElapsed = tElapsed;
@@ -80,7 +81,7 @@ public class OsMoveListItem {
      *
      * @param move move made
      */
-    public OsMoveListItem(OsMove move) {
+    public OsMoveListItem(@NotNull OsMove move) {
         this.move = move;
         eval = Double.NaN;
         tElapsed = 0;

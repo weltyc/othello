@@ -21,10 +21,10 @@ public class COsGame {
 
     public String sPlace;
     protected String sDateTime;
-    public OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
+    private OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
     private final COsMoveList ml;
     OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
-    public OsMatchType mt = new OsMatchType();
+    private OsMatchType mt = new OsMatchType();
     public OsResult result = OsResult.INCOMPLETE;
     private double dKomiValue = 0;
 
@@ -37,6 +37,14 @@ public class COsGame {
         this(b, b.ml.size());
     }
 
+    /**
+     * Construct a game from text.
+     * <p/>
+     * The text is in GGF format. The text may also include an initial "1 " or "2 " which is ignored - this is used
+     * in some GGF files to denote the number of games in a match.
+     *
+     * @param text GGF format text.
+     */
     public COsGame(String text) {
         this(new CReader(text));
     }
@@ -94,7 +102,7 @@ public class COsGame {
     }
 
     boolean NeedsKomi() {
-        return mt.fKomi && ml.isEmpty();
+        return mt.komi && ml.isEmpty();
     }
 
     private static boolean fCheckKomiValue = true;
@@ -137,16 +145,16 @@ public class COsGame {
                     sDateTime = sData;
                     break;
                 case "PB":
-                    pis[1].sName = sData;
+                    pis[1].name = sData;
                     break;
                 case "PW":
-                    pis[0].sName = sData;
+                    pis[0].name = sData;
                     break;
                 case "RB":
-                    pis[1].dRating = is.readDoubleNoExponent();
+                    pis[1].rating = is.readDoubleNoExponent();
                     break;
                 case "RW":
-                    pis[0].dRating = is.readDoubleNoExponent();
+                    pis[0].rating = is.readDoubleNoExponent();
                     break;
                 case "TI":
                     final OsClock clock = new OsClock(is);
@@ -227,7 +235,7 @@ public class COsGame {
         Clear();
         mt.bt.n = 8;
         posStart.board.initialize(mt.bt);
-        pis[0].sName = pis[1].sName = "logtest";
+        pis[0].name = pis[1].name = "logtest";
         pos = new COsPosition(posStart);
         sPlace = "logbook";
 
@@ -290,11 +298,11 @@ public class COsGame {
 
             // game end type
             final char cResultType = is.read();
-            pis[1].sName = is.readString();
+            pis[1].name = is.readString();
             nBlack = is.readInt();
             posStart.setBlackClock(OsClock.InIOS(is));
 
-            pis[0].sName = is.readString();
+            pis[0].name = is.readString();
             nWhite = is.readInt();
             posStart.setWhiteClock(OsClock.InIOS(is));
 
@@ -353,14 +361,14 @@ public class COsGame {
         sb.append("PC[").append(sPlace);
         if (!sDateTime.isEmpty())
             sb.append("]DT[").append(sDateTime);
-        sb.append("]PB[").append(pis[1].sName);
-        sb.append("]PW[").append(pis[0].sName);
+        sb.append("]PB[").append(pis[1].name);
+        sb.append("]PW[").append(pis[0].name);
         sb.append("]RE[").append(result);
 
-        if (pis[1].dRating != 0)
-            sb.append("]RB[").append(pis[1].dRating);
-        if (pis[0].dRating != 0)
-            sb.append("]RW[").append(pis[0].dRating);
+        if (pis[1].rating != 0)
+            sb.append("]RB[").append(pis[1].rating);
+        if (pis[0].rating != 0)
+            sb.append("]RW[").append(pis[0].rating);
         if (posStart.getBlackClock().equals(posStart.getWhiteClock())) {
             sb.append("]TI[").append(posStart.getBlackClock());
         } else {
@@ -371,7 +379,7 @@ public class COsGame {
         sb.append("]BO[").append(posStart.board);
 
         // komi set moves
-        if (mt.fKomi && !ml.isEmpty()) {
+        if (mt.komi && !ml.isEmpty()) {
             sb.append("]KB[").append(mlisKomi[1]);
             sb.append("]KW[").append(mlisKomi[0]);
             sb.append("]KM[").append((mlisKomi[0].getEval() + mlisKomi[1].getEval()) / 2);
@@ -475,7 +483,7 @@ public class COsGame {
 
     COsPosition calcPosition(List<OsMoveListItem> moveList) {
         final COsPosition position = new COsPosition(posStart);
-        if (mt.fKomi && !moveList.isEmpty())
+        if (mt.komi && !moveList.isEmpty())
             position.UpdateKomiSet(mlisKomi);
 
         for (OsMoveListItem mli : moveList) {
@@ -510,7 +518,7 @@ public class COsGame {
             // we don't adjust for timeouts because we don't keep track of
             //	who timed out first. This is a bug; but in games coming from GGS
             //	it should update us with the final result later.
-            result = new OsResult(pos.board.getResult(mt.fAnti));
+            result = new OsResult(pos.board.getResult(mt.anti));
         }
     }
 
@@ -609,5 +617,44 @@ public class COsGame {
     public void stripEvalsAndTimes() {
         ml.stripEvalsAndTimes();
         CalcCurrentPos();
+    }
+
+    /**
+     * Get information about the black player
+     *
+     * @return black OsPlayerInfo
+     */
+    public @NotNull OsPlayerInfo getBlackPlayer() {
+        return pis[1];
+    }
+
+    /**
+     * Get information about the white player
+     *
+     * @return white OsPlayerInfo
+     */
+    public @NotNull OsPlayerInfo getWhitePlayer() {
+        return pis[0];
+    }
+
+    /**
+     * @return true if this game is being played on an 8x8 board.
+     */
+    public boolean is8x8() {
+        return getStartPosition().board.getBoardType().equals(COsBoardType.BT_8x8);
+    }
+
+    public OsMatchType getMatchType() {
+        return mt;
+    }
+
+    /**
+     * Get information about a player.
+     *
+     * @param isBlack if true, get information about the black player; if false, get information about the white player.
+     * @return the player info.
+     */
+    public OsPlayerInfo getPlayer(boolean isBlack) {
+        return pis[isBlack ? 1 : 0];
     }
 }

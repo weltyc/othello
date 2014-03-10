@@ -55,6 +55,6 @@ public class OsMatch {
     }
 
     boolean IsPlaying(final String sLogin) {
-        return pis[0].sName.equals(sLogin) || pis[1].sName.equals(sLogin);
+        return pis[0].name.equals(sLogin) || pis[1].name.equals(sLogin);
     }
 }

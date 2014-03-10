@@ -9,6 +9,8 @@ import java.io.EOFException;
  * An Othello board type
  */
 public class COsBoardType {
+    public static final COsBoardType BT_8x8 = new COsBoardType("8");
+
     public int n;
     public boolean fOcto;
 

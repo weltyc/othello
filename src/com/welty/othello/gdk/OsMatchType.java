@@ -11,10 +11,10 @@ import java.io.EOFException;
 @EqualsAndHashCode
 public class OsMatchType {
     COsBoardType bt = new COsBoardType("8");
-    private boolean fSynch;
-    public boolean fRand;
-    boolean fKomi;
-    boolean fAnti;
+    public boolean synch;
+    public boolean rand;
+    public boolean komi;
+    public boolean anti;
     private boolean fBlack;
     private boolean fWhite;
     private int nRandDiscs;
@@ -34,10 +34,10 @@ public class OsMatchType {
 
     public OsMatchType(OsMatchType b) {
         bt = new COsBoardType(b.bt);
-        fSynch = b.fSynch;
-        fRand = b.fRand;
-        fKomi = b.fKomi;
-        fAnti = b.fAnti;
+        synch = b.synch;
+        rand = b.rand;
+        komi = b.komi;
+        anti = b.anti;
         fBlack = b.fBlack;
         fWhite = b.fWhite;
         nRandDiscs = b.nRandDiscs;
@@ -61,16 +61,16 @@ public class OsMatchType {
                 c = is.read();
                 switch (Character.toLowerCase(c)) {
                     case 's':
-                        fSynch = true;
+                        synch = true;
                         break;
                     case 'a':
-                        fAnti = true;
+                        anti = true;
                         break;
                     case 'k':
-                        fKomi = true;
+                        komi = true;
                         break;
                     case 'r':
-                        fRand = true;
+                        rand = true;
                         try {
                             nRandDiscs = is.readInt();
                         } catch (EOFException e) {
@@ -89,10 +89,10 @@ public class OsMatchType {
             }
         }
         int nColors = 0;
-        if (fSynch) {
+        if (synch) {
             nColors++;
         }
-        if (fKomi) {
+        if (komi) {
             nColors++;
         }
         if (fBlack) {
@@ -107,14 +107,14 @@ public class OsMatchType {
     }
 
     void Out(StringBuilder sb) {
-        if (fSynch)
+        if (synch)
             sb.append('s');
         sb.append(bt.toString());
-        if (fKomi)
+        if (komi)
             sb.append('k');
-        if (fAnti)
+        if (anti)
             sb.append('a');
-        if (fRand)
+        if (rand)
             sb.append('r').append(nRandDiscs);
     }
 
@@ -125,7 +125,7 @@ public class OsMatchType {
     }
 
     void Clear() {
-        fSynch = fRand = fKomi = fAnti = fBlack = fWhite = false;
+        synch = rand = komi = anti = fBlack = fWhite = false;
         bt.Clear();
     }
 
@@ -136,9 +136,9 @@ public class OsMatchType {
     //  W: white
     //  ?: random
     char GetColor() {
-        if (fSynch) {
+        if (synch) {
             return 'S';
-        } else if (fKomi) {
+        } else if (komi) {
             return 'K';
         } else if (fBlack) {
             return 'B';
@@ -154,21 +154,21 @@ public class OsMatchType {
         if (fBlack && fWhite)
             return kErrBlackAndWhite;
         if (fBlack || fWhite) {
-            if (fRand)
+            if (rand)
                 return kErrRandAndColor;
-            if (fSynch)
+            if (synch)
                 return kErrSynchAndColor;
-            if (fKomi)
+            if (komi)
                 return kErrKomiAndColor;
         }
 
         // misc errors
-        if (fSynch && fKomi)
+        if (synch && komi)
             return kErrSynchAndKomi;
 
         // rand errors
-        if (fRand) {
-            if (!fSynch && !fKomi)
+        if (rand) {
+            if (!synch && !komi)
                 return kErrRandUnbalanced;
             if (nRandDiscs > bt.NRandDiscsMax())
                 return kErrTooManyRandDiscs;
