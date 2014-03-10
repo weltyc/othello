@@ -5,12 +5,28 @@ import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
+import java.util.HashMap;
 
 /**
  * Match Type, as used in GGF format games
  */
 @EqualsAndHashCode
 public class OsMatchType {
+    public static final OsMatchType STANDARD = new OsMatchType(OsBoardType.BT_8x8);
+
+    /**
+     * Construct a match type with standard options (color = STANDARD, not rand or anti).
+     *
+     * @param bt board size
+     */
+    public OsMatchType(@NotNull OsBoardType bt) {
+        this.bt = bt;
+        this.color = Color.STANDARD;
+        this.rand = false;
+        this.nRandDiscs = 0;
+        this.anti = false;
+    }
+
     /**
      * Method of determining which player plays which color.
      */
@@ -18,40 +34,41 @@ public class OsMatchType {
         STANDARD, BLACK, WHITE, SYNCH, KOMI
     }
 
-    public @NotNull Color color;
+    public final @NotNull Color color;
+    final @NotNull OsBoardType bt;
+    public final boolean rand;
+    public final boolean anti;
+    private final int nRandDiscs;
 
-    OsBoardType bt = new OsBoardType("8");
-    public boolean rand;
-    public boolean anti;
-    private int nRandDiscs;
-
-    public OsMatchType() {
-
+    public OsMatchType(String sBoardType) {
+        this(new CReader(sBoardType));
     }
 
-    public OsMatchType(OsMatchType b) {
-        bt = b.bt;
-        color = b.color;
-        rand = b.rand;
-        anti = b.anti;
-        nRandDiscs = b.nRandDiscs;
+    private static final HashMap<Character, Color> colorFromChar = new HashMap<>();
+
+    static {
+        colorFromChar.put('b', Color.BLACK);
+        colorFromChar.put('w', Color.WHITE);
+        colorFromChar.put('s', Color.SYNCH);
+        colorFromChar.put('k', Color.KOMI);
     }
 
-
-    public void Initialize(String sBoardType) {
-        In(new CReader(sBoardType));
-    }
-
-    void In(CReader is) {
-        Clear();
+    OsMatchType(@NotNull CReader is) {
+        is.ignoreWhitespace();
 
         final StringBuilder colorChars = new StringBuilder();
+        OsBoardType bt = null;
+        boolean anti = false;
+        boolean rand = false;
+        int nRandDisks = 0;
 
-        is.ignoreWhitespace();
         while (Character.isLetterOrDigit(is.peek())) {
             char c;
             c = is.peek();
             if (Character.isDigit(c)) {
+                if (bt != null) {
+                    throw new IllegalArgumentException("Multiple board types? already had " + bt);
+                }
                 bt = new OsBoardType(is);
             } else {
                 c = is.read();
@@ -70,7 +87,7 @@ public class OsMatchType {
                     case 'r':
                         rand = true;
                         try {
-                            nRandDiscs = is.readInt();
+                            nRandDisks = is.readInt();
                         } catch (EOFException e) {
                             throw new IllegalStateException("unable to calculate # of rand discs");
                         }
@@ -81,12 +98,24 @@ public class OsMatchType {
                 }
             }
         }
+
+        // determine color
         if (colorChars.length() > 1) {
             throw new IllegalArgumentException("illegal color scheme: " + colorChars);
         }
         if (colorChars.length() == 0) {
             color = Color.STANDARD;
+        } else {
+            color = colorFromChar.get(colorChars.charAt(0));
         }
+
+        if (bt == null) {
+            throw new IllegalArgumentException("missing board type");
+        }
+        this.bt = bt;
+        this.anti = anti;
+        this.rand = rand;
+        this.nRandDiscs = nRandDisks;
     }
 
     void Out(StringBuilder sb) {
@@ -109,12 +138,6 @@ public class OsMatchType {
         StringBuilder sb = new StringBuilder();
         Out(sb);
         return sb.toString();
-    }
-
-    void Clear() {
-        color = Color.STANDARD;
-        rand = anti = false;
-        bt = OsBoardType.BT_8x8;
     }
 
     /**

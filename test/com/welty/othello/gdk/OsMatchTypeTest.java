@@ -12,9 +12,8 @@ import junit.framework.TestCase;
  */
 public class OsMatchTypeTest extends TestCase {
     public void testCreate() {
-        final OsMatchType type = new OsMatchType();
         final CReader cReader = new CReader("8");
-        type.In(cReader);
+        final OsMatchType type = new OsMatchType(cReader);
         assertEquals("8", type.bt.toString());
         assertEquals(OsMatchType.Color.STANDARD, type.getColor());
     }

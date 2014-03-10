@@ -5,18 +5,14 @@ import com.welty.othello.c.CReader;
 import java.io.EOFException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: HP_Administrator
- * Date: May 5, 2009
- * Time: 8:40:07 PM
- * To change this template use File | Settings | File Templates.
+ * GGS/Os 'match' message
  */
 public class OsMatch {
     private String idm;
     public final OsPlayerInfo[] pis = new OsPlayerInfo[2];
-    public OsMatchType mt = new OsMatchType();
+    public OsMatchType mt;
     public char cRated;
-    private int nObservers;    // not in matchDelta msgs
+    private int nObservers;    // not in matchDelta messages
 
     @Override public boolean equals(Object obj) {
         if (obj instanceof OsMatch) {
@@ -31,7 +27,7 @@ public class OsMatch {
         idm = is.readString();
         pis[1].In(is);
         pis[1].In(is);
-        mt.In(is);
+        mt = new OsMatchType(is);
         cRated = is.readChar();
         nObservers = 0;
 
@@ -41,7 +37,7 @@ public class OsMatch {
     // |  .9   s8r20  R 2574 lynx     2570 kitty    2
     CReader In(CReader is) {
         idm = is.readString();
-        mt.In(is);
+        mt = new OsMatchType(is);
         cRated = is.readChar();
         pis[0].In(is);
         pis[1].In(is);

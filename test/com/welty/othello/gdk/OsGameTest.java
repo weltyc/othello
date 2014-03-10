@@ -23,8 +23,7 @@ public class OsGameTest extends TestCase {
             "01]W[a7//0.01]B[a1//0.01]W[b2//0.01]B[g8//0.01]W[h1//0.01]B[g7//0.01]W[h8//0.01];)";
 
     public void testConstructor() {
-        final COsGame game = new COsGame();
-        game.In(new CReader(gameText));
+        final COsGame game = new COsGame(new CReader(gameText));
         assertEquals(true, game.isOver());
         assertEquals(60, game.nMoves());
         assertEquals("8", game.getMatchType().toString());

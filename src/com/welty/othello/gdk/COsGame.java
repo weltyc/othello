@@ -5,7 +5,6 @@ import com.welty.othello.c.CReader;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.EOFException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -24,13 +23,12 @@ public class COsGame {
     private OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
     private final COsMoveList ml;
     OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
-    private OsMatchType mt = new OsMatchType();
+    private @NotNull OsMatchType mt;
     public OsResult result = OsResult.INCOMPLETE;
     private double dKomiValue = 0;
 
     public COsGame() {
-        posStart = new COsPosition();
-        ml = new COsMoveList();
+        this(OsMatchType.STANDARD);
     }
 
     public COsGame(COsGame b) {
@@ -50,68 +48,11 @@ public class COsGame {
     }
 
     public COsGame(CReader in) {
-        this();
-        In(in);
-    }
+        ml = new COsMoveList();
+        posStart = new COsPosition();
 
-    /**
-     * Create a copy of this game, truncated to the given move number
-     *
-     * @param game       source game
-     * @param moveNumber number of moves to retain (0..ml.size()).
-     */
-    public COsGame(COsGame game, int moveNumber) {
-        Require.leq(moveNumber, "move number", game.nMoves());
-        Require.geq(moveNumber, "move number", 0);
-        posStart = new COsPosition(game.posStart);
-        sPlace = game.sPlace;
-        sDateTime = game.sDateTime;
-        pis = new OsPlayerInfo[]{new OsPlayerInfo(game.pis[0]), new OsPlayerInfo(game.pis[1])};
-        ml = new COsMoveList(game.ml, moveNumber);
-        if (moveNumber > 0) {
-            mlisKomi = Arrays.copyOf(game.mlisKomi, 2);
-        }
-        CalcCurrentPos();
-
-        mt = new OsMatchType(game.mt);
-
-        if (moveNumber == game.ml.size()) {
-            result = game.result;
-        } else {
-            result = OsResult.INCOMPLETE;
-        }
-    }
-
-    public static @NotNull COsGame ofLogbook(String s) {
-        final COsGame osGame = new COsGame();
-        osGame.inLogbook(new CReader(s));
-        return osGame;
-    }
-
-    // Information
-    public OsResult Result() {
-        return result;
-    }
-
-    public COsPosition getStartPosition() {
-        return posStart;
-    }
-
-    public COsPosition getPos() {
-        return pos;
-    }
-
-    boolean NeedsKomi() {
-        return mt.isKomi() && ml.isEmpty();
-    }
-
-    private static boolean fCheckKomiValue = true;
-
-    public void In(CReader in) {
         char c;
         String sToken, sData;
-
-        Clear();
 
         // CGame header	fOK
         // note that we might have an initial '1' or '2' if this is 1 non-synchro game or 2 synchro games
@@ -126,6 +67,8 @@ public class COsGame {
         c = in.read();
         Require.eq(c, "c", ';');
         // CGame tokens
+        OsMatchType mt = null;
+
         while (true) {
             if (in.peek() == ';')
                 break;
@@ -168,7 +111,7 @@ public class COsGame {
                     posStart.setWhiteClock(new OsClock(is));
                     break;
                 case "TY":
-                    mt.In(is);
+                    mt = new OsMatchType(is);
                     break;
                 case "BO":
                     posStart.board.in(is);
@@ -218,26 +161,60 @@ public class COsGame {
         c = in.read();
         Require.eq(c, "c", ')');
 
+        if (mt==null) {
+            throw new IllegalArgumentException("missing match type");
+        }
+        this.mt = mt;
+
         // Get the current position
         CalcCurrentPos();
     }
 
     /**
-     * Read in the game in Logistello's book format
+     * Create a copy of this game, truncated to the given move number
      *
-     * @param is reader containing at least one game in Logistello's book format
-     * @return the reader
+     * @param game       source game
+     * @param moveNumber number of moves to retain (0..ml.size()).
      */
-    private CReader inLogbook(@NotNull CReader is) {
+    public COsGame(COsGame game, int moveNumber) {
+        Require.leq(moveNumber, "move number", game.nMoves());
+        Require.geq(moveNumber, "move number", 0);
+        posStart = new COsPosition(game.posStart);
+        sPlace = game.sPlace;
+        sDateTime = game.sDateTime;
+        pis = new OsPlayerInfo[]{new OsPlayerInfo(game.pis[0]), new OsPlayerInfo(game.pis[1])};
+        ml = new COsMoveList(game.ml, moveNumber);
+        if (moveNumber > 0) {
+            mlisKomi = Arrays.copyOf(game.mlisKomi, 2);
+        }
+
+        mt = game.mt;
+
+        CalcCurrentPos();
+
+        if (moveNumber == game.ml.size()) {
+            result = game.result;
+        } else {
+            result = OsResult.INCOMPLETE;
+        }
+    }
+
+    public COsGame(@NotNull OsMatchType mt) {
+        this.mt = mt;
+        posStart = new COsPosition();
+        ml = new COsMoveList();
+    }
+
+    public static @NotNull COsGame ofLogbook(String s) {
+        final COsGame osGame = new COsGame(OsMatchType.STANDARD);
+        CReader is = new CReader(s);
         final OsMoveListItem pass = new OsMoveListItem(OsMove.PASS);
         char c;
 
-        Clear();
-        mt.bt = OsBoardType.BT_8x8;
-        posStart.board.initialize(mt.bt);
-        pis[0].name = pis[1].name = "logtest";
-        pos = new COsPosition(posStart);
-        sPlace = "logbook";
+        osGame.posStart.board.initialize(osGame.mt.bt);
+        osGame.pis[0].name = osGame.pis[1].name = "logtest";
+        osGame.pos = new COsPosition(osGame.posStart);
+        osGame.sPlace = "logbook";
 
         // get moves
         while (0 != (c = is.read())) {
@@ -245,17 +222,17 @@ public class COsGame {
 
                 // read move
                 boolean fBlackMove = c == '+';
-                Require.eq(fBlackMove, "black move", pos.board.isBlackMove());
+                Require.eq(fBlackMove, "black move", osGame.pos.board.isBlackMove());
                 OsMoveListItem mli = new OsMoveListItem(new OsMove(is));
 
                 // update game and pass if needed
-                append(mli);
-                if (!isOver() && !pos.board.hasLegalMove()) {
-                    append(pass);
+                osGame.append(mli);
+                if (!osGame.isOver() && !osGame.pos.board.hasLegalMove()) {
+                    osGame.append(pass);
                 }
             } else {
                 if (c != ':') {
-                    throw new IllegalArgumentException("Unable to read logbook. Was expecting ':' but had '" + c + "' to end the game. Game so far: " + this);
+                    throw new IllegalArgumentException("Unable to read logbook. Was expecting ':' but had '" + c + "' to end the game. Game so far: " + osGame);
                 }
                 break;
             }
@@ -263,80 +240,100 @@ public class COsGame {
 
         // get result
         final int nResult = is.readInt(0);
-        Require.eq(nResult, "result", pos.board.netBlackSquares());
-        result = new OsResult(nResult);
+        Require.eq(nResult, "result", osGame.pos.board.netBlackSquares());
+        osGame.result = new OsResult(nResult);
 
         // game over flag
         final int n = is.readInt(10);
         Require.eq(n, "n", 10); // what is this?
 
-        return is;
+        return osGame;
     }
 
-    /**
-     * Read in a game in IOS format
-     * <p/>
-     * Example IOS game:
-     * 772942166 r idiot    64 ( 30   0   0) TravisS   0 ( 30   0   0) +34-33+43-35+24-42+52-64+23-13+41-32+53-14+25-31+51-61+15-16+63-74+62-73+65-75+66-56+76-57+67-86+46-68+47-38+26-37+58-48+36 +0
-     *
-     * @param is reader containing the game
-     * @return the reader
-     * @throws EOFException if EOF occurs while reading in the game
-     */
-    public CReader inIos(CReader is) throws EOFException {
-        long timestamp;
-        int nBlack, nWhite;
-
-        Clear();
-        mt.bt = OsBoardType.BT_8x8;
-        posStart.board.initialize(mt.bt);
-        sPlace = "IOS";
-
-        if (0 != (timestamp = is.readLong())) {
-            // time. For early games no timestamp was stored, it is 0.
-            SetTime(timestamp);
-
-            // game end type
-            final char cResultType = is.read();
-            pis[1].name = is.readString();
-            nBlack = is.readInt();
-            posStart.setBlackClock(OsClock.InIOS(is));
-
-            pis[0].name = is.readString();
-            nWhite = is.readInt();
-            posStart.setWhiteClock(OsClock.InIOS(is));
-
-            pos = posStart;
-
-            // get moves
-            int iosMove;
-
-            // read move code. move code 0 means game is over
-            while (0 != (iosMove = is.readInt())) {
-                // positive moves are black, negative are white
-                Require.eq(pos.board.isBlackMove(), "black move", iosMove > 0);
-
-                final OsMoveListItem mli = new OsMoveListItem(OsMove.ofIos(iosMove));
-                append(mli);
-
-                // pass if needed
-                if (!isOver() && !pos.board.hasLegalMove()) {
-                    append(OsMoveListItem.PASS);
-                }
-            }
-
-            // calculate result. Might not be equal to the result
-            //	on the board if one player resigned.
-
-            result = new OsResult(statusFromChar(cResultType), nBlack - nWhite);
-
-            if (!(result.score == pos.board.netBlackSquares() || result.status != OsResult.TStatus.kNormalEnd)) {
-                throw new IllegalArgumentException("Don't understand game result");
-            }
-        }
-
-        return is;
+    // Information
+    public OsResult Result() {
+        return result;
     }
+
+    public COsPosition getStartPosition() {
+        return posStart;
+    }
+
+    public COsPosition getPos() {
+        return pos;
+    }
+
+    boolean NeedsKomi() {
+        return mt.isKomi() && ml.isEmpty();
+    }
+
+    private static boolean fCheckKomiValue = true;
+
+    // Not maintaining this code right now.
+//    /**
+//     * Read in a game in IOS format
+//     * <p/>
+//     * Example IOS game:
+//     * 772942166 r idiot    64 ( 30   0   0) TravisS   0 ( 30   0   0) +34-33+43-35+24-42+52-64+23-13+41-32+53-14+25-31+51-61+15-16+63-74+62-73+65-75+66-56+76-57+67-86+46-68+47-38+26-37+58-48+36 +0
+//     *
+//     * @param is reader containing the game
+//     * @return the reader
+//     * @throws EOFException if EOF occurs while reading in the game
+//     */
+//    public CReader inIos(CReader is) throws EOFException {
+//        long timestamp;
+//        int nBlack, nWhite;
+//
+//        Clear();
+//        mt = OsMatchType.STANDARD;
+//        posStart.board.initialize(mt.bt);
+//        sPlace = "IOS";
+//
+//        if (0 != (timestamp = is.readLong())) {
+//            // time. For early games no timestamp was stored, it is 0.
+//            SetTime(timestamp);
+//
+//            // game end type
+//            final char cResultType = is.read();
+//            pis[1].name = is.readString();
+//            nBlack = is.readInt();
+//            posStart.setBlackClock(OsClock.InIOS(is));
+//
+//            pis[0].name = is.readString();
+//            nWhite = is.readInt();
+//            posStart.setWhiteClock(OsClock.InIOS(is));
+//
+//            pos = posStart;
+//
+//            // get moves
+//            int iosMove;
+//
+//            // read move code. move code 0 means game is over
+//            while (0 != (iosMove = is.readInt())) {
+//                // positive moves are black, negative are white
+//                Require.eq(pos.board.isBlackMove(), "black move", iosMove > 0);
+//
+//                final OsMoveListItem mli = new OsMoveListItem(OsMove.ofIos(iosMove));
+//                append(mli);
+//
+//                // pass if needed
+//                if (!isOver() && !pos.board.hasLegalMove()) {
+//                    append(OsMoveListItem.PASS);
+//                }
+//            }
+//
+//            // calculate result. Might not be equal to the result
+//            //	on the board if one player resigned.
+//
+//            result = new OsResult(statusFromChar(cResultType), nBlack - nWhite);
+//
+//            if (!(result.score == pos.board.netBlackSquares() || result.status != OsResult.TStatus.kNormalEnd)) {
+//                throw new IllegalArgumentException("Don't understand game result");
+//            }
+//        }
+//
+//        return is;
+//    }
 
     private OsResult.TStatus statusFromChar(char cResultType) {
         switch (cResultType) {
@@ -359,7 +356,7 @@ public class COsGame {
     public void out(StringBuilder sb) {
         sb.append("(;GM[Othello]");
         sb.append("PC[").append(sPlace);
-        if (!sDateTime.isEmpty())
+        if (sDateTime!=null && !sDateTime.isEmpty())
             sb.append("]DT[").append(sDateTime);
         sb.append("]PB[").append(pis[1].name);
         sb.append("]PW[").append(pis[0].name);
@@ -404,7 +401,7 @@ public class COsGame {
         posStart.Clear();
         sDateTime = "";
         sPlace = "";
-        mt.Clear();
+        mt = OsMatchType.STANDARD;
     }
 
     protected void Undo() {
@@ -431,7 +428,7 @@ public class COsGame {
     public void Initialize(final String sBoardType, final OsClock blackClock, final OsClock whiteClock) {
         Clear();
         OsBoardType bt = new OsBoardType(sBoardType);
-        mt.Initialize(sBoardType);
+        mt = new OsMatchType(bt);
         posStart.board.initialize(bt);
         posStart.setBlackClock(blackClock);
         posStart.setWhiteClock(whiteClock);
