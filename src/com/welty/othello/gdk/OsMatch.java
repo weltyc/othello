@@ -25,8 +25,8 @@ public class OsMatch {
 
     CReader InDelta(CReader is) {
         idm = is.readString();
-        pis[1].In(is);
-        pis[1].In(is);
+        pis[0] = new OsPlayerInfo(is);
+        pis[1] = new OsPlayerInfo(is);
         mt = new OsMatchType(is);
         cRated = is.readChar();
         nObservers = 0;
@@ -39,8 +39,8 @@ public class OsMatch {
         idm = is.readString();
         mt = new OsMatchType(is);
         cRated = is.readChar();
-        pis[0].In(is);
-        pis[1].In(is);
+        pis[0] = new OsPlayerInfo(is);
+        pis[1] = new OsPlayerInfo(is);
         try {
             nObservers = is.readInt();
         } catch (EOFException e) {

@@ -19,7 +19,7 @@ public class OsPlayerInfo {
     public OsPlayerInfo() {
     }
 
-    void In(CReader is) {
+    OsPlayerInfo(CReader is) {
         rating = is.readDoubleNoExponent();
         name = is.readString();
     }
