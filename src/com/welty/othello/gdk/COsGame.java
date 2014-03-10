@@ -395,8 +395,8 @@ public class COsGame {
     public void Clear() {
         result = OsResult.INCOMPLETE;
         ml.clear();
-        pis[0].Clear();
-        pis[1].Clear();
+        pis[0] = new OsPlayerInfo();
+        pis[1] = new OsPlayerInfo();
         pos.Clear();
         posStart.Clear();
         sDateTime = "";

@@ -17,17 +17,11 @@ public class OsPlayerInfo {
     }
 
     public OsPlayerInfo() {
+        name = "";
     }
 
     OsPlayerInfo(CReader is) {
         rating = is.readDoubleNoExponent();
         name = is.readString();
     }
-
-    void Clear() {
-        rating = 0;
-        name = "";
-    }
-
-
 }
