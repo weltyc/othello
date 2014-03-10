@@ -89,7 +89,7 @@ public class OsMatchType {
                         try {
                             nRandDisks = is.readInt();
                         } catch (EOFException e) {
-                            throw new IllegalStateException("unable to calculate # of rand discs");
+                            throw new IllegalStateException("Random match type is missing # of random disks");
                         }
                         break;
 
