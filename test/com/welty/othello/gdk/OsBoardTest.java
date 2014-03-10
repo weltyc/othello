@@ -64,7 +64,7 @@ public class OsBoardTest extends TestCase {
 
     public void testSquareCounts() {
         final COsBoard osBoard = new COsBoard();
-        final COsBoardType bt = new COsBoardType("8");
+        final OsBoardType bt = new OsBoardType("8");
         osBoard.initialize(bt);
         osBoard.setText("--------OOOOOOOO********----------------OOOOOOOO********--------");
         assertEquals(new PieceCounts(16, 16, 32), osBoard.getPieceCounts());

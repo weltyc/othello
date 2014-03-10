@@ -1,5 +1,7 @@
 package com.welty.othello.c;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 
 /**
@@ -8,20 +10,20 @@ import java.io.*;
  * The class roughly mimics scanf() or "<<" by automatically stripping whitespace when parsing.
  */
 public class CReader {
-    private final PushbackInputStream in;
+    private final @NotNull PushbackInputStream in;
 
-    public CReader(File file) throws FileNotFoundException {
+    public CReader(@NotNull File file) throws FileNotFoundException {
         this(new BufferedInputStream(new FileInputStream(file)));
     }
 
-    public CReader(InputStream is) {
+    public CReader(@NotNull InputStream is) {
         in = new PushbackInputStream(is);
     }
 
     /**
      * Create a CReader whose data is the given string
      */
-    public CReader(String s) {
+    public CReader(@NotNull String s) {
         this(new ByteArrayInputStream(s.getBytes()));
     }
 

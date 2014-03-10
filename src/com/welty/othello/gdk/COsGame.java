@@ -233,7 +233,7 @@ public class COsGame {
         char c;
 
         Clear();
-        mt.bt.n = 8;
+        mt.bt = OsBoardType.BT_8x8;
         posStart.board.initialize(mt.bt);
         pis[0].name = pis[1].name = "logtest";
         pos = new COsPosition(posStart);
@@ -288,7 +288,7 @@ public class COsGame {
         int nBlack, nWhite;
 
         Clear();
-        mt.bt.n = 8;
+        mt.bt = OsBoardType.BT_8x8;
         posStart.board.initialize(mt.bt);
         sPlace = "IOS";
 
@@ -430,7 +430,7 @@ public class COsGame {
 
     public void Initialize(final String sBoardType, final OsClock blackClock, final OsClock whiteClock) {
         Clear();
-        COsBoardType bt = new COsBoardType(sBoardType);
+        OsBoardType bt = new OsBoardType(sBoardType);
         mt.Initialize(sBoardType);
         posStart.board.initialize(bt);
         posStart.setBlackClock(blackClock);
@@ -641,7 +641,7 @@ public class COsGame {
      * @return true if this game is being played on an 8x8 board.
      */
     public boolean is8x8() {
-        return getStartPosition().board.getBoardType().equals(COsBoardType.BT_8x8);
+        return getStartPosition().board.getBoardType().equals(OsBoardType.BT_8x8);
     }
 
     public OsMatchType getMatchType() {

@@ -20,7 +20,7 @@ public class OsMatchType {
 
     public @NotNull Color color;
 
-    COsBoardType bt = new COsBoardType("8");
+    OsBoardType bt = new OsBoardType("8");
     public boolean rand;
     public boolean anti;
     private int nRandDiscs;
@@ -30,7 +30,7 @@ public class OsMatchType {
     }
 
     public OsMatchType(OsMatchType b) {
-        bt = new COsBoardType(b.bt);
+        bt = b.bt;
         color = b.color;
         rand = b.rand;
         anti = b.anti;
@@ -52,7 +52,7 @@ public class OsMatchType {
             char c;
             c = is.peek();
             if (Character.isDigit(c)) {
-                bt = new COsBoardType(is);
+                bt = new OsBoardType(is);
             } else {
                 c = is.read();
                 switch (Character.toLowerCase(c)) {
@@ -114,7 +114,7 @@ public class OsMatchType {
     void Clear() {
         color = Color.STANDARD;
         rand = anti = false;
-        bt.Clear();
+        bt = OsBoardType.BT_8x8;
     }
 
     /**

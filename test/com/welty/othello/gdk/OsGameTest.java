@@ -82,7 +82,7 @@ public class OsGameTest extends TestCase {
         game.setToDefaultStartPosition(OsClock.DEFAULT, OsClock.DEFAULT);
         final COsPosition pos = game.calcPosition(new ArrayList<OsMoveListItem>());
         COsPosition expected = new COsPosition();
-        expected.board.initialize(new COsBoardType("8"));
+        expected.board.initialize(new OsBoardType("8"));
 
         assertEquals(expected, pos);
     }

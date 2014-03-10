@@ -12,7 +12,7 @@ import java.util.Arrays;
  * A board knows its size, the disks on the board, and the player to move
  */
 public class COsBoard {
-    private @NotNull COsBoardType bt = new COsBoardType("8");
+    private @NotNull OsBoardType bt = new OsBoardType("8");
 
     /**
      * The board is stored as an (n+2)x(n+2) array of squares, with dummy squares
@@ -53,17 +53,17 @@ public class COsBoard {
      *
      * @param bt board type
      */
-    public void initialize(final COsBoardType bt) {
+    public void initialize(final OsBoardType bt) {
         int row, col;
         char c;
         this.bt = bt;
 
-        sBoard = new char[this.bt.NTotalSquares()];
+        sBoard = new char[this.bt.nTotalSquares()];
         for (row = -1; row <= this.bt.n; row++) {
             for (col = -1; col <= this.bt.n; col++) {
                 if (row == -1 || col == -1 || row == this.bt.n || col == this.bt.n)
                     c = DUMMY;
-                else if (this.bt.DummyCorner(row, col))
+                else if (this.bt.dummyCorner(row, col))
                     c = DUMMY;
                 else
                     c = EMPTY;
@@ -277,7 +277,7 @@ public class COsBoard {
     public void in(CReader is) {
         clear();
 
-        initialize(new COsBoardType(is));
+        initialize(new OsBoardType(is));
         for (int i = 0; i < sBoard.length; i++) {
             // find the next non-dummy square
             if (sBoard[i] != 'd') {
@@ -367,7 +367,7 @@ public class COsBoard {
      * Set this board into an invalid state
      */
     void clear() {
-        bt.Clear();
+        bt = OsBoardType.BT_8x8;
         fBlackMove = true;
         sBoard = null;
     }
@@ -472,7 +472,7 @@ public class COsBoard {
         }
 
         final String sBoard = sb.toString();
-        Require.eq(sBoard.length(), "squares used", bt.NPlayableSquares());
+        Require.eq(sBoard.length(), "squares used", bt.nPlayableSquares());
         return new GetTextResult(sBoard, fBlackMove);
     }
 
@@ -497,7 +497,7 @@ public class COsBoard {
      * @param board board to copy form
      */
     public void copy(COsBoard board) {
-        bt = new COsBoardType(board.bt);
+        bt = board.bt;
         sBoard = (board.sBoard == null) ? null : Arrays.copyOf(board.sBoard, board.sBoard.length);
         fBlackMove = board.fBlackMove;
         validate();
@@ -574,7 +574,7 @@ public class COsBoard {
         int nWhite = 0;
         int nEmpty = 0;
         int i;
-        for (i = 0; i < bt.NTotalSquares(); i++) {
+        for (i = 0; i < bt.nTotalSquares(); i++) {
             switch (sBoard[i]) {
                 case BLACK:
                     nBlack++;
@@ -632,7 +632,7 @@ public class COsBoard {
     /**
      * @return the board type
      */
-    public final @NotNull COsBoardType getBoardType() {
+    public final @NotNull OsBoardType getBoardType() {
         return bt;
     }
 }

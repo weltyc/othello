@@ -11,6 +11,18 @@ import junit.framework.TestCase;
  * To change this template use File | Settings | File Templates.
  */
 public class OsBoardTypeTest extends TestCase {
+    public void testEquals() {
+        final OsBoardType a = new OsBoardType("10");
+        final OsBoardType b = new OsBoardType("10");
+        final OsBoardType c = new OsBoardType("8");
+        final OsBoardType d = new OsBoardType("8");
+
+        assertEquals(a, a);
+        assertEquals(a, b);
+        assertFalse(a.equals(c));
+        assertFalse(a.equals(d));
+    }
+
     public void testIn() {
         testIn("8", 8, false, 64);
         testIn("6", 6, false, 36);
@@ -20,9 +32,9 @@ public class OsBoardTypeTest extends TestCase {
     }
 
     private static void testIn(String s, int size, boolean octo, int nSquares) {
-        final COsBoardType bt = new COsBoardType(new CReader(s));
+        final OsBoardType bt = new OsBoardType(new CReader(s));
         assertEquals(size, bt.n);
-        assertEquals(octo, bt.fOcto);
-        assertEquals(nSquares, bt.NPlayableSquares());
+        assertEquals(octo, bt.octo);
+        assertEquals(nSquares, bt.nPlayableSquares());
     }
 }
