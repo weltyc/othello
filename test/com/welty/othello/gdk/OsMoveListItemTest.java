@@ -7,9 +7,13 @@ import junit.framework.TestCase;
  */
 public class OsMoveListItemTest extends TestCase {
     public void testReadWrite() {
-        final String test = "F5/1.23/2.1";
-        final OsMoveListItem mli = new OsMoveListItem(test);
-        assertEquals(test, mli.toString());
+        testReadWrite("F5/1.23/2.1");
+        testReadWrite("H8//1.03");
+    }
+
+    private static void testReadWrite(String text) {
+        final OsMoveListItem mli = new OsMoveListItem(text);
+        assertEquals(text, mli.toString());
     }
 
     public void testHasEval() {

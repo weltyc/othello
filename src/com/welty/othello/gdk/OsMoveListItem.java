@@ -144,4 +144,8 @@ public class OsMoveListItem {
     public OsMoveListItem reflect(int iReflection) {
         return new OsMoveListItem(move.reflect(iReflection), eval, tElapsed);
     }
+
+    public boolean isPass() {
+        return move.isPass();
+    }
 }
