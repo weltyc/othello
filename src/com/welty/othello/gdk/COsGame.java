@@ -20,7 +20,7 @@ public class COsGame {
 
     public String sPlace;
     protected String sDateTime;
-    private OsPlayerInfo[] pis = new OsPlayerInfo[]{new OsPlayerInfo(), new OsPlayerInfo()};
+    private final OsPlayerInfo[] pis;
     private final COsMoveList ml;
     OsMoveListItem[] mlisKomi = new OsMoveListItem[2];
     private @NotNull OsMatchType mt;
@@ -69,6 +69,12 @@ public class COsGame {
         // CGame tokens
         OsMatchType mt = null;
 
+        // default values if they don't show up in tags:
+        String blackName = "";
+        String whiteName = "";
+        double blackRating = 0;
+        double whiteRating = 0;
+
         while (true) {
             if (in.peek() == ';')
                 break;
@@ -88,16 +94,16 @@ public class COsGame {
                     sDateTime = sData;
                     break;
                 case "PB":
-                    pis[1].name = sData;
+                    blackName = sData;
                     break;
                 case "PW":
-                    pis[0].name = sData;
+                    whiteName = sData;
                     break;
                 case "RB":
-                    pis[1].rating = is.readDoubleNoExponent();
+                    blackRating = is.readDoubleNoExponent();
                     break;
                 case "RW":
-                    pis[0].rating = is.readDoubleNoExponent();
+                    whiteRating = is.readDoubleNoExponent();
                     break;
                 case "TI":
                     final OsClock clock = new OsClock(is);
@@ -141,6 +147,12 @@ public class COsGame {
                     throw new IllegalArgumentException("Unknown token: " + sToken);
             }
         }
+
+        pis = new OsPlayerInfo[]{
+                new OsPlayerInfo(whiteName, whiteRating),
+                new OsPlayerInfo(blackName, blackRating)
+        };
+
         if (fCheckKomiValue) {
             final double komiCheck;
             if (mlisKomi[0] == null && mlisKomi[1] == null) {
@@ -161,7 +173,7 @@ public class COsGame {
         c = in.read();
         Require.eq(c, "c", ')');
 
-        if (mt==null) {
+        if (mt == null) {
             throw new IllegalArgumentException("missing match type");
         }
         this.mt = mt;
@@ -182,7 +194,7 @@ public class COsGame {
         posStart = new COsPosition(game.posStart);
         sPlace = game.sPlace;
         sDateTime = game.sDateTime;
-        pis = new OsPlayerInfo[]{new OsPlayerInfo(game.pis[0]), new OsPlayerInfo(game.pis[1])};
+        pis = new OsPlayerInfo[]{game.pis[0], game.pis[1]};
         ml = new COsMoveList(game.ml, moveNumber);
         if (moveNumber > 0) {
             mlisKomi = Arrays.copyOf(game.mlisKomi, 2);
@@ -203,7 +215,13 @@ public class COsGame {
         this.mt = mt;
         posStart = new COsPosition();
         ml = new COsMoveList();
+        pis = new OsPlayerInfo[] {
+                OsPlayerInfo.UNKNOWN,
+                OsPlayerInfo.UNKNOWN
+        };
     }
+
+    static final OsPlayerInfo LOGISTELLO = new OsPlayerInfo("Logistello", 0);
 
     public static @NotNull COsGame ofLogbook(String s) {
         final COsGame osGame = new COsGame(OsMatchType.STANDARD);
@@ -212,7 +230,7 @@ public class COsGame {
         char c;
 
         osGame.posStart.board.initialize(osGame.mt.bt);
-        osGame.pis[0].name = osGame.pis[1].name = "logtest";
+        osGame.pis[0] = osGame.pis[1] = LOGISTELLO;
         osGame.pos = new COsPosition(osGame.posStart);
         osGame.sPlace = "logbook";
 
@@ -356,7 +374,7 @@ public class COsGame {
     public void out(StringBuilder sb) {
         sb.append("(;GM[Othello]");
         sb.append("PC[").append(sPlace);
-        if (sDateTime!=null && !sDateTime.isEmpty())
+        if (sDateTime != null && !sDateTime.isEmpty())
             sb.append("]DT[").append(sDateTime);
         sb.append("]PB[").append(pis[1].name);
         sb.append("]PW[").append(pis[0].name);
@@ -395,8 +413,7 @@ public class COsGame {
     public void Clear() {
         result = OsResult.INCOMPLETE;
         ml.clear();
-        pis[0] = new OsPlayerInfo();
-        pis[1] = new OsPlayerInfo();
+        pis[0] = pis[1] = OsPlayerInfo.UNKNOWN;
         pos.Clear();
         posStart.Clear();
         sDateTime = "";
@@ -653,5 +670,19 @@ public class COsGame {
      */
     public OsPlayerInfo getPlayer(boolean isBlack) {
         return pis[isBlack ? 1 : 0];
+    }
+
+    public void setPlayerName(boolean fBlackMove, String name) {
+        final int i = fBlackMove ? 1 : 0;
+        OsPlayerInfo pi = pis[i];
+        pis[i] = new OsPlayerInfo(name, pi.rating);
+    }
+
+    public void setBlackPlayer(String name, int rating) {
+        pis[1] = new OsPlayerInfo(name, rating);
+    }
+
+    public void setWhitePlayer(String name, int rating) {
+        pis[0] = new OsPlayerInfo(name, rating);
     }
 }
