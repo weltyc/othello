@@ -65,7 +65,8 @@ public class OsMove {
     }
 
     /**
-     * @return row number, from 0-7
+     * @return row number, from 0-7. 0 = top row, 7 = bottom row
+     * @throws IllegalStateException if the move is a pass
      */
     public int row() {
         requireOnBoard();
@@ -73,7 +74,8 @@ public class OsMove {
     }
 
     /**
-     * @return col number, from 0-7
+     * @return col number, from 0-7. 0 = left col (col 'A'), 7 = right col (col 'H')
+     * @throws IllegalStateException if the move is a pass
      */
     public int col() {
         requireOnBoard();
@@ -82,7 +84,7 @@ public class OsMove {
 
     private void requireOnBoard() {
         if (fPass) {
-            throw new IllegalStateException("must be on the board");
+            throw new IllegalStateException("must not be a pass");
         }
         Require.inRange("Row must be 0-7", row, "row", 0, 7);
         Require.inRange("Col must be 0-7", col, "col", 0, 7);
@@ -136,11 +138,11 @@ public class OsMove {
         }
 
         if ((iReflection & 2) != 0) {
-            col^=7;
+            col ^= 7;
         }
 
-        if ((iReflection & 1) != 0){
-            row ^=7;
+        if ((iReflection & 1) != 0) {
+            row ^= 7;
         }
 
         return new OsMove(row, col);
