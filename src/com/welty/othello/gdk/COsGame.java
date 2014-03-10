@@ -102,7 +102,7 @@ public class COsGame {
     }
 
     boolean NeedsKomi() {
-        return mt.komi && ml.isEmpty();
+        return mt.isKomi() && ml.isEmpty();
     }
 
     private static boolean fCheckKomiValue = true;
@@ -379,7 +379,7 @@ public class COsGame {
         sb.append("]BO[").append(posStart.board);
 
         // komi set moves
-        if (mt.komi && !ml.isEmpty()) {
+        if (mt.isKomi() && !ml.isEmpty()) {
             sb.append("]KB[").append(mlisKomi[1]);
             sb.append("]KW[").append(mlisKomi[0]);
             sb.append("]KM[").append((mlisKomi[0].getEval() + mlisKomi[1].getEval()) / 2);
@@ -483,7 +483,7 @@ public class COsGame {
 
     COsPosition calcPosition(List<OsMoveListItem> moveList) {
         final COsPosition position = new COsPosition(posStart);
-        if (mt.komi && !moveList.isEmpty())
+        if (mt.isKomi() && !moveList.isEmpty())
             position.UpdateKomiSet(mlisKomi);
 
         for (OsMoveListItem mli : moveList) {

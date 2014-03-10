@@ -16,6 +16,6 @@ public class OsMatchTypeTest extends TestCase {
         final CReader cReader = new CReader("8");
         type.In(cReader);
         assertEquals("8", type.bt.toString());
-        assertEquals('?', type.GetColor());
+        assertEquals(OsMatchType.Color.STANDARD, type.getColor());
     }
 }

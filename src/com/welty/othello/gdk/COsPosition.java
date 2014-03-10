@@ -87,7 +87,7 @@ public class COsPosition {
         board.copy(posStart.board);
         copyClocks(posStart);
 
-        if (nMoves != 0 && game.getMatchType().komi) {
+        if (nMoves != 0 && game.getMatchType().isKomi()) {
             Require.isTrue(!game.NeedsKomi(), "Needs komi as first move");
 
             UpdateKomiSet(game.mlisKomi);
