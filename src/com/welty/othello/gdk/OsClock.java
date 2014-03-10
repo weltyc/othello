@@ -10,6 +10,12 @@ import java.text.DecimalFormat;
  */
 public class OsClock {
     public static final OsClock DEFAULT = new OsClock(0);
+
+    /**
+     * A clock that lasts for a long time. The exact amount of time may change from release to release.
+     */
+    public static final OsClock LONG = new OsClock(24 * 60 * 60);
+
     /**
      * Remaining time for this move, in seconds
      */
@@ -17,11 +23,11 @@ public class OsClock {
     /**
      * Amount added to clock after the player makes a legal move, in seconds
      */
-    private double tIncrement;
+    private final double tIncrement;
     /**
      * Amount added to the clock if the player times out when iTimeout=0, in seconds
      */
-    private double tGrace;
+    private final double tGrace;
 
     /**
      * Player timeout status:
@@ -29,7 +35,7 @@ public class OsClock {
      * 1 = timed out once
      * 2 = timed out more than once
      */
-    private int iTimeout;
+    private final int iTimeout;
 
     /**
      * Create a clock with no increment and a 2 minute grace period
@@ -67,9 +73,16 @@ public class OsClock {
         return update(tElapsed, true);
     }
 
+    /**
+     * Create a clock from the text, as given in a GGF format game
+     * @param s text of the clock
+     */
+    public OsClock(String s) {
+        this(new CReader(s));
+    }
+
     OsClock(CReader is) {
         double tIncrement = 0;
-        tGrace = 120;
 
         tCurrent = ReadTime(is);
 
@@ -85,9 +98,12 @@ public class OsClock {
         if (is.peek() == '/') {
             is.ignore(1);
             tGrace = ReadTime(is);
+        } else {
+            tGrace = 120;
         }
 
         this.tIncrement = tIncrement;
+        this.iTimeout = 0;
     }
 
     static OsClock InIOS(CReader is) {
@@ -170,10 +186,10 @@ public class OsClock {
 
     static void writeTime(StringBuilder sb, int nSeconds) {
         final DecimalFormat df2 = new DecimalFormat("00");
-        if (nSeconds > 60) {
+        if (nSeconds >= 60) {
             int nMinutes = nSeconds / 60;
             nSeconds %= 60;
-            if (nMinutes > 60) {
+            if (nMinutes >= 60) {
                 int nHours = nMinutes / 60;
                 nMinutes %= 60;
                 sb.append(nHours).append(':').append(df2.format(nMinutes));
@@ -223,5 +239,15 @@ public class OsClock {
             return String.format("%d:%02d%s", m, s, suffix);
         }
 
+    }
+
+    /**
+     * Player timeout status:
+     * 0 = never timed out
+     * 1 = timed out once, in grace period
+     * 2 = timed out after grace period
+     */
+    public int getITimeout() {
+        return iTimeout;
     }
 }

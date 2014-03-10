@@ -38,6 +38,8 @@ public class OsClockTest extends TestCase {
     public void testOut() {
         assertEquals("5:00", new OsClock(5 * 60, 0, 120).toString());
         assertEquals("5:00//0", new OsClock(5 * 60, 0, 0).toString());
+        assertEquals("1:00//1:00", new OsClock(60, 0, 60).toString());
+        assertEquals("1:00:00//1:00:00", new OsClock(60*60, 0, 60*60).toString());
     }
 
     public void testToDisplayString() {
