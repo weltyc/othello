@@ -1,5 +1,6 @@
 package com.welty.othello.timer.timer;
 
+import com.welty.othello.core.OperatingSystem;
 import com.welty.othello.timer.progress.ProgressCombiner;
 import com.welty.othello.timer.progress.ProgressTask;
 
@@ -15,7 +16,8 @@ import java.util.ArrayList;
  * </PRE>
  */
 public class OthelloTimer {
-    private static final String COMMAND = "o.exe t";
+    public static final boolean isMac = OperatingSystem.os == OperatingSystem.MACINTOSH;
+    private static final String COMMAND = isMac ? "./ntest t" : "o.exe t";
 
     public static void main(String[] args) {
         final boolean useGui = args.length < 3;
@@ -38,7 +40,7 @@ public class OthelloTimer {
 
     private static void run(Inputs inputs) throws IOException, InterruptedException {
         System.out.println("Starting othello endgame timing test for " + inputs.machineName + " with " + inputs.nCopies + " copies");
-        final ArrayList<TimerProcess> processes = new ArrayList<TimerProcess>();
+        final ArrayList<TimerProcess> processes = new ArrayList<>();
         for (int i = 0; i < inputs.nCopies; i++) {
             final TimerProcess process = TimerProcess.execGrep(COMMAND);
             processes.add(process);
