@@ -1,5 +1,5 @@
 Othello Utils
--------------
+=============
 
 This project contains Othello utilities.
 
@@ -20,7 +20,7 @@ This project contains Othello utilities.
 * CBinaryReader and CBinaryWriter to make porting C programs easier
 
 Dependencies
-============
+------------
 
 This depends on Orbanova Common Library 0.09, available at 
 https://www.dropbox.com/s/ny4ldhsbrusxvkh/common-0.09.jar
