@@ -22,8 +22,7 @@ This project contains Othello utilities.
 Building
 --------
 
-This depends on Orbanova Common Library 0.09, available at 
-<https://www.dropbox.com/s/ny4ldhsbrusxvkh/common-0.09.jar>
-
-
+This depends on Orbanova Common Library 0.09, available from 
+<http://www.orbanova.com/maven2/com/orbanova/common/0.09/common-0.09.jar>, and its dependencies.
+Maven should automatically pick up the transitive dependencies.
 
