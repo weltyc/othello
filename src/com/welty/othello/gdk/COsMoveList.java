@@ -37,6 +37,9 @@ public class COsMoveList extends ArrayList<OsMoveListItem> {
     public COsMoveList() {
     }
 
+    /**
+     * @return A string representation of the move list. For example "F5 D6 C3/0.01/1.0".
+     */
     public String toMoveListString() {
         final StringBuilder sb = new StringBuilder();
         for (OsMoveListItem mli : this) {

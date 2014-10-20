@@ -23,6 +23,9 @@ import java.io.*;
  * A class designed to ease porting C programs to Java.
  * <p/>
  * The class roughly mimics scanf() or "<<" by automatically stripping whitespace when parsing.
+ *
+ * This class reads in bytes, which are then converted to characters using (char); no charset encoding
+ * is performed.
  */
 public class CReader {
     private final @NotNull PushbackInputStream in;
@@ -39,7 +42,29 @@ public class CReader {
      * Create a CReader whose data is the given string
      */
     public CReader(@NotNull String s) {
-        this(new ByteArrayInputStream(s.getBytes()));
+        this(new ByteArrayInputStream(bytes(s)));
+    }
+
+    /**
+     * Convert s to bytes.
+     *
+     * Characters are converted using (byte); no Charset is used. If the String contains any
+     * characters outside the range 0-255 an exception is thrown.
+     *
+     * @param s string to convert
+     * @return array of bytes
+     * @throws IllegalArgumentException if s contains chars outside the range 0-255.
+     */
+    static private byte[] bytes(String s) {
+        final byte[] bytes = new byte[s.length()];
+        for (int i=0; i<s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c > 255) {
+                throw new IllegalArgumentException("Illegal character at location " + i + ": " + c);
+            }
+            bytes[i] = (byte)c;
+        }
+        return bytes;
     }
 
     /**

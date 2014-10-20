@@ -15,6 +15,7 @@
 
 package com.welty.othello.gdk;
 
+import com.welty.othello.c.CReader;
 import junit.framework.TestCase;
 
 /**
@@ -64,8 +65,25 @@ public class OsMoveTest extends TestCase {
         assertEquals("D6", move.reflect(6).toString());
         assertEquals("D3", move.reflect(7).toString());
 
-        for (int i=0; i<8; i++) {
+        for (int i = 0; i < 8; i++) {
             assertEquals(OsMove.PASS, OsMove.PASS.reflect(i));
+        }
+    }
+
+    public void testErrorHandling() {
+        try {
+            new OsMove("F");
+            fail("should throw");
+        } catch (IllegalArgumentException e) {
+            assertTrue("need readable error message", e.getMessage().contains("ends"));
+        }
+
+        final OsBoardType bt = new OsBoardType("8");
+        try {
+            new OsMove(new CReader("F"), bt);
+            fail("should throw");
+        } catch (IllegalArgumentException e) {
+            assertTrue("need readable error message", e.getMessage().contains("ends"));
         }
     }
 }

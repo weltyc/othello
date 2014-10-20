@@ -31,6 +31,16 @@ public class PieceCounts {
         this.nEmpty = nEmpty;
     }
 
+    /**
+     * Compute black's winning margin, including empty disks.
+     *
+     * if fAnti is false, this is (black disks - white disks), with winner getting empties.
+     *
+     * if fAnti is true, this is (white disks - black disks), with the loser getting empties.
+     *
+     * @param fAnti is this an 'anti' game?
+     * @return black winning margin.
+     */
     public int result(boolean fAnti) {
         int nNet = nBlack - nWhite;
         if (nNet < 0)
@@ -38,7 +48,7 @@ public class PieceCounts {
         else if (nNet > 0)
             nNet += nEmpty;
 
-        return fAnti ? nNet : -nNet;
+        return fAnti ? -nNet : +nNet;
     }
 
     public int netBlackSquares() {

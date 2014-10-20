@@ -21,9 +21,9 @@ import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The in-memory data corresponding to a GGF-format game
@@ -48,6 +48,65 @@ public class COsGame {
 
     public COsGame(COsGame b) {
         this(b, b.ml.size());
+    }
+
+    private static final Pattern pgnMovePattern = Pattern.compile("[a-h][1-8]");
+
+    /**
+     * Create a game from a game stored in Chess's PGN format.
+     *
+     * @param pgn text
+     * @return the new game
+     * @throws IllegalArgumentException if this method can't parse the game as a kurnik-style game.
+     */
+    public static COsGame ofPgn(String pgn) {
+        final String[] lines = pgn.split("\n");
+        Map<String, String> tags = new HashMap<>();
+        List<OsMoveListItem> moves = new ArrayList<>();
+
+        for (String line : lines) {
+            if (line.startsWith("[")) {
+                final String[] tagAndValue = line.substring(1, line.length() - 1).split(" ", 2);
+                String value = tagAndValue[1];
+                value = value.substring(1, value.length() - 1);
+                tags.put(tagAndValue[0], value);
+            } else {
+                final String[] moveTexts = line.split("\\s+");
+                for (String moveText : moveTexts) {
+                    final Matcher matcher = pgnMovePattern.matcher(moveText);
+                    if (matcher.matches()) {
+                        moves.add(new OsMoveListItem(moveText));
+                    } else if (moveText.equals("--")) {
+                        moves.add(OsMoveListItem.PASS);
+                    }
+                }
+            }
+        }
+
+        final COsGame game = new COsGame(OsMatchType.STANDARD);
+        game.posStart.board.initialize(OsBoardType.BT_8x8);
+        game.pos = new COsPosition(game.posStart);
+
+        game.sPlace = tags.get("Site");
+        Require.notNull(game.sPlace);
+
+        Require.notNull(tags.get("Date"));
+        Require.notNull(tags.get("Time"));
+        game.sDateTime = tags.get("Date") + " " + tags.get("Time");
+
+        Require.notNull(tags.get("Black"));
+        Require.notNull(tags.get("BlackElo"));
+        game.setBlackPlayer(tags.get("Black"), Double.parseDouble(tags.get("BlackElo")));
+
+        Require.notNull(tags.get("White"));
+        Require.notNull(tags.get("WhiteElo"));
+        game.setWhitePlayer(tags.get("White"), Double.parseDouble(tags.get("WhiteElo")));
+
+        for (OsMoveListItem mli : moves) {
+            game.append(mli);
+        }
+
+        return game;
     }
 
     /**
@@ -230,7 +289,7 @@ public class COsGame {
         this.mt = mt;
         posStart = new COsPosition();
         ml = new COsMoveList();
-        pis = new OsPlayerInfo[] {
+        pis = new OsPlayerInfo[]{
                 OsPlayerInfo.UNKNOWN,
                 OsPlayerInfo.UNKNOWN
         };
@@ -576,11 +635,12 @@ public class COsGame {
      *
      * @param s string containing a move list, for example "F5 d6 C3 d3"
      */
-    public void SetMoveList(String s) {
+    public void setMoveList(String s) {
         ml.clear();
         final CReader in = new CReader(s);
+        final OsBoardType bt = getStartPosition().board.getBoardType();
         while (!in.wsEof()) {
-            OsMove mv = new OsMove(in);
+            OsMove mv = new OsMove(in, bt);
             ml.add(new OsMoveListItem(mv));
         }
         CalcCurrentPos();
@@ -693,11 +753,11 @@ public class COsGame {
         pis[i] = new OsPlayerInfo(name, pi.rating);
     }
 
-    public void setBlackPlayer(String name, int rating) {
+    public void setBlackPlayer(String name, double rating) {
         pis[1] = new OsPlayerInfo(name, rating);
     }
 
-    public void setWhitePlayer(String name, int rating) {
+    public void setWhitePlayer(String name, double rating) {
         pis[0] = new OsPlayerInfo(name, rating);
     }
 }

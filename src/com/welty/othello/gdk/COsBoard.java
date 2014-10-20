@@ -176,7 +176,7 @@ public class COsBoard {
 
     /**
      * @return 0 if mover has a legal move, 1 if mover passes but opponent has a legal move, 2 if neither player has
-     *         a legal move and the game is therefore over.
+     * a legal move and the game is therefore over.
      */
     public int nPass() {
         if (hasLegalMove(fBlackMove))
@@ -476,10 +476,23 @@ public class COsBoard {
      * @return a GetTextResult containing the information.
      */
     public GetTextResult getText() {
+        return getText("");
+    }
+
+    /**
+     * Get the text for the board and a flag for black-to-move
+     *
+     * @param lineSeparator character that separates lines, or "" for no separator.
+     * @return a GetTextResult containing the information.
+     */
+    public GetTextResult getText(String lineSeparator) {
         StringBuilder sb = new StringBuilder();
 
-        for (int r = 0; r <= bt.n; r++) {
-            for (int c = 0; c <= bt.n; c++) {
+        for (int r = 0; r < bt.n; r++) {
+            if (r>0) {
+                sb.append(lineSeparator);
+            }
+            for (int c = 0; c < bt.n; c++) {
                 if (getPiece(r, c) != DUMMY) {
                     sb.append(getPiece(r, c));
                 }
@@ -487,7 +500,9 @@ public class COsBoard {
         }
 
         final String sBoard = sb.toString();
-        Require.eq(sBoard.length(), "squares used", bt.nPlayableSquares());
+        if (lineSeparator.isEmpty()) {
+            Require.eq(sBoard.length(), "squares used", bt.nPlayableSquares());
+        }
         return new GetTextResult(sBoard, fBlackMove);
     }
 

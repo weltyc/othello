@@ -17,10 +17,7 @@ package com.welty.othello.gdk;
 
 import com.orbanova.common.misc.Require;
 import com.welty.othello.c.CReader;
-
-import static com.welty.othello.core.Utils.Col;
-import static com.welty.othello.core.Utils.Row;
-import static com.welty.othello.core.Utils.Square;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A GGF-format move
@@ -41,11 +38,17 @@ public class OsMove {
         this.fPass = pass;
     }
 
-    public OsMove(final String text) {
+    public OsMove(final @NotNull String text) {
         this(new CReader(text));
     }
 
-    public OsMove(CReader in) {
+    /**
+     * Construct a move from text.
+     *
+     * @param in Reader to read from.
+     * @throws IllegalArgumentException if the move appears invalid
+     */
+    public OsMove(@NotNull CReader in, @NotNull OsBoardType bt) {
         final char cCol = Character.toUpperCase(in.read());
         fPass = cCol == 'P';
         if (fPass) {
@@ -60,8 +63,47 @@ public class OsMove {
             col = 0;
         } else {
             col = cCol - 'A';
-            row = in.read() - '1';
+            final char cRow = readRowChar(in, cCol);
+            row = cRow - '1';
+
+            if (!bt.isLegalSquare(row, col)) {
+                throw new IllegalArgumentException("Illegal move : " + cCol + cRow);
+            }
         }
+    }
+
+    /**
+     * Construct a move from text.
+     *
+     * @param in Reader to read from.
+     * @throws IllegalArgumentException if the move appears invalid
+     */
+    public OsMove(@NotNull CReader in) {
+        final char cCol = Character.toUpperCase(in.read());
+        fPass = cCol == 'P';
+        if (fPass) {
+            while (true) {
+                final char c = in.read();
+                if (!Character.isLetter(c)) {
+                    in.unread(c);
+                    break;
+                }
+            }
+            row = 0;
+            col = 0;
+        } else {
+            col = cCol - 'A';
+            final char cRow = readRowChar(in, cCol);
+            row = cRow - '1';
+        }
+    }
+
+    private static char readRowChar(@NotNull CReader in, char cCol) {
+        final char cRow = in.read();
+        if (cRow==(char)-1) {
+            throw new IllegalArgumentException("Move ends after one character ('" + cCol + "')");
+        }
+        return cRow;
     }
 
     /**
@@ -161,6 +203,5 @@ public class OsMove {
         }
 
         return new OsMove(row, col);
-
     }
 }

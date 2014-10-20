@@ -97,7 +97,7 @@ public class OsBoardType {
 
     /**
      * @return The total number of squares used to represent the position, including
-     * a border row of dummy squares
+     *         a border row of dummy squares
      */
     int nTotalSquares() {
         return (n + 2) * (n + 2);
@@ -142,5 +142,9 @@ public class OsBoardType {
             default:
                 return "Unknown board";
         }
+    }
+
+    public boolean isLegalSquare(int row, int col) {
+        return row >= 0 && col >= 0 && row < n && col < n && !dummyCorner(row, col);
     }
 }
