@@ -269,17 +269,26 @@ public class CReader {
     }
 
     /**
-     * reads the line up to the terminal character. The terminal character is removed from the stream but is not added to the return value.
-     * Whitespace at the beginning of the line is returned, not ignored
+     * Reads the line up to the terminal character.
+     *
+     * The terminal character is removed from the stream but is not added to the return value.
+     * Whitespace at the beginning of the line is returned, not ignored.
+     *
+     * If EOF is reached when the line is empty, an IllegalArgumentException is thrown. If EOF is reached
+     * when the line is not empty, the line is returned.
      *
      * @param terminal character that ends the line
      * @return line up to, but not including, the terminal character
+     * @throws IllegalArgumentException if EOF occurs with an empty line.
      */
-    public String readLine(char terminal) {
+    public String readLine(char terminal) throws EOFException {
         StringBuilder sb = new StringBuilder();
         char c;
         while (terminal != (c = read()) && c != (char) -1) {
             sb.append(c);
+        }
+        if (c==(char)-1 && sb.length()==0) {
+            throw new EOFException("EOF");
         }
         return sb.toString();
     }
@@ -290,8 +299,43 @@ public class CReader {
      *
      * @return line up to, but not including, the '\n' character
      */
-    public String readLine() {
+    public String readLine() throws EOFException {
         return readLine('\n');
+    }
+
+    /**
+     * Reads the line up to the next newline (\n).
+     *
+     * The newline is removed from the stream but is not added to the return value.
+     * Whitespace at the beginning of the line is returned, not ignored.
+     *
+     * The only difference between this method and {@link #readLine()} is that readLine() throws an exception
+     * if this CReader is already at EOF, while this method returns an empty string.
+     *
+     * @return line up to, but not including, the newline
+     */
+    public String readLineNoThrow() {
+        return readLineNoThrow('\n');
+    }
+
+    /**
+     * Reads the line up to the terminal character.
+     *
+     * The terminal character is removed from the stream but is not added to the return value.
+     * Whitespace at the beginning of the line is returned, not ignored.
+     *
+     * The only difference between this method and {@link #readLine(char)} is that readLine() throws an exception
+     * if this CReader is already at EOF, while this method returns an empty string.
+     *
+     * @return line up to, but not including, the terminal character
+     */
+    public String readLineNoThrow(char terminal) {
+        StringBuilder sb = new StringBuilder();
+        char c;
+        while (terminal != (c = read()) && c != (char) -1) {
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     public boolean eof() {

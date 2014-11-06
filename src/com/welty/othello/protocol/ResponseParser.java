@@ -64,7 +64,7 @@ public class ResponseParser {
 
                     // Edax produces the mli with spaces between components rather than slashes.
                     // Translate to normal form if there are spaces.
-                    final String mliText = in.readLine().trim().replaceAll("\\s+", "/");
+                    final String mliText = in.readLineNoThrow().trim().replaceAll("\\s+", "/");
                     final OsMoveListItem mli = new OsMoveListItem(mliText);
                     responseHandler.handle(new MoveResponse(pong, mli));
                     break;
@@ -74,7 +74,7 @@ public class ResponseParser {
                     break;
                 case "status":
                     in.ignoreWhitespace();
-                    final String status = in.readLine();
+                    final String status = in.readLineNoThrow();
                     setStatus(status);
                     break;
                 case "set":

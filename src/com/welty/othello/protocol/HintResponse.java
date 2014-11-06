@@ -58,7 +58,7 @@ public class HintResponse implements NBoardResponse {
         final Value eval = new Value(in.readString());
         final int nGames = in.readInt();
         final Depth depth = new Depth(in.readString());
-        final String freeformText = in.readLine();
+        String freeformText = in.readLineNoThrow();
         return new HintResponse(pong, isBook, pv, eval, nGames, depth, freeformText);
     }
 

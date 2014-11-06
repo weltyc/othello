@@ -34,6 +34,11 @@ public class COsGame {
     public COsPosition pos = new COsPosition();
 
     public String sPlace;
+
+    public String getDate() {
+        return sDateTime;
+    }
+
     protected String sDateTime;
     private final OsPlayerInfo[] pis;
     private final COsMoveList ml;
@@ -152,8 +157,8 @@ public class COsGame {
         while (true) {
             if (in.peek() == ';')
                 break;
-            sToken = in.readLine('[');
-            sData = in.readLine(']');
+            sToken = in.readLineNoThrow('[');
+            sData = in.readLineNoThrow(']');
 
             CReader is = new CReader(sData);
 

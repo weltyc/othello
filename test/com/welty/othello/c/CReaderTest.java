@@ -110,7 +110,7 @@ public class CReaderTest extends TestCase {
         assertEquals((char) -1, in.peek());
     }
 
-    public void testReadLine() {
+    public void testReadLine() throws EOFException {
         final String s = "no end of line";
         CReader in = new CReader(s);
         assertEquals(s, in.readLine());
@@ -136,7 +136,7 @@ public class CReaderTest extends TestCase {
     private void testReadLong(String input, long expected, String remainder) throws EOFException {
         final CReader in = new CReader(input);
         assertEquals(expected, in.readLong());
-        assertEquals(remainder, in.readLine());
+        assertEquals(remainder, in.readLineNoThrow());
     }
 
     private void testReadLongThrowsEofException(String input) {
@@ -158,4 +158,16 @@ public class CReaderTest extends TestCase {
             fail("should throw IllegalArgumentException");
         }
     }
+
+    public void testReadLinesThrows() {
+        try {
+            final CReader in = new CReader("foo\n");
+            in.readLine();
+            in.readLine();
+            fail("should throw, at EOF");
+        } catch(EOFException e) {
+            // expected;
+        }
+    }
+
 }

@@ -22,8 +22,8 @@ import java.io.EOFException;
 
 @EqualsAndHashCode
 public class Depth {
-    public int depth;
-    public String suffix;
+    public final int depth;
+    public final String suffix;
 
 
     public Depth(String s) {
@@ -33,7 +33,7 @@ public class Depth {
         } catch (EOFException e) {
             throw new IllegalArgumentException("Depth must start with an integer, had " + s);
         }
-        suffix = cReader.readLine();
+        this.suffix = cReader.readLineNoThrow();
     }
 
     public Depth(int depth) {
