@@ -78,6 +78,13 @@ public class DatabaseData extends ListenerManager<DatabaseData.Listener> {
         return isFileType(fn, ".JOU");
     }
 
+    /**
+     * @return true if the file ends with ".ggf", with any capitalization accepted
+     */
+    public static boolean isGgfFile(String fn) {
+        return isFileType(fn, ".GGF");
+    }
+
     private static boolean isFileType(String fn, String suffix) {
         return fn.toUpperCase().endsWith(suffix);
     }
@@ -249,9 +256,11 @@ public class DatabaseData extends ListenerManager<DatabaseData.Listener> {
 
     /**
      * Set this database to contain the given Thor games.
-     *
+     * <p/>
      * Previously existing Thor games are discarded. Previously existing GGF games are retained.
-
+     * <p/>
+     * fireDatabaseChanged() is called once this is done.
+     *
      * @param games list of Thor games.
      */
     public void setThorGames(ArrayList<ThorGameInternal> games) {
@@ -276,6 +285,15 @@ public class DatabaseData extends ListenerManager<DatabaseData.Listener> {
         fireDatabaseChanged();
     }
 
+    /**
+     * Adds GGF games to this database.
+     * <p/>
+     * You can get the GgfGameText by, for example,
+     * <p/>
+     * <code>GgfGameText.Load(new File(it), tracker);</code>
+     *
+     * @param ggfGameTexts GGF games, in text format.
+     */
     public void addGgfGames(ArrayList<GgfGameText> ggfGameTexts) {
         m_ggfGames.addAll(ggfGameTexts);
 
@@ -284,36 +302,44 @@ public class DatabaseData extends ListenerManager<DatabaseData.Listener> {
 
     /**
      * Loads Thor players file, tournament file, and all games files from the given directory.
-     *
-     * This will not look in subdirectories.
+     * <p/>
+     * This will not look in subdirectories. It clears any existing games/players/tournaments from this database.
      *
      * @param thorDirectory directory to load from
      */
     public void loadFromThorDirectory(File thorDirectory) {
+        try (final GuiProgressTracker tracker = new GuiProgressTracker("games loaded")) {
+            loadFromDirectory(thorDirectory, tracker);
+        }
+    }
+
+    /**
+     * Loads Thor players file, tournament file, and all games files from the given directory.
+     * <p/>
+     * This will not look in subdirectories. It clears any existing games/players/tournaments from this database.
+     *
+     * @param thorDirectory directory to load from
+     */
+    public void loadFromDirectory(File thorDirectory, IndeterminateProgressTracker tracker) {
         final File[] files = thorDirectory.listFiles();
-        if (files==null) {
+        if (files == null) {
             throw new RuntimeException(thorDirectory + " is not a directory");
         }
+        clearGames();
+
         ArrayList<ThorGameInternal> games = new ArrayList<>();
-        final IndeterminateProgressTracker tracker = new IndeterminateProgressTracker() {
-            @Override public void increment() {
-            }
-
-            @Override public void update() {
-            }
-
-            @Override public void close() {
-            }
-        };
         for (File file : files) {
             final String fn = file.toString();
             if (isThorGamesFile(fn)) {
                 // games file
                 games.addAll(Thor.ThorLoadGames(fn, tracker));
             } else if (isThorTournamentFile(fn)) {
-               setTournaments(ThorLoadTournaments(fn));
+                setTournaments(ThorLoadTournaments(fn));
             } else if (isThorPlayersFile(fn)) {
                 setPlayers(Thor.ThorLoadPlayers(fn));
+            } else if (isGgfFile(fn)) {
+                final ArrayList<GgfGameText> ggfGameTexts = GgfGameText.Load(file, tracker);
+                addGgfGames(ggfGameTexts);
             }
         }
         setThorGames(games);
