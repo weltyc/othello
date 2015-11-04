@@ -27,6 +27,17 @@ public class OsBoardTest extends TestCase {
     private static final COsBoard board6 = board("6 OOOOOO ****** OOOOOO ****** OOOOOO ****** O");
     private static final COsBoard boardBtm = board("8 OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** *");
     private static final COsBoard board2 = board("8 *OOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** OOOOOOOO ******** O");
+    private static final String TEXT =
+            "--------\n" +
+            "--------\n" +
+            "--*O----\n" +
+            "--***O--\n" +
+            "---OO*--\n" +
+            "---O----\n" +
+            "--------\n" +
+            "--------\n" +
+            "O";
+    private static final String README = "8 " + TEXT;
 
     public void testInitialization() {
         assertFalse(board(sBoard).isBlackMove());
@@ -53,19 +64,16 @@ public class OsBoardTest extends TestCase {
     }
 
     public void testIn() {
-        final CReader in = new CReader("8 " +
-                "--------\n" +
-                "--------\n" +
-                "--*O----\n" +
-                "--***O--\n" +
-                "---OO*--\n" +
-                "---O----\n" +
-                "--------\n" +
-                "--------\n" +
-                "O");
+        final CReader in = new CReader(README);
         final COsBoard board = new COsBoard(in);
         assertFalse(board.isBlackMove());
         assertEquals(5, board.getPieceCounts().nBlack);
+    }
+
+    public void testToText() {
+        final CReader in = new CReader(README);
+        final COsBoard board = new COsBoard(in);
+        assertEquals(TEXT, board.toText());
     }
 
     public void testIsMoveLegal() {

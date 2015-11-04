@@ -379,6 +379,35 @@ public class COsBoard {
     }
 
     /**
+     * Convert the board into something that looks like:
+     * <p/>
+     * --------
+     * --------
+     * --------
+     * ---O*---
+     * ---O**--
+     * ---O*O--
+     * ----*---
+     * --------
+     * O
+     *
+     * The board type is not included.
+     *
+     * @return the converted text
+     */
+    public String toText() {
+        StringBuilder os = new StringBuilder();
+        for (int row = 0; row < bt.n; row++) {
+            for (int col = 0; col < bt.n; col++) {
+                os.append(getPiece(row, col));
+            }
+            os.append("\n");
+        }
+        os.append(getMoverChar());
+        return os.toString();
+    }
+
+    /**
      * Set this board into an invalid state
      */
     void clear() {
@@ -489,7 +518,7 @@ public class COsBoard {
         StringBuilder sb = new StringBuilder();
 
         for (int r = 0; r < bt.n; r++) {
-            if (r>0) {
+            if (r > 0) {
                 sb.append(lineSeparator);
             }
             for (int c = 0; c < bt.n; c++) {
