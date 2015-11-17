@@ -144,6 +144,15 @@ public class OsBoardType {
         }
     }
 
+    /**
+     * Determine whether the row/column is a legal square on the board.
+     *
+     * 'legal' means in the board and, in the case of octagonal boards, not in the unused corner.
+     *
+     * @param row 0-based row of square
+     * @param col  0-based col of square
+     * @return true if the square is a legal board square.
+     */
     public boolean isLegalSquare(int row, int col) {
         return row >= 0 && col >= 0 && row < n && col < n && !dummyCorner(row, col);
     }

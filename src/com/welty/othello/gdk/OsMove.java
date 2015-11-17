@@ -49,58 +49,63 @@ public class OsMove {
      * @throws IllegalArgumentException if the move appears invalid
      */
     public OsMove(@NotNull CReader in, @NotNull OsBoardType bt) {
-        final char cCol = Character.toUpperCase(in.read());
-        fPass = cCol == 'P';
-        if (fPass) {
-            while (true) {
-                final char c = in.read();
-                if (!Character.isLetter(c)) {
-                    in.unread(c);
-                    break;
-                }
-            }
-            row = 0;
-            col = 0;
-        } else {
-            col = cCol - 'A';
-            final char cRow = readRowChar(in, cCol);
-            row = cRow - '1';
+        this(in);
 
-            if (!bt.isLegalSquare(row, col)) {
-                throw new IllegalArgumentException("Illegal move : " + cCol + cRow);
-            }
+        if (!isPass() && !bt.isLegalSquare(row, col)) {
+            readErr();
         }
     }
 
+    private void readErr() {
+        throw new IllegalArgumentException("Illegal move : " + (char)(col + 'A') + (char)(row + '1'));
+    }
+
+    private static char[] more = "ASS".toCharArray();
+
     /**
      * Construct a move from text.
+     *
+     * Legal moves are:
+     * <UL>
+     * <LI>{char}{digit}: a square on the board</LI>
+     * <LI>any prefix of "PASS" in any case: a pass</LI>
+     * <LI>"--": a pass</LI>
+     * </UL>
      *
      * @param in Reader to read from.
      * @throws IllegalArgumentException if the move appears invalid
      */
     public OsMove(@NotNull CReader in) {
         final char cCol = Character.toUpperCase(in.read());
-        fPass = cCol == 'P';
-        if (fPass) {
-            while (true) {
-                final char c = in.read();
-                if (!Character.isLetter(c)) {
-                    in.unread(c);
+        if (cCol == 'P') {
+            fPass = true;
+            // read the next characters as long as they match the next letters from "PASS".
+            for (int i = 0; i<3; i++) {
+                final char c = Character.toUpperCase(in.peek());
+                if (c==more[i]) {
+                    in.read();
+                } else {
                     break;
                 }
             }
-            row = 0;
-            col = 0;
+            row = -1;
+            col = -1;
         } else {
             col = cCol - 'A';
             final char cRow = readRowChar(in, cCol);
             row = cRow - '1';
+            fPass =  (cCol == '-' && cRow == '-');
+            if (!fPass) {
+                if (col < 0 || row < 0) {
+                    readErr();
+                }
+            }
         }
     }
 
     private static char readRowChar(@NotNull CReader in, char cCol) {
         final char cRow = in.read();
-        if (cRow==(char)-1) {
+        if (cRow == (char) -1) {
             throw new IllegalArgumentException("Move ends after one character ('" + cCol + "')");
         }
         return cRow;
@@ -154,14 +159,16 @@ public class OsMove {
         return fPass;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         if (fPass)
             return "PA";
         else
             return "" + (char) (col + 'A') + (row + 1);
     }
 
-    @Override public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (obj instanceof OsMove) {
             OsMove b = (OsMove) obj;
 
@@ -175,7 +182,7 @@ public class OsMove {
 
     /**
      * Return a reflection of the move
-     * <p/>
+     * <p>
      * Passes are returned as passes.
      *
      * @param iReflection reflection index, 0..7. 0 leaves the square unchanged.

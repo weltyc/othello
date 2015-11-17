@@ -157,6 +157,8 @@ public class CReader {
     }
 
     /**
+     * Remove the next character from the stream.
+     *
      * @return the next character (does not strip whitespace characters, returns them instead),
      *         or 65535 if at end of stream.
      */
@@ -190,6 +192,12 @@ public class CReader {
         unread(c);
     }
 
+    /**
+     * Look at the next character from the stream without removing it.
+     *
+     * @return the next character (does not strip whitespace characters, returns them instead),
+     *         or 65535 if at end of stream.
+     */
     public char peek() {
         char c = read();
         unread(c);

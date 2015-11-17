@@ -46,6 +46,24 @@ public class OsMoveTest extends TestCase {
         assertEquals("A3", new OsMove("a3").toString());
         assertEquals("PA", new OsMove("PA").toString());
         assertEquals("PA", new OsMove("pAsS").toString());
+        assertEquals("PA", new OsMove("--").toString());
+    }
+
+    public void testThrowingConstructor() {
+        try {
+            new OsMove("%%");
+            fail("should throw");
+        }
+        catch(IllegalArgumentException e) {
+            assertTrue("need a nice error message, but got " + e, e.toString().contains("%%"));
+        }
+
+    }
+
+    public void testConstructorWithPassAndMove() {
+        CReader reader = new CReader("PAA8");
+        assertEquals("PA", new OsMove(reader).toString());
+        assertEquals("A8", new OsMove(reader).toString());
     }
 
     public void testOfIos() throws Exception {
