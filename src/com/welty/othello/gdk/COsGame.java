@@ -575,11 +575,27 @@ public class COsGame {
     }
 
     COsPosition calcPosition(List<OsMoveListItem> moveList) {
+        return calcPositionWithPossiblePassInsertion(moveList, false);
+    }
+
+    /**
+     * Calculate the position that occurs at the end of a sequence of moves, possibly inserting passes into the move list.
+     *
+     * @param moveList list of moves. If insertPasses is true, this may be modified; if insertPasses is false it will not be modified.
+     * @param insertPasses if true, insert passes into the move list when necessary.
+     * @return the position at the end of the sequence.
+     */
+    COsPosition calcPositionWithPossiblePassInsertion(List<OsMoveListItem> moveList, boolean insertPasses) {
         final COsPosition position = new COsPosition(posStart);
         if (mt.isKomi() && !moveList.isEmpty())
             position.UpdateKomiSet(mlisKomi);
 
-        for (OsMoveListItem mli : moveList) {
+        for (int i=0; i<moveList.size(); i++) {
+            OsMoveListItem mli = moveList.get(i);
+            if (insertPasses && !mli.isPass() && position.board.nPass()==1) {
+                mli = OsMoveListItem.PASS;
+                moveList.add(i, mli);
+            }
             position.append(mli);
         }
         return position;
@@ -638,6 +654,8 @@ public class COsGame {
     /**
      * Set the game's current moves
      *
+     * Passes will be added if not contained in s.
+     *
      * @param s string containing a move list, for example "F5 d6 C3 d3"
      */
     public void setMoveList(String s) {
@@ -648,7 +666,7 @@ public class COsGame {
             OsMove mv = new OsMove(in, bt);
             ml.add(new OsMoveListItem(mv));
         }
-        CalcCurrentPos();
+        pos = calcPositionWithPossiblePassInsertion(ml, true);
     }
 
     /**

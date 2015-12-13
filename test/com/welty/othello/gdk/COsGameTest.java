@@ -153,6 +153,14 @@ public class COsGameTest extends TestCase {
         assertEquals("F5F6", game.getMoveList().toMoveListString());
     }
 
+    public void testSetMoveListWithImpliedPasses() {
+        // This move list comes from the website Reversi Wars, which does not include passes in its move list
+        final String moves = "F5D6C3D3C4F4F6F3E3B4B5E6E7F2E2G5G6F7G3E1C5C6H4G4D2H6F8H5H7H3H2C1D1A4A6A5F1A7D7C7B6G1B3E8D8G2B7B8A8C8G8G7H8A2A3H1A1B2C2B1";
+        final COsGame game = new COsGame(EMPTY_GAME);
+        game.setMoveList(moves);
+        assertEquals(moves, game.getMoveList().toMoveListString().replace("PA",""));
+    }
+
     public void testSetMoveListErrors() {
         final COsGame game = new COsGame(EMPTY_GAME);
         // test error handling.
