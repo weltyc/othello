@@ -21,8 +21,13 @@ public enum OperatingSystem {
     public static final OperatingSystem os = detectOs();
 
     private static OperatingSystem detectOs() {
-        if (System.getProperty("os.name").startsWith("Mac OS")) {
+        String name = System.getProperty("os.name");
+        if (name.startsWith("Mac OS")) {
             return MACINTOSH;
+        } else if (name.equals("Linux")) {
+            return LINUX;
+        } else if (name.contains("Windows")) {
+            return WINDOWS;
         }
         else {
             return UNKNOWN;
