@@ -53,7 +53,7 @@ public class ResponseParser {
      *
      * @param msg message to parse
      */
-    public synchronized void handle(String msg) {
+    public synchronized void handle(@NotNull String msg) {
         final CReader in = new CReader(msg);
         final String command = in.readString();
         try {

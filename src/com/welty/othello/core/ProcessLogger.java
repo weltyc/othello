@@ -15,6 +15,8 @@
 
 package com.welty.othello.core;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 
 /**
@@ -49,7 +51,15 @@ public class ProcessLogger {
         }
     }
 
-    public String readLine() throws IOException {
+    /**
+     * Reads the next line from the process (blocking if necessary).
+     *
+     * Returns null if no more information is available from the subprocess, for example due to subprocess termination.
+     *
+     * @return the next line or null.
+     * @throws IOException
+     */
+    public @Nullable String readLine() throws IOException {
         final String line = in.readLine();
         if (line != null) {
             synchronized (this) {

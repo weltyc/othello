@@ -15,7 +15,7 @@
 
 package com.welty.othello.timer.timer;
 
-import com.welty.othello.core.OperatingSystem;
+import com.orbanova.common.misc.OperatingSystem;
 import com.welty.othello.timer.progress.ProgressCombiner;
 import com.welty.othello.timer.progress.ProgressTask;
 
