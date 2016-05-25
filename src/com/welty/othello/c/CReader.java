@@ -306,6 +306,7 @@ public class CReader {
      * Whitespace at the beginning of the line is returned, not ignored
      *
      * @return line up to, but not including, the '\n' character
+     * @throws EOFException if this Reader is already at EOF. To get a blank line instead, see {@link #readLineNoThrow()}.
      */
     public String readLine() throws EOFException {
         return readLine('\n');

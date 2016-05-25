@@ -127,8 +127,13 @@ public class COsGame {
     }
 
     public COsGame(CReader in) {
-        ml = new COsMoveList();
-        posStart = new COsPosition();
+        this();
+        In(in);
+    }
+
+    public void In(CReader in) {
+        ml.clear();
+        posStart.Clear();
 
         char c;
         String sToken, sData;
@@ -227,10 +232,8 @@ public class COsGame {
             }
         }
 
-        pis = new OsPlayerInfo[]{
-                new OsPlayerInfo(whiteName, whiteRating),
-                new OsPlayerInfo(blackName, blackRating)
-        };
+        pis[0] = new OsPlayerInfo(whiteName, whiteRating);
+        pis[1] = new OsPlayerInfo(blackName, blackRating);
 
         if (fCheckKomiValue) {
             final double komiCheck;

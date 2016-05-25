@@ -15,14 +15,22 @@
 
 package com.welty.othello.timer.progress;
 
+import com.orbanova.common.jsb.JSwingBuilder;
+
 import javax.swing.*;
+import java.awt.*;
 
 /**
- * <PRE>
- * User: Chris
- * Date: Jul 25, 2009
- * Time: 8:05:21 AM
- * </PRE>
+ * A ProgressBox is a thread-safe alternative to Java's Progress Bar.
+ * <p>
+ * Create one like this:
+ * <pre>
+ *     ProgressBox.create("Endgame", endgameTask, ColorSet.green);
+ * </pre>
+ * To display a window showing the progress box,
+ * <pre>
+ *     ProgressBox.create("Endgame", endgameTask, ColorSet.green).displayWindow();
+ * </pre>
  */
 public class ProgressBox extends JPanel implements ProgressListener {
     private final MyProgressBar progressBar;
@@ -42,12 +50,19 @@ public class ProgressBox extends JPanel implements ProgressListener {
         this.task = task;
         progressBar = new MyMatteProgressBar(colorSet);
         final Box box = Box.createHorizontalBox();
-        box.add(Utils.createLabel(text, 80));
+        box.add(createLabel(text, 80));
         box.add(progressBar);
-        resultLabel = Utils.createLabel("", 80);
+        resultLabel = createLabel("", 80);
         resultLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         box.add(resultLabel);
         add(box);
+    }
+
+    private static JLabel createLabel(String text, int width) {
+        final JLabel label = new JLabel(text);
+        label.setPreferredSize(new Dimension(width,20));
+        label.setVerticalAlignment(SwingConstants.TOP);
+        return label;
     }
 
     public void handleProgress() {
@@ -66,4 +81,15 @@ public class ProgressBox extends JPanel implements ProgressListener {
         });
     }
 
+    /**
+     * Create a window and display this progress box in it.
+     * <p>
+     * The Window is created as Dispose on close.
+     *
+     * @return The window.
+     */
+    @SuppressWarnings("unused")
+    public JFrame displayWindow() {
+        return JSwingBuilder.frame("", WindowConstants.DISPOSE_ON_CLOSE, this);
+    }
 }
