@@ -16,6 +16,7 @@
 package com.welty.othello.database;
 
 import com.orbanova.common.feed.Feeds;
+import com.orbanova.common.misc.OperatingSystem;
 import com.orbanova.common.misc.Vec;
 import gnu.trove.map.hash.TDoubleIntHashMap;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -45,37 +46,38 @@ public class GgsDownloader {
     private static final String archiveUrl = "https://skatgame.net/mburo/ggs/game-archive/Othello/";
 
     /**
-     * The location on disk where the archives will be cached
-     */
-    static final Path cacheLocation = Paths.get("C:/dev/othello/db");
-
-    /**
      * Download a GGS file, select games from it, and write the selected games to c:/dev/oth1/games.ggf
      * (overwriting the existing file).
      */
     public static void main(String[] args) throws IOException, CompressorException {
-        // Game archives that have already been added to book:
-        // 142-154
-        // As of 18 Feb 2014, 154 is the last split file created; remainder is in Othello.latest.225728.bz2
-        // Game archives that are currently running:
-        final int fileNumber = 141;
-        final String outputLocation = "c:/dev/oth1/games.ggf";
-
-        download(fileNumber, Paths.get(outputLocation));
+        select("latest.256860");
     }
 
     /**
-     * Select games and store them at the outputPath.
+     * Select games and store them.
      * <p/>
      * Downloads the games from GGS if they are not already downloaded in the cache.
      *
-     * @param archiveFileNumber game archive number, from the selection available at the archive server.
-     * @param outputPath        path to store selected games at.
+     * @param fileNumber game archive number, from the selection available at the archive server.
      * @throws IOException
      * @throws CompressorException
      */
-    public static void download(int archiveFileNumber, Path outputPath) throws IOException, CompressorException {
-        final Path destPath = downloadGgs("Othello." + archiveFileNumber + ".ggf.bz2");
+    public static void select(int fileNumber) throws IOException, CompressorException {
+        select(fileNumber+".ggf");
+    }
+
+    /**
+     * Select games and store them.
+     * <p/>
+     * Downloads the games from GGS if they are not already downloaded in the cache.
+     *
+     * @param fileCode game 'xxx.ggf' or 'latest.xxxxxx'
+     * @throws IOException
+     * @throws CompressorException
+     */
+    private static void select(String fileCode) throws IOException, CompressorException {
+        final Path destPath = downloadGgs("Othello." + fileCode + ".bz2");
+        final Path outputPath = Paths.get("/home/chris/games_" + fileCode + ".ggf");
 
         final List<OthelloMatch> matches = Feeds.ofLines(bz2Reader(destPath))
                 .map(OthelloMatch.PARSER)
@@ -91,6 +93,9 @@ public class GgsDownloader {
         for (OthelloMatch match : matches) {
             for (OthelloGame game : match.games) {
                 nGames++;
+                if (nGames%1024 == 0) {
+                    System.out.println((nGames>>10) + "k games");
+                }
                 final String type = game.type();
                 // only want to add standard start position to book.
                 // no comments allowed because book might freak out if game is not completely played out.
@@ -116,12 +121,14 @@ public class GgsDownloader {
     }
 
     private static Path downloadGgs(String sourceFile) throws IOException {
-        final Path destPath = cacheLocation.resolve(sourceFile);
+        Path cacheDir = OperatingSystem.os.getCacheDir("com.welty.othello.database");
+        final Path destPath = cacheDir.resolve(sourceFile);
 
-        Files.createDirectories(cacheLocation);
+        Files.createDirectories(cacheDir);
 
         // download the file, unless we've already got it
         if (!Files.exists(destPath)) {
+            System.out.println("downloading to " + destPath);
             // fix a bug in Java, see http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
             System.setProperty("jsse.enableSNIExtension", "false");
             final URL url = new URL(archiveUrl + sourceFile);
@@ -140,7 +147,7 @@ public class GgsDownloader {
      * @param bz2File the file to open
      * @return a BufferedReader containing the decompressed contents of the bz2 file
      */
-    public static BufferedReader bz2Reader(Path bz2File) throws CompressorException, IOException {
+    private static BufferedReader bz2Reader(Path bz2File) throws CompressorException, IOException {
         final BufferedInputStream compressedBytes = new BufferedInputStream(Files.newInputStream(bz2File));
         final CompressorInputStream decompressedBytes = new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.BZIP2, compressedBytes);
         final BufferedReader br2 = new BufferedReader(new InputStreamReader(decompressedBytes));

@@ -198,6 +198,7 @@ public class DatabaseData extends ListenerManager<DatabaseData.Listener> {
             game.setWhitePlayer(playerFromPlayerNumber(tg.iWhitePlayer), 0);
 
             game.sPlace = tournamentFromTournamentNumber(tg.iTournament);
+            game.SetTimeYear(tg.year);
             for (int i = 0; i < 60 && tg.moves[i] >= 0; i++) {
                 final int sq = tg.moves[i];
                 OsMoveListItem mli = new OsMoveListItem(new OsMove(Row(sq), Col(sq)));

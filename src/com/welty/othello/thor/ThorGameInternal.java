@@ -24,11 +24,11 @@ import java.util.List;
 /**
  * Memory representation of a thor game
  */
-public class ThorGameInternal extends ThorGame8 {
+class ThorGameInternal extends ThorGame8 {
     final char year;
     final char openingCode;
 
-    public ThorGameInternal(CBinaryReader is, char year) {
+    ThorGameInternal(CBinaryReader is, char year) {
         super(is);
         this.year = year;
         openingCode = (char) ThorOpeningMap.OpeningCode(moves);
@@ -46,13 +46,13 @@ public class ThorGameInternal extends ThorGame8 {
         this.openingCode = (char) openingCode;
     }
 
-    public ThorGameInternal(int iTournament, int iBlackPlayer, int iWhitePlayer, int nBlackDiscs, int nPerfectDiscs, byte[] moves, int year, int openingCode) {
+    ThorGameInternal(int iTournament, int iBlackPlayer, int iWhitePlayer, int nBlackDiscs, int nPerfectDiscs, byte[] moves, int year, int openingCode) {
         super(iTournament, iBlackPlayer, iWhitePlayer, nBlackDiscs, nPerfectDiscs, moves);
         this.year = (char) year;
         this.openingCode = (char) openingCode;
     }
 
-    public COsGame toOsGame(List<String> tournaments, List<String> players) {
+    COsGame toOsGame(List<String> tournaments, List<String> players) {
         final COsGame game = new COsGame();
         game.Initialize("8", OsClock.DEFAULT, OsClock.DEFAULT);
         game.setPlayerName(true, players.get(iBlackPlayer));
