@@ -22,7 +22,7 @@ public class ThorSelector {
         });
     }
 
-    public static void createAndShowGui() {
+    private static void createAndShowGui() {
         DatabaseData db = new DatabaseData();
         db.loadFromDirectory(new File("/home/chris/dist/nboard/db/ffo"), new GuiProgressTracker("games"));
 
@@ -30,14 +30,20 @@ public class ThorSelector {
         printGames("Meijin", db);
     }
 
-    public static void printGames(String place, DatabaseData db) {
+    /**
+     * Select games where PC={place} from a database and write them, in GGF format, to /home/chris/Dropbox/othello/{place}.
+     *
+     * @param place place where games occurred
+     * @param db    game source
+     */
+    private static void printGames(String place, DatabaseData db) {
         File dir = new File("/home/chris/Dropbox/othello");
         try {
             dir.mkdirs();
             BufferedWriter out = new BufferedWriter(new FileWriter(new File(dir, place)));
             int n = db.NGames();
             int nGames = 0;
-            for (int i=0; i< n; i++) {
+            for (int i = 0; i < n; i++) {
                 COsGame game = db.GameFromIndex(i);
                 if (game.sPlace.equals(place)) {
                     out.write(game.toString() + "\n");
@@ -45,7 +51,7 @@ public class ThorSelector {
                 }
             }
             out.close();
-            System.out.println(place +  ": " + nGames + " games");
+            System.out.println(place + ": " + nGames + " games");
         } catch (IOException e) {
             e.printStackTrace();
         }
